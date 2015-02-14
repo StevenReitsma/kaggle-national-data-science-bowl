@@ -1,6 +1,15 @@
 import numpy as np
 import scipy
 
+"""
+Utility class for squaring ndarrays (representing images)
+
+Squaring here means making the width and height of the image equal, by
+increasing one of either.
+
+"""
+
+
 # Square an image by stretching the shorter dimension
 # Possible interpolation values: 'nearest', 'bilinear', 'bicubic'
 # or 'cubic'

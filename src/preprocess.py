@@ -1,0 +1,102 @@
+# -*- coding: utf-8 -*-
+
+import os
+import sys
+import imsquare
+import scipy
+from scipy import misc
+
+"""
+Preprocessing script
+
+    1. Load all images into memory.
+    2. Pad or stretch images into square images
+    3. Resize (downsize probably) to common size
+    4. Write the results to a file    
+
+"""
+
+def preprocess(path='../data/train'):
+    
+    
+    images, labels = loadimages(path)
+    squared = squareimages(images, 'pad')
+    resized = resizeimages(squared)    
+    
+    
+    
+def loadimages(path):
+    print "LOADING IMAGES INTO MEMORY"
+    
+    # Images and labels are kept in seperate lists, this is done for efficiency
+    # Being able to process the images sequentially in memory decreases the
+    # chance of cache misses
+    images = []
+    labels = []
+    
+    #The classes are the folders in which the images reside
+    classes = os.listdir(path)
+    
+    for classname in classes:  
+        print "LOADING ", classname
+        
+        for filename in os.listdir(os.path.join(path, classname)):
+            image = misc.imread( os.path.join(path, classname, filename) )
+            images.append(image)
+            labels.append((classname, filename))
+    
+    return images, labels
+        
+    
+        
+
+def squareimages(images, approach='pad'):
+    print "SQUARING IMAGES"
+    squaredimages = []
+    
+    if approach == 'pad':
+        squarefunction = imsquare.squarepad
+    elif approach == 'stretch':
+        squarefunction = imsquare.squarestretch
+    else:
+        raise Exception('Unknown square method!')
+    
+    step = len(images)//10
+    
+    for i, image in enumerate(images):
+
+        squared = squarefunction(image)  
+        squaredimages.append(squared)
+        
+        if (i % step) == 0: # Print progress
+            print '\b.',
+            sys.stdout.flush()
+        
+    print "DONE"  
+    return squaredimages
+    
+
+def resizeimages(images, size=32, interp='bilinear'): #Default width and height is 32
+    print "RESIZING IMAGES TO", size, "x", size
+
+    resizedimages = []
+
+    step = len(images)//10
+    
+    for i, image in enumerate(images):
+        
+        resizedimages.append( scipy.misc.imresize(image, (size, size), interp))
+        
+        if (i % step) == 0: # Print progress
+            print '\b.',
+            sys.stdout.flush()   
+    
+    print "DONE"    
+    return resizedimages
+
+
+
+if __name__ == '__main__':
+    preprocess();
+
+
