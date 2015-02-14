@@ -1,13 +1,19 @@
 import numpy as np
-
+import scipy
 
 # Square an image by stretching the shorter dimension
-def squarestretch(image):
-        pass
+# Possible interpolation values: 'nearest', 'bilinear', 'bicubic'
+# or 'cubic'
+def squarestretch(image, interp= 'bilinear'):
     
+    height = len(image)
+    width = len(image[0])    
     
+    #Desired width and height length.
+    desiredsize = max([height, width])  
     
-
+    return scipy.misc.imresize(image, (desiredsize, desiredsize), interp)
+    
 
 
 # Square an image by padding its sides
