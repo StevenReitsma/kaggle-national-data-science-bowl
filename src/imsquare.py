@@ -1,9 +1,4 @@
-from scipy import misc
 import numpy as np
-
-#a = misc.imread('../data/train/amphipods/4661.jpg')
-#print a
-
 
 # Square an image by padding its sides
 def squarepad(image, padvalue=255):
@@ -57,7 +52,3 @@ def calcpadsize(currentlength, desiredlength):
     
     return l, r
     
-
- 
-
-

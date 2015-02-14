@@ -4,8 +4,6 @@ import sys
 sys.path.append('../src')
 import imsquare as imsquare
 
-
-
 class TestImageSquaring(unittest.TestCase):
     
     def setUp(self):
@@ -72,10 +70,6 @@ class TestImageSquaring(unittest.TestCase):
         ]      
         
         self.assertTrue(np.array_equal(squared, expected))   
-        
-        
-        
-        
         
         
     def test_pad_tall_image(self):
