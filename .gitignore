@@ -1,8 +1,8 @@
 # Ignore data files
 data/
 
-# Ignore Spyder workspace definition
-.spyderworkspace
+# Ignore Spyder workspace definitions
+*.spyderproject
 
 # PYTHON
 # Byte-compiled / optimized / DLL files
