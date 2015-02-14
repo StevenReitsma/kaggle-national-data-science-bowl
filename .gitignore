@@ -1,6 +1,9 @@
 # Ignore data files
 data/
 
+# Ignore Spyder workspace definition
+.spyderworkspace
+
 # PYTHON
 # Byte-compiled / optimized / DLL files
 __pycache__/
