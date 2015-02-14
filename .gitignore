@@ -3,6 +3,7 @@ data/
 
 # Ignore Spyder workspace definitions
 *.spyderproject
+.spyderproject
 
 # PYTHON
 # Byte-compiled / optimized / DLL files
