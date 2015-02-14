@@ -37,7 +37,31 @@ class TestImageSquaring(unittest.TestCase):
             [0,0],
             [0,0]
         ]
+    
+    
+    def test_stretch_square_image(self):
         
+        testimages = [self.alreadySquare, self.widerect, self.tallrect]        
+        
+        for image in testimages:
+            self.stretch_test_image(image)
+        
+        
+        
+    def stretch_test_image(self, image):
+        width = len(image[0])
+        height = len(image)
+        
+        squared = imsquare.squarestretch(image)
+        
+        expectedsize = max([width, height])
+
+        # Assert that dimensions are correct
+        self.assertEquals(len(squared), expectedsize)
+        self.assertEquals(len(squared[0]), expectedsize)
+        
+        
+    
         
     def test_pad_square_image(self):
         #Image is already square, output should not change

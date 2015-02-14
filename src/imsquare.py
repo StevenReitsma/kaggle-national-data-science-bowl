@@ -1,5 +1,15 @@
 import numpy as np
 
+
+# Square an image by stretching the shorter dimension
+def squarestretch(image):
+        pass
+    
+    
+    
+
+
+
 # Square an image by padding its sides
 def squarepad(image, padvalue=255):
     
@@ -39,8 +49,6 @@ def squarepad(image, padvalue=255):
         image = np.vstack((tpad, image, bpad))        
         
     return image
-    
-
 
 # Returns the pad sizes for either side of the image
 def calcpadsize(currentlength, desiredlength):
