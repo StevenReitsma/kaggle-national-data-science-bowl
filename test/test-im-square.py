@@ -103,7 +103,16 @@ class TestImageSquaring(unittest.TestCase):
         self.assertTrue(np.array_equal(squared, expected))  
     
     
-
+    def test_calc_pad_size(self):
+        # Current width is 1, desired width is 4
+        l, r = imsquare.calcpadsize(1, 4)
+        # Expected pad sizes
+        expectedl = 1
+        expectedr = 2
+        
+        self.assertEquals(expectedl, l)
+        self.assertEquals(expectedr, r)
+        
 
 if __name__ == '__main__':
     unittest.main();
