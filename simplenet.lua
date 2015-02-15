@@ -5,6 +5,7 @@ require('xlua')
 require('optim')
 require('cudnn')
 require('cunn')
+Plot = require('itorch.Plot')
 matio = require('matio')
 
 -- parse command line arguments
@@ -16,6 +17,9 @@ if not opt then
 	cmd:option('-cuda', false, 'whether to use cuda')
 	cmd:option('-threads', 1, 'amount of CPU threads to use, not relevant for cuda')
 	cmd:option('-resume', false, 'whether to resume loading from model.net file')
+	cmd:option('-subset', false, 'whether to run on a subset of the data for testing')
+	cmd:option('-save', false, 'whether to save the model each 10 epochs')
+	cmd:option('-test', false, 'whether to split the training set 90/10 and test during training')
 	cmd:text()
 	opt = cmd:parse(arg or {})
 end
@@ -35,46 +39,91 @@ else
 end
 
 -- load data
-local trainData = matio.load("data/training.mat", "data") -- to use a subset, append [{{1,1000},}]
-local trainLabels = matio.load("data/labels.mat", "labels")[1] + 1 -- add one because lua assumes 1 as starting index
-local filename = 'model.net'
+local trainDataFull = matio.load("data/training.mat", "data")
+local trainLabelsFull = matio.load("data/labels.mat", "labels")[1] + 1 -- add one because lua assumes 1 as starting index
 
-print(trainData[1])
+if opt.subset then
+	trainDataFull = trainDataFull[{{1,2048},}]
+	trainLabelsFull = trainLabelsFull[{{1,2048},}]
+end
+
+local trainData
+local trainLabels
+local testData
+local testLabels
+
+if opt.test then
+	shuffle = torch.randperm(trainDataFull:size(1))
+	nTraining = math.floor(trainDataFull:size(1) * 0.90)
+	nTesting = trainDataFull:size(1) - nTraining
+
+	trainData = torch.Tensor(nTraining, trainDataFull:size(2), trainDataFull:size(3), trainDataFull:size(4))
+	trainLabels = torch.Tensor(nTraining)
+	testData = torch.Tensor(nTesting, trainDataFull:size(2), trainDataFull:size(3), trainDataFull:size(4))
+	testLabels = torch.Tensor(nTesting)
+
+	for t = 1,trainDataFull:size(1) do
+		sample = trainDataFull[shuffle[t]]
+		label = trainLabelsFull[shuffle[t]]
+
+		if t <= nTraining then
+			trainData[t] = sample
+			trainLabels[t] = label
+		else
+			testData[t-nTraining] = sample
+			testLabels[t-nTraining] = label
+		end
+	end
+else
+	trainData = trainDataFull
+	trainLabels = trainLabelsFull
+end
+
+local filename = 'model.net'
 
 -- parameters
 local nChannels = 1 -- the amount of channels in the input image (1 for Plankton)
-local nConvolutionMaps = {64, 128, 64} -- the amount of feature maps in layer k
-local nKernelSize = {9, 5, 3} -- the kernel size in layer k
-local nKernelSkipSize = {1, 1, 2} -- the stride
-local nPoolSize = 3 -- the pool kernel size
-local nPoolSkipSize = 2 -- the pool kernel stride
-local nOutputs = trainLabels[trainLabels:size(1)]
-local nBatchSize = 256 -- power of 2 for faster processing
+local nOutputs = trainLabelsFull[trainLabelsFull:size(1)]
+local nBatchSize = 32 -- power of 2 for faster processing
+
+-- free up memory
+trainDataFull = nil
+trainLabelsFull = nil
 
 -- Container:
 local model = nn.Sequential()
 local criterion = nn.ClassNLLCriterion()
 
--- Set up network
-local branch1 = nn.Sequential()
-branch1:add(SpatialConvolution(nChannels, nConvolutionMaps[1], nKernelSize[1], nKernelSize[1], nKernelSkipSize[1], nKernelSkipSize[1]))
-branch1:add(ReLU(true))
-branch1:add(SpatialMaxPooling(nPoolSize, nPoolSize, nPoolSkipSize, nPoolSkipSize))
-branch1:add(SpatialConvolution(nConvolutionMaps[1], nConvolutionMaps[2], nKernelSize[2], nKernelSize[2], nKernelSkipSize[2], nKernelSkipSize[2]))
-branch1:add(ReLU(true))
-branch1:add(SpatialMaxPooling(nPoolSize, nPoolSize, nPoolSkipSize, nPoolSkipSize))
-branch1:add(SpatialConvolution(nConvolutionMaps[2], nConvolutionMaps[3], nKernelSize[3], nKernelSize[3], nKernelSkipSize[3], nKernelSkipSize[3]))
-branch1:add(ReLU(true))
-branch1:add(SpatialMaxPooling(nPoolSize, nPoolSize, nPoolSkipSize, nPoolSkipSize))
+-- Set up OverFeat network
+local features = nn.Sequential()
+
+features:add(SpatialConvolution(1, 96, 7, 7, 4, 4)) -- (64 - 7 + 1)/4 = 15
+features:add(ReLU(true))
+features:add(SpatialMaxPooling(2, 2, 1, 1)) -- 14
+
+features:add(SpatialConvolution(96, 256, 5, 5, 1, 1)) -- (14 - 5 + 1)/1 = 10
+features:add(ReLU(true))
+features:add(SpatialMaxPooling(2, 2, 1, 1)) -- 9
+
+features:add(SpatialConvolution(256, 512, 3, 3, 1, 1, 1, 1)) -- (9 - 3 + 3)/1 = 9
+features:add(ReLU(true))
+
+features:add(SpatialMaxPooling(2, 2, 2, 2)) -- 4
 
 local classifier = nn.Sequential()
-classifier:add(nn.View(64*2*2))
-classifier:add(nn.Linear(64*2*2, 4096))
+classifier:add(nn.View(512*4*4))
+classifier:add(nn.Dropout(0.5))
+classifier:add(nn.Linear(512*4*4, 3072))
 classifier:add(nn.Threshold(0, 1e-6))
+
+classifier:add(nn.Dropout(0.5))
+classifier:add(nn.Linear(3072, 4096))
+classifier:add(nn.Threshold(0, 1e-6))
+
 classifier:add(nn.Linear(4096, nOutputs))
 classifier:add(nn.LogSoftMax())
 
-local model = nn.Sequential():add(branch1):add(classifier)
+local model = nn.Sequential():add(features):add(classifier)
 
 -- check for resume
 if opt.resume then
@@ -89,10 +138,10 @@ end
 parameters,gradParameters = model:getParameters()
 
 optimState = {
-	learningRate = 1e-3,
-	weightDecay = 0,
-	momentum = 0,
-	learningRateDecay = 1e-7
+	learningRate = 5e-2,
+	weightDecay = 1e-5,
+	momentum = 0.6,
+	learningRateDecay = 5e-7
 }
 optimMethod = optim.sgd
 
@@ -112,19 +161,27 @@ function train()
 	-- do one epoch
 	print('==> doing epoch on training data:')
 	print("==> online epoch # " .. epoch .. ' [batchSize = ' .. nBatchSize .. ']')
+
+	local totalError = 0
+	local nBatches = 0
+
 	for t = 1,trainData:size(1),nBatchSize do
 		-- disp progress
-		xlua.progress(t-1, trainData:size(1))
+		if (t-1) % 3200 == 0 then
+			xlua.progress(t-1, trainData:size(1))
+		end
 
 		-- create mini batch
 		local inputs
+		local targets
+		local actualBatchSize = math.min(t+nBatchSize-1,trainData:size(1)) - t + 1
 
 		if opt.cuda then
-			inputs = torch.CudaTensor(nBatchSize, nChannels, trainData:size(3), trainData:size(4))
-			targets = torch.CudaTensor(nBatchSize)
+			inputs = torch.CudaTensor(actualBatchSize, nChannels, trainData:size(3), trainData:size(4))
+			targets = torch.CudaTensor(actualBatchSize)
 		else
-			inputs = torch.Tensor(nBatchSize, nChannels, trainData:size(3), trainData:size(4))
-			targets = torch.Tensor(nBatchSize)
+			inputs = torch.Tensor(actualBatchSize, nChannels, trainData:size(3), trainData:size(4))
+			targets = torch.Tensor(actualBatchSize)
 		end
 
 		local tensor_index = 1
@@ -149,16 +206,11 @@ function train()
 			-- reset gradients
 			gradParameters:zero()
 
-			-- f is the average of all criterions
-			local f = 0
-
 			local outputs = model:forward(inputs)
 			outputs = outputs:double()
 
 			local err = criterion:forward(outputs, targets)
 			local df_do = criterion:backward(outputs, targets)
-
-			f = f + err
 
 			if opt.cuda then
 				df_do = df_do:cuda()
@@ -166,32 +218,79 @@ function train()
 
 			model:backward(inputs, df_do)
 
+			totalError = totalError + err
+
 			-- normalize gradients and f(X)
 			gradParameters:div(targets:size(1))
-			print(model:forward(trainData[1]:cuda()))
 
-			return f,gradParameters
+			return err,gradParameters
 		end
 
 		-- optimize on current mini-batch
 		optimMethod(feval, parameters, optimState)
+
+		nBatches = nBatches + 1
 	end
 
 	-- time taken
 	time = sys.clock() - time
 	time = time / trainData:size(1)
-	print("\n==> time to learn 1 sample = " .. (time*1000) .. 'ms')
+	print("\n==> time to learn 1 sample = " .. (time*1000) .. 'ms, total error = ' .. (totalError / nBatches))
 
 	-- save/log current net
-	if epoch % 10 == 0 then
+	if epoch % 10 == 0 and opt.save then
 		print('==> saving model to '..filename)
 		torch.save(filename, model)
 	end
 
 	-- next epoch
 	epoch = epoch + 1
+
+	return totalError / nBatches
 end
 
+function test(subset)
+	epoch = epoch or 1
+
+	local totalError = 0
+	local amount
+
+	if subset then
+		amount = math.min(512, nTesting)
+	else
+		amount = nTesting
+	end
+
+	for t = 1,amount do
+		if t % 512 == 0 then
+			xlua.progress(t-1, amount)
+		end
+
+		local input = testData[t]
+		input = input:cuda()
+		local output = model:forward(input)
+		output = output:double()
+
+		local err = criterion:forward(output, testLabels[t])
+		totalError = totalError + err
+	end
+
+	return totalError / amount
+end
+
+local train_error_rates = {}
+local test_error_rates = {}
 while true do
-	train()
+	table.insert(train_error_rates, train())
+
+	if opt.test then
+		table.insert(test_error_rates, test())
+	end
+
+	-- plot that shit
+	plot = Plot():line(torch.range(1,#train_error_rates), train_error_rates,'red','Training set error'):legend(true):title('Error rate')
+	if opt.test then
+		plot:line(torch.range(1,#test_error_rates), test_error_rates,'blue','Test set error'):draw()
+	end
+	plot:save('out.html')
 end
