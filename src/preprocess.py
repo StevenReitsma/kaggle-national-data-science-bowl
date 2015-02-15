@@ -3,6 +3,7 @@
 import os
 import sys
 import imsquare
+import impatch
 import scipy
 from scipy import misc
 
@@ -12,7 +13,10 @@ Preprocessing script
     1. Load all images into memory.
     2. Pad or stretch images into square images
     3. Resize (downsize probably) to common size
-    4. Write the results to a file    
+    4. Patch images
+    5. Write the results to a file    
+    
+    Note that patching images eats a lot of memory.
 
 """
 
@@ -22,6 +26,7 @@ def preprocess(path='../data/train'):
     images, labels = loadimages(path)
     squared = squareimages(images, 'pad')
     resized = resizeimages(squared)    
+    patched = patchimages(resized)
     
     
     
@@ -34,7 +39,7 @@ def loadimages(path):
     images = []
     labels = []
     
-    #The classes are the folders in which the images reside
+    # The classes are the folders in which the images reside
     classes = os.listdir(path)
     
     for classname in classes:  
@@ -94,9 +99,26 @@ def resizeimages(images, size=32, interp='bilinear'): #Default width and height 
     print "DONE"    
     return resizedimages
 
-
+def patchimages(images, patchsize=6):
+    print "PATCHING IMAGES"
+    
+    patchedimages = []
+    
+    step = len(images)//10
+    
+    for i, image in enumerate(images):
+        
+        patches = impatch.patch(image)
+        patchedimages.append(patches)
+        
+        if (i % step) == 0: # Print progress
+            print '\b.',
+            sys.stdout.flush()   
+    
+    print "DONE"    
+    return patchedimages
 
 if __name__ == '__main__':
-    preprocess();
+    preprocess()
 
 

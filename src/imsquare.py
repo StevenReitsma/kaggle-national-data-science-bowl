@@ -2,7 +2,7 @@ import numpy as np
 import scipy
 
 """
-Utility class for squaring ndarrays (representing images)
+Utility functions for squaring ndarrays (representing images)
 
 Squaring here means making the width and height of the image equal, by
 increasing one of either.
