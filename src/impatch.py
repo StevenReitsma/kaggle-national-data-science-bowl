@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 import random
 
-# Hack to improve memory usage for 32x32sized images
-coords32 = [(x,y) for x in range(32-6+1) for y in range(32-6+1)]
-
-
 def patch(image, n=0, patchsize=6):    
     """
        Patches an image (samples sub-images)
@@ -33,13 +29,7 @@ def patch(image, n=0, patchsize=6):
     if n == 0:
         n = maxpatches
         
-    # Hack to improve memory usage for 32x32sized images
-    # Coord list doesn't have to be created for every image
-    # TODO: Work for lengths that are not 32
-    if xlength == 32 and ylength == 32:
-        coords = coords32
-    else:
-        coords = [(x,y) for x in range(xindexmax+1) for y in range(yindexmax+1)]
+    coords = [(x,y) for x in range(xindexmax+1) for y in range(yindexmax+1)]
     
     # Shuffle list of coords
     random.shuffle(coords)
@@ -55,10 +45,4 @@ def patch(image, n=0, patchsize=6):
         patches.append(patch)
     
     return patches
-    
-    
-    
-    
-    
-    
     
