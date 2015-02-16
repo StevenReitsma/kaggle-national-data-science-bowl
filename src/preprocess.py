@@ -14,6 +14,8 @@ Preprocessing script
     2. Pad or stretch images into square images
     3. Resize (downsize probably) to common size
     4. Patch images
+    
+    TODO
     5. Write the results to a file    
     
     Note that patching images eats a lot of memory.
@@ -28,7 +30,7 @@ def preprocess(path='../data/train'):
     resized = resizeimages(squared)    
     patched = patchimages(resized)
     
-    
+    return patched, labels
     
 def loadimages(path):
     print "LOADING IMAGES INTO MEMORY"
