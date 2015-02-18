@@ -1,6 +1,10 @@
 # Ignore data files
 data/
 
+# Ignore Spyder workspace definitions
+*.spyderproject
+.spyderproject
+
 # PYTHON
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -179,3 +183,4 @@ sympy-plots-for-*.tex/
 
 # xindy
 *.xdy
+*.spyderworkspace
