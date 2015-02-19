@@ -6,6 +6,9 @@ import imsquare
 import impatch
 import scipy
 from scipy import misc
+import numpy as np
+from numpy import random
+import h5py
 
 """
 Preprocessing script
@@ -22,15 +25,58 @@ Preprocessing script
 
 """
 
-def preprocess(path='../data/train', *opts):
-    
+def preprocess(path='../data/train'):
+
 
     images, labels = loadimages(path)
     squared = squareimages(images, 'pad')
     resized = resizeimages(squared)
     patched = patchimages(resized)
 
-    return patched, labels
+
+        
+    flattened = flatten(patched)
+    print "Length before flattening: {0}, after: {1}".format(len(patched), len(flattened))
+    
+    print "SHUFFLING"
+    random.shuffle(flattened)
+    print "DONE"
+    return flattened, labels
+
+
+    print "DONE"
+    save(patched, labels, flattened)
+    return patched, labels, flattened
+    
+def save(patches, labels, unordered, filepath="../data/preprocessed.h5"):
+    f = h5py.File(filepath, 'w')
+
+    # Dimensions
+    dUnordered = (len(unordered), len(unordered[0]), len(unordered[0][0]))
+    
+    dsetP = f.create_dataset("unordered",dUnordered, dtype=np.int8)
+    dsetP[...] = unordered
+    
+    
+def loadunsupervised(filepath="../data/preprocessed.h5"):
+    f = h5py.File(filepath)
+    dset = f["unordered"]    
+    rdata = []
+    dset.read_direct(rdata)
+    
+    return rdata;
+    
+    
+    
+
+
+
+
+def flatten(collection):
+    print "FLATTENING"
+    return [item for sublist in collection for item in sublist]
+
+
 
 def loadimages(path):
     print "LOADING IMAGES INTO MEMORY"
