@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 import sys
 sys.path.append('../src')
-import preprocess
+import imutil
 
 class TestPreprocessing(unittest.TestCase):
     
@@ -23,11 +23,8 @@ class TestPreprocessing(unittest.TestCase):
     
     def test_flatten_images(self):
         
-        flat = preprocess.flattenimages(self.images)  
+        flat = imutil.flattenimages(self.images)  
         expected = np.array( [ [1,2,3,0,5,0,2,3,1],[1,0,1,0,1,0,1,0,1] ])
-        
-        print flat
-                
         
         self.assertTrue(np.array_equal(flat, expected))         
         
