@@ -17,51 +17,78 @@ Preprocessing script
     2. Pad or stretch images into square images
     3. Resize (downsize probably) to common size
     4. Patch images
-
-    TODO
     5. Write the results to a file
 
     Note that patching images eats a lot of memory.
 
 """
 
-def preprocess(path='../data/train'):
-
+def preprocess(path='../data/train', writeToFile=True):
 
     images, labels = loadimages(path)
     squared = squareimages(images, 'pad')
     resized = resizeimages(squared)
     patched = patchimages(resized)
 
-
+    # Clear some memory..
+    del squared
+    del resized
+    del images
         
     flattened = flatten(patched)
     print "Length before flattening: {0}, after: {1}".format(len(patched), len(flattened))
     
     print "SHUFFLING"
     random.shuffle(flattened)
-    print "DONE"
-    return flattened, labels
 
+    print "RAVELLING 2D IMAGES TO 1D"
+    flattened = [np.ravel(image) for image in flattened]
 
+    print flattened
+    if writeToFile:
+        print "SAVING TO {0}".format(path)
+        #save(patched, labels, flattened)
+    
     print "DONE"
-    save(patched, labels, flattened)
     return patched, labels, flattened
     
 def save(patches, labels, unordered, filepath="../data/preprocessed.h5"):
     f = h5py.File(filepath, 'w')
 
     # Dimensions
-    dUnordered = (len(unordered), len(unordered[0]), len(unordered[0][0]))
+    dUnordered = (len(unordered), len(unordered[0]))
     
-    dsetP = f.create_dataset("unordered",dUnordered, dtype=np.int8)
+    dsetP = f.create_dataset("unordered",dUnordered, dtype=np.uint8)
     dsetP[...] = unordered
     
+
+def flattenimages(images):
+    print "FLATTENING 2D IMAGES TO 1D"
+    flatimages = []    
     
+    step = len(images)//10
+    if step < 1:
+        step = 1
+
+    for i, image in enumerate(images):
+
+        flatimages.append( np.ravel(image))
+
+        if (i % step) == 0: # Print progress
+            print '\b.',
+            sys.stdout.flush()
+            
+    print "DONE"
+    return flatimages
+    
+
 def loadunsupervised(filepath="../data/preprocessed.h5"):
     f = h5py.File(filepath)
     dset = f["unordered"]    
-    rdata = []
+   # rdata = []
+    dimensions = (len(dset), len(dset[0]))
+    #dimensions = len(dset)
+    rdata = np.zeros(dimensions, dtype=np.uint8)
     dset.read_direct(rdata)
     
     return rdata;
