@@ -2,8 +2,7 @@ from __future__ import print_function
 
 #Author: Robbert v.d. Gugten & Inez Wijnands
 
-#Returns probability according to RBM for every class.
-#print(__doc__)
+#Calculate feature vectors for training set by using an unsupervised RBM
 
 
 import numpy as np
@@ -14,33 +13,39 @@ from sklearn import linear_model, datasets, metrics
 from sklearn.cross_validation import train_test_split
 from sklearn.neural_network import BernoulliRBM
 from sklearn.pipeline import Pipeline
-
+#from preprocess import preprocess #For using code from different branch
 
 ###############################################################################
 # Setting up
 
-
 def RBMtraining(X_train):
 
 
-    # Models we will use
-    #logistic = linear_model.LogisticRegression()
+    #Scale all grey values to probabilities between 0 and 1
+    X_train = [x/float(255) for x in X_train]
+    #Flatten images, probably not necessary after new preprocess function
+    X = []
+    for x in X_train:
+        X.append(np.ravel(x))
+
+
+    #print (X_train)
     rbm = BernoulliRBM(random_state=0, verbose=True)
     rbm.learning_rate = 0.06
-    rbm.n_iter = 20
+    rbm.n_iter = 3
     # More components tend to give better prediction performance, but larger
     # fitting time
     rbm.n_components = 100
     #logistic.C = 6000.0
-    rbm.fit(X_train)
-    #classifier = Pipeline(steps=[('rbm', rbm), ('logistic', logistic)])
+    print ("FITTING")
+    rbm.fit(X)
+    print ("DONE")
 
     ###############################################################################
-    # Training
+    #supervised:
 
-    # Hyper-parameters. These were set by cross-validation,
-    # using a GridSearchCV. Here we are not performing cross-validation to
-    # save time.
+    #classifier = Pipeline(steps=[('rbm', rbm), ('logistic', logistic)])
+
 
 
     # Training RBM-Logistic Pipeline
@@ -48,8 +53,19 @@ def RBMtraining(X_train):
 
     #print(classifier.predict_proba(X_test)) #Outputs probability for every class in matrix/array
     #return(classifier.predict_proba(X_test))
-    rbm.gibbs(X_train)
-    return rbm.intercept_hidden_
+
+    ###############################################################################
+
+    #For every patch the belonging feature vector.
+    return rbm.transform(X)
+
+#Probably load data here!
+patched, labels, flattened = preprocess("../data/train")
+weights = RBMtraining(flattened)
+print (len(weights))
+print (weights)
+
+
 
 
 
