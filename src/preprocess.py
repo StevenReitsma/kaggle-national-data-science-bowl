@@ -42,7 +42,7 @@ def preprocess(path='../data/train', writeToFile=True):
     random.shuffle(flattened)
 
     print "RAVELLING 2D IMAGES TO 1D"
-    flattened = [np.ravel(image) for image in flattened]
+    flattened = flattenimages(flattened)
 
     print flattened
     if writeToFile:
