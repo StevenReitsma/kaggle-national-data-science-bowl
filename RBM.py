@@ -60,7 +60,7 @@ def RBMtraining(X_train):
     return rbm.transform(X)
 
 
-if __name__ == "main":
+if __name__ == "__main__":
     #Probably load data here!
     patched, labels, flattened = preprocess("../data/train")
     weights = RBMtraining(flattened)
