@@ -59,11 +59,13 @@ def RBMtraining(X_train):
     #For every patch the belonging feature vector.
     return rbm.transform(X)
 
-#Probably load data here!
-patched, labels, flattened = preprocess("../data/train")
-weights = RBMtraining(flattened)
-print (len(weights))
-print (weights)
+
+if __name__ == "main":
+    #Probably load data here!
+    patched, labels, flattened = preprocess("../data/train")
+    weights = RBMtraining(flattened)
+    print (len(weights))
+    print (weights)
 
 
 
