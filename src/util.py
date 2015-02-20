@@ -9,7 +9,10 @@ def loadunsupervised(filepath="../data/preprocessed.h5"):
     dimensions = (len(dset), len(dset[0]))
     #dimensions = len(dset)
     rdata = np.zeros(dimensions, dtype=np.uint8)
+    
     dset.read_direct(rdata)
+    
+    f.close()    
     
     return rdata;
 
