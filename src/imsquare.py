@@ -55,8 +55,8 @@ def squarepad(image, padvalue=255):
 
         toplength, bottomlength = calcpadsize(height, desiredsize)
 
-        tpad = np.empty([toplength, width], dtype=int)
-        bpad = np.empty([bottomlength, width], dtype=int)
+        tpad = np.empty([toplength, width], dtype=np.uint8)
+        bpad = np.empty([bottomlength, width], dtype=np.uint8)
 
         tpad.fill(padvalue)
         bpad.fill(padvalue)
