@@ -30,37 +30,51 @@ Preprocessing script
 
 """
 
-def preprocess(path='../data/train', writeToFile=True):
+def preprocess(path='../data/train', 
+               outpath="../data/preprocessed.h5", patchsize=6, imagesize=32):
     
     labels = getimagepaths(path)
-    processedimages = []    
-    allpatches = []
     
     n = len(labels)
     
+    f = h5py.File(outpath, 'w')
+    patchesperimage = impatch.npatch(imagesize, patchsize)
+    
+    dimallpatches = ((n * patchesperimage), patchsize*patchsize)
+    dsetunordered = f.create_dataset('unordered', dimallpatches)
+    
+    # Debug to see if all indices are written to
+    last = 0
+    
     for i, (classname, filename, filepath) in enumerate(labels):
+        
         image = misc.imread(filepath)
-        image, patches = process(image)
-        processedimages.append(image)
-        allpatches.append(patches)
+        image, patches = process(image, patchsize=patchsize, imagesize=imagesize)
+        
+        for j, patch in enumerate(patches):
+            dsetunordered[i*patchesperimage + j] = patch
+            last = i*patchesperimage + j
         
         if i % 20 == 0:
             update_progress(i/n)
+    
+    print (n * patchesperimage)
+    print last
+    f.close()
         
     update_progress(1.0)
    
     
-
     
-def process(image, squarefunction=imsquare.squarepad):
+def process(image, squarefunction=imsquare.squarepad, patchsize=6, imagesize=32):
     """
         Process a single image (make square, resize, extract patches, flatten patches)
     """
     
     image = squarefunction(image)
-    image = imutil.resizeimage(image)
+    image = imutil.resizeimage(image, imagesize)
     
-    patches = impatch.patch(image)
+    patches = impatch.patch(image, patchsize)
     patches = [imutil.flattenimage(patch) for patch in patches]
     
     return image, patches

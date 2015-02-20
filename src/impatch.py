@@ -19,15 +19,15 @@ def patch(image, n=0, patchsize=6):
     xindexmax = xlength - patchsize    
     yindexmax = ylength - patchsize 
     
-    maxpatches = (xindexmax+1) * (yindexmax+1)
+    nmaxpatches = (xindexmax+1) * (yindexmax+1)
     
     
     
-    if n > maxpatches:
+    if n > nmaxpatches:
         raise Exception("Impossible to extract this many patches from image")
         
     if n == 0:
-        n = maxpatches
+        n = nmaxpatches
         
     coords = [(x,y) for x in range(xindexmax+1) for y in range(yindexmax+1)]
     
@@ -46,3 +46,9 @@ def patch(image, n=0, patchsize=6):
     
     return patches
     
+    
+def npatch(imagesize, patchsize):
+    return (imagesize + 1 - patchsize) * (imagesize + 1 - patchsize)
+    """
+        Maximum amount of patches extracted from image given size
+    """
