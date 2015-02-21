@@ -33,33 +33,41 @@ Preprocessing script
 def preprocess(path='../data/train', 
                outpath="../data/preprocessed.h5", patchsize=6, imagesize=32):
     
-    labels = getimagepaths(path)
     
+    print "Patch size: {0}x{0} = {1}".format(patchsize, patchsize*patchsize)
+    print "Image size: {0}".format(imagesize)
+    
+    
+    labels = getimagepaths(path) 
     n = len(labels)
     
-    f = h5py.File(outpath, 'w')
-    patchesperimage = impatch.npatch(imagesize, patchsize)
+    print "Amount of images: {0}".format(n)
     
-    dimallpatches = ((n * patchesperimage), patchsize*patchsize)
+    
+    f = h5py.File(outpath, 'w')
+    
+    # Calculate some dimensions
+    patchesperimage = impatch.npatch(imagesize, patchsize)
+    patchestotal = n*patchesperimage
+    
+    print "Patches per image: {0}".format(patchesperimage)
+    print "Patches total: {0}".format(patchestotal)
+    
+    #Dimension of what will be written to file
+    dimallpatches = (patchestotal, patchsize*patchsize)
     dsetunordered = f.create_dataset('unordered', dimallpatches)
     
-    # Debug to see if all indices are written to
-    last = 0
     
     for i, (classname, filename, filepath) in enumerate(labels):
         
         image = misc.imread(filepath)
         image, patches = process(image, patchsize=patchsize, imagesize=imagesize)
-        
-        for j, patch in enumerate(patches):
-            dsetunordered[i*patchesperimage + j] = patch
-            last = i*patchesperimage + j
+         
+        dsetunordered[i*patchesperimage:i*patchesperimage+len(patches)] = patches
         
         if i % 20 == 0:
             update_progress(i/n)
     
-    print (n * patchesperimage)
-    print last
     f.close()
         
     update_progress(1.0)
@@ -74,9 +82,8 @@ def process(image, squarefunction=imsquare.squarepad, patchsize=6, imagesize=32)
     image = squarefunction(image)
     image = imutil.resizeimage(image, imagesize)
     
-    patches = impatch.patch(image, patchsize)
+    patches = impatch.patch(image, patchsize = patchsize)
     patches = [imutil.flattenimage(patch) for patch in patches]
-    
     return image, patches
     
     
@@ -111,7 +118,7 @@ def getimagepaths(path):
 ## A value at 1 or bigger represents 100%
 # From http://stackoverflow.com/questions/3160699/python-progress-bar
 def update_progress(progress):
-    barLength = 10 # Modify this to change the length of the progress bar
+    barLength = 20 # Modify this to change the length of the progress bar
     status = ""
     if isinstance(progress, int):
         progress = float(progress)
@@ -125,7 +132,7 @@ def update_progress(progress):
         progress = 1
         status = "Done...\r\n"
     block = int(round(barLength*progress))
-    text = "\rPercent: [{0}] {1}% {2}".format( "#"*block + "-"*(barLength-block), progress*100, status)
+    text = "\rPercent: [{0}] {1}% {2}".format( "="*block + "-"*(barLength-block), progress*100, status)
     sys.stdout.write(text)
     sys.stdout.flush()
 
