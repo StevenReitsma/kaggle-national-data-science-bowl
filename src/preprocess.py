@@ -16,16 +16,16 @@ import h5py
 """
 Preprocessing script
 
-    1. Load all images into memory.
+    1. Load all image paths into memory.
+    2. Generate label tuple <classname (plankton type), filename, filepath>
     
-    2. For each image:
-        1. Pad or stretch image into squar
-        2. Resize (downsize probably) to common size
-        3. Patch image
-        4. Flatten image from 2D to 1D    
-        5. Write the results to file
-
-    Note that patching images eats a lot of memory.
+    3. For each image:
+        1. Load image from disk
+        2. Pad or stretch image into squar
+        3. Resize (downsize probably) to common size
+        4. Patch image
+        5. Flatten image from 2D to 1D    
+        6. Write the results to file
 
 """
 
