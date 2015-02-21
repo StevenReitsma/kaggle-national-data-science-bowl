@@ -2,7 +2,7 @@
 import h5py
 import numpy as np
 
-def loadunsupervised(filepath="../data/preprocessed.h5"):
+def loadunsupervised(filepath="../data/preprocessed.h5", shuffle=True):
     f = h5py.File(filepath)
     dset = f["unordered"]    
    # rdata = []
@@ -11,6 +11,9 @@ def loadunsupervised(filepath="../data/preprocessed.h5"):
     rdata = np.zeros(dimensions, dtype=np.uint8)
     
     dset.read_direct(rdata)
+    
+    if shuffle:
+        np.random.shuffle(rdata)
     
     f.close()    
     
