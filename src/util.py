@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import h5py
 import numpy as np
+import sys
 
 def loadunsupervised(filepath="../data/preprocessed.h5", shuffle=True):
     f = h5py.File(filepath)
@@ -22,3 +23,28 @@ def loadunsupervised(filepath="../data/preprocessed.h5", shuffle=True):
 
 def flatten(collection):
     return [item for sublist in collection for item in sublist]
+
+
+# update_progress() : Displays or updates a console progress bar
+## Accepts a float between 0 and 1. Any int will be converted to a float.
+## A value under 0 represents a 'halt'.
+## A value at 1 or bigger represents 100%
+# From http://stackoverflow.com/questions/3160699/python-progress-bar
+def update_progress(progress):
+    barLength = 20 # Modify this to change the length of the progress bar
+    status = ""
+    if isinstance(progress, int):
+        progress = float(progress)
+    if not isinstance(progress, float):
+        progress = 0
+        status = "error: progress var must be float\r\n"
+    if progress < 0:
+        progress = 0
+        status = "Halt...\r\n"
+    if progress >= 1:
+        progress = 1
+        status = "Done...\r\n"
+    block = int(round(barLength*progress))
+    text = "\rPercent: [{0}] {1}% {2}".format( "="*block + "-"*(barLength-block), progress*100, status)
+    sys.stdout.write(text)
+    sys.stdout.flush()

@@ -2,8 +2,8 @@
 
 from __future__ import division
 import os
-import sys
 
+import util
 import imsquare
 import impatch
 import imutil
@@ -23,8 +23,7 @@ Preprocessing script
         2. Resize (downsize probably) to common size
         3. Patch image
         4. Flatten image from 2D to 1D    
-    
-    3. Write the results to a file
+        5. Write the results to file
 
     Note that patching images eats a lot of memory.
 
@@ -57,7 +56,6 @@ def preprocess(path='../data/train',
     dimallpatches = (patchestotal, patchsize*patchsize)
     dsetunordered = f.create_dataset('unordered', dimallpatches)
     
-    
     for i, (classname, filename, filepath) in enumerate(labels):
         
         image = misc.imread(filepath)
@@ -66,11 +64,11 @@ def preprocess(path='../data/train',
         dsetunordered[i*patchesperimage:i*patchesperimage+len(patches)] = patches
         
         if i % 20 == 0:
-            update_progress(i/n)
+            util.update_progress(i/n)
     
     f.close()
         
-    update_progress(1.0)
+    util.update_progress(1.0)
    
     
     
@@ -110,31 +108,6 @@ def getimagepaths(path):
                 labels.append((classname, filename, filepath))
     
     return labels
-
-
-# update_progress() : Displays or updates a console progress bar
-## Accepts a float between 0 and 1. Any int will be converted to a float.
-## A value under 0 represents a 'halt'.
-## A value at 1 or bigger represents 100%
-# From http://stackoverflow.com/questions/3160699/python-progress-bar
-def update_progress(progress):
-    barLength = 20 # Modify this to change the length of the progress bar
-    status = ""
-    if isinstance(progress, int):
-        progress = float(progress)
-    if not isinstance(progress, float):
-        progress = 0
-        status = "error: progress var must be float\r\n"
-    if progress < 0:
-        progress = 0
-        status = "Halt...\r\n"
-    if progress >= 1:
-        progress = 1
-        status = "Done...\r\n"
-    block = int(round(barLength*progress))
-    text = "\rPercent: [{0}] {1}% {2}".format( "="*block + "-"*(barLength-block), progress*100, status)
-    sys.stdout.write(text)
-    sys.stdout.flush()
 
 
 if __name__ == '__main__':
