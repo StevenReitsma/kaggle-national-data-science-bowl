@@ -3,9 +3,16 @@
 import h5py
 
 
+
+#Usage:
+#
+# for chunk_of_data in BatchReader()
+#     print chunk_of_data
+#
+
 class BatchReader:
     
-    def __init__(self, filepath="../data/preprocessed.h5", batchsize=1000000, dataset="unordered"):
+    def __init__(self, filepath="../data/preprocessed.h5", batchsize=10000, dataset="unordered"):
         self.path = filepath;
         self.batchsize = batchsize
         
@@ -18,8 +25,7 @@ class BatchReader:
         self.current = 0
         # Max iterations
         self.nbatches = self.dimensions[0]//batchsize
-        
-        print self.nbatches
+
             
     def __iter__(self):
         return self
@@ -34,11 +40,5 @@ class BatchReader:
             
             dat = self.dset[fromIndex : toIndex]
             self.current += 1       
-
             return dat;
                 
-                
-                
-#a = BatchReader()
-#for x in a:
-#    print x
