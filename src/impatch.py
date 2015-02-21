@@ -48,7 +48,7 @@ def patch(image, n=0, patchsize=6):
     
     
 def npatch(imagesize, patchsize):
-    return (imagesize + 1 - patchsize) * (imagesize + 1 - patchsize)
+    return (imagesize + 1 - patchsize)**2
     """
         Maximum amount of patches extracted from image given size
     """
