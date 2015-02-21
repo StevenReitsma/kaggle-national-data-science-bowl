@@ -44,11 +44,10 @@ class TestImageSquaring(unittest.TestCase):
         testimages = [self.alreadySquare, self.widerect, self.tallrect]        
         
         for image in testimages:
-            self.stretch_test_image(image)
+            self._stretch_test_image(image)
         
         
-        
-    def stretch_test_image(self, image):
+    def _stretch_test_image(self, image):
         width = len(image[0])
         height = len(image)
         
