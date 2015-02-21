@@ -2,6 +2,8 @@
 import numpy as np
 import scipy
 
+# Misc image functions
+
 def flattenimage(image):
     return np.ravel(image)    
     
