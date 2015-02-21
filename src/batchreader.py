@@ -3,7 +3,6 @@
 import h5py
 
 
-
 #Usage:
 #
 # for chunk_of_data in BatchReader()
@@ -39,6 +38,10 @@ class BatchReader:
             toIndex = fromIndex + self.batchsize
             
             dat = self.dset[fromIndex : toIndex]
+            
             self.current += 1       
             return dat;
-                
+            
+if __name__ == '__main__':
+    for i, x in enumerate( BatchReader() ):
+        print i, x
