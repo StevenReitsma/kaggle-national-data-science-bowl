@@ -11,3 +11,5 @@ install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib nose dateutil pandas statsmodels h5py scikit-learn
 script:
   - nosetests
+notifications:
+  slack: bestwhalewow:1yLchP9tghGz2NuZLNXkEB5X
