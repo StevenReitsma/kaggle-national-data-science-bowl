@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 import sys
 sys.path.append('../src')
-import imsquare as imsquare
+import imsquare
 
 class TestImageSquaring(unittest.TestCase):
     

@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import sys
 sys.path.append('../src')
-import impatch as impatch
+import impatch
 
 class TestImageSquaring(unittest.TestCase):
     
