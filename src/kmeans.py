@@ -25,6 +25,7 @@ class kMeansTrainer():
             kmeans.partial_fit(batch)
 
         util.update_progress(1.0)
+        print "fitting done"
         return kmeans.cluster_centers_
         
     
@@ -39,17 +40,22 @@ class kMeansTrainer():
     def pipeline(self):
         batches = br.BatchReader(batchsize = 50000)
         centroids = self.fit(batches)
+        self.plotCentroids(centroids)
         self.saveCentroids(centroids)         
      
     #   Under construction
-    def plotCentroids(self): 
-        array = np.zeros(6*6)
-        for i in range(6):
-            array[i*6+i] = 255
-        matrix = np.reshape(array, (6,6))
-        plt.gray()
-        plt.imsave('testimage.png', matrix)
-        print matrix
+    def plotCentroids(self, centroids, im_size = (6,6), filepath = "../data/centroidskmeans/"): 
+        print "start plotting"        
+        for i, centroid in enumerate(centroids):
+            util.update_progress(i/len(centroids))
+            centroidMatrix = np.reshape(centroid, im_size)
+            plt.gray()
+            plt.imsave(filepath + "centroid" + str(i) + ".png", centroidMatrix)
+         
+        util.update_progress(1.0)
+        print "plotting done"
+
+        
     
     
 if __name__ == '__main__':  
