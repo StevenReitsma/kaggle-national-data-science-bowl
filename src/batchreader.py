@@ -39,6 +39,6 @@ class BatchReader:
             toIndex = fromIndex + self.batchsize
             
             dat = self.dset[fromIndex : toIndex]
-            self.current += 1       
+            self.current += 1
             return dat;
                 
