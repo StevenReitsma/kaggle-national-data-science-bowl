@@ -76,7 +76,7 @@ def preprocess(path='../data/train',
             util.update_progress(i/n)
     
     f.close()
-        
+    
     util.update_progress(1.0)
    
 def write_metadata(dataset, patch_size=6, image_size=32, patches_per_image=729):
@@ -84,7 +84,7 @@ def write_metadata(dataset, patch_size=6, image_size=32, patches_per_image=729):
     dataset.attrs['image_size'] = image_size
     dataset.attrs['patches_per_image'] = patches_per_image
 
-def process(image, squarefunction=imsquare.squarepad, patchsize=6, imagesize=32):
+def process(image, squarefunction=imsquare.squarepad, patchsize=6, imagesize=32, ):
     """
         Process a single image (make square, resize, extract patches, flatten patches)
     """
@@ -96,16 +96,6 @@ def process(image, squarefunction=imsquare.squarepad, patchsize=6, imagesize=32)
     patches = [imutil.flattenimage(patch) for patch in patches]
     return image, patches
     
-    
-
-def save(patches, labels, unordered, filepath="../data/preprocessed.h5"):
-    f = h5py.File(filepath, 'w')
-
-    # Dimensions
-    dUnordered = (len(unordered), len(unordered[0]))
-    
-    dsetP = f.create_dataset("unordered",dUnordered, dtype=np.uint8)
-    dsetP[...] = unordered
 
 def getimagepaths(path):
     
