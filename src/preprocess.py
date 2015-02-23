@@ -46,22 +46,31 @@ def preprocess(path='../data/train',
     f = h5py.File(outpath, 'w')
     
     # Calculate some dimensions
-    patchesperimage = impatch.npatch(imagesize, patchsize)
-    patchestotal = n*patchesperimage
+    patches_per_image = impatch.npatch(imagesize, patchsize)
+    patches_total = n*patches_per_image
     
-    print "Patches per image: {0}".format(patchesperimage)
-    print "Patches total: {0}".format(patchestotal)
+    print "Patches per image: {0}".format(patches_per_image)
+    print "Patches total: {0}".format(patches_total)
     
     #Dimension of what will be written to file
-    dimallpatches = (patchestotal, patchsize*patchsize)
-    dsetunordered = f.create_dataset('data', dimallpatches)
+    dimallpatches = (patches_total, patchsize*patchsize)
+    
+    #Create dataset (in file)
+    dset = f.create_dataset('data', dimallpatches)
+
+    #Write metadata to file (options)
+    write_metadata(dset, 
+                   patch_size = patchsize, 
+                   image_size = imagesize, 
+                   patches_per_image=patches_per_image)
+    
     
     for i, (classname, filename, filepath) in enumerate(labels):
         
         image = misc.imread(filepath)
         image, patches = process(image, patchsize=patchsize, imagesize=imagesize)
          
-        dsetunordered[i*patchesperimage:i*patchesperimage+len(patches)] = patches
+        dset[i*patches_per_image:i*patches_per_image+len(patches)] = patches
         
         if i % 20 == 0:
             util.update_progress(i/n)
@@ -70,7 +79,10 @@ def preprocess(path='../data/train',
         
     util.update_progress(1.0)
    
-    
+def write_metadata(dataset, patch_size=6, image_size=32, patches_per_image=729):
+    dataset.attrs['patch_size'] = patch_size
+    dataset.attrs['image_size'] = image_size
+    dataset.attrs['patches_per_image'] = patches_per_image
 
 def process(image, squarefunction=imsquare.squarepad, patchsize=6, imagesize=32):
     """
