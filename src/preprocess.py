@@ -54,7 +54,7 @@ def preprocess(path='../data/train',
     
     #Dimension of what will be written to file
     dimallpatches = (patchestotal, patchsize*patchsize)
-    dsetunordered = f.create_dataset('unordered', dimallpatches)
+    dsetunordered = f.create_dataset('data', dimallpatches)
     
     for i, (classname, filename, filepath) in enumerate(labels):
         
@@ -71,7 +71,7 @@ def preprocess(path='../data/train',
     util.update_progress(1.0)
    
     
-    
+
 def process(image, squarefunction=imsquare.squarepad, patchsize=6, imagesize=32):
     """
         Process a single image (make square, resize, extract patches, flatten patches)

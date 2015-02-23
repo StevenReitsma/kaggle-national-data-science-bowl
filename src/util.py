@@ -5,7 +5,7 @@ import sys
 
 def loadunsupervised(filepath="../data/preprocessed.h5", shuffle=True):
     f = h5py.File(filepath)
-    dset = f["unordered"]    
+    dset = f["data"]    
    # rdata = []
     dimensions = (len(dset), len(dset[0]))
     #dimensions = len(dset)
