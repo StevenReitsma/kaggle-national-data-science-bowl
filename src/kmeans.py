@@ -31,8 +31,7 @@ class kMeansTrainer():
     
     def saveCentroids(self, centroids, filepath = "../data/centroidskmeans.h5"):
         f = h5py.File(filepath, "w")
-        dimensions = (len(centroids), len(centroids[0]))
-        dataSet = f.create_dataset("centroids", dimensions, dtype = np.uint8)
+        dataSet = f.create_dataset("centroids", centroids.shape, dtype = np.uint8)
         dataSet[...]= centroids
         f.close()
 
@@ -43,7 +42,7 @@ class kMeansTrainer():
         self.plotCentroids(centroids)
         self.saveCentroids(centroids)         
      
-    #   Under construction
+
     def plotCentroids(self, centroids, im_size = (6,6), filepath = "../data/centroidskmeans/"): 
         print "start plotting"        
         for i, centroid in enumerate(centroids):

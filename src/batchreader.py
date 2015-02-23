@@ -43,7 +43,7 @@ class BatchReader:
             
             dat = self.dset[fromIndex : toIndex]
 
-            self.current += 1       
+            self.current += 1           
             return dat;
             
 if __name__ == '__main__':
