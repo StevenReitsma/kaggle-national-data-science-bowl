@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import division
 import h5py
-
+import math
 
 
 #Usage:
@@ -9,6 +10,8 @@ import h5py
 # for chunk_of_data in BatchReader()
 #     print chunk_of_data
 #
+# In the last iteration the remainder chunk is returned
+# (which may be smaller than batchsize)
 
 class BatchReader:
     
@@ -24,7 +27,7 @@ class BatchReader:
         # Iteration index
         self.current = 0
         # Max iterations
-        self.nbatches = self.dimensions[0]//batchsize
+        self.nbatches = math.ceil(self.dimensions[0]/batchsize)
 
             
     def __iter__(self):
@@ -39,6 +42,10 @@ class BatchReader:
             toIndex = fromIndex + self.batchsize
             
             dat = self.dset[fromIndex : toIndex]
-            self.current += 1
+
+            self.current += 1       
             return dat;
-                
+            
+if __name__ == '__main__':
+    for i, x in enumerate( BatchReader() ):
+        print i, len(x), x

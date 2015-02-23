@@ -24,6 +24,12 @@ def loadunsupervised(filepath="../data/preprocessed.h5", shuffle=True):
 def flatten(collection):
     return [item for sublist in collection for item in sublist]
 
+
+def normalize(images):
+    return [image/float(255) for image in images]
+
+    
+
 # update_progress() : Displays or updates a console progress bar
 ## Accepts a float between 0 and 1. Any int will be converted to a float.
 ## A value under 0 represents a 'halt'.
