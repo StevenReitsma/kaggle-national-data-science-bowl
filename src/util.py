@@ -28,7 +28,18 @@ def flatten(collection):
 def normalize(images):
     return [image/float(255) for image in images]
 
+def load_metadata(filepath="../data/preprocessed.h5"):
+    f = h5py.File(filepath)
+    dset = f["data"]  
     
+    attributes = {}
+    
+    # Copy into an in-memory dict
+    for key, val in dset.attrs.items():
+        attributes[key] = val
+    
+    f.close()
+    return attributes
 
 # update_progress() : Displays or updates a console progress bar
 ## Accepts a float between 0 and 1. Any int will be converted to a float.
@@ -53,3 +64,4 @@ def update_progress(progress):
     text = "\rPercent: [{0}] {1}% {2}".format( "="*block + "-"*(barLength-block), progress*100, status)
     sys.stdout.write(text)
     sys.stdout.flush()
+    
