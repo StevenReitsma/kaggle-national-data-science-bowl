@@ -66,6 +66,13 @@ def squarepad(image, padvalue=255):
 
     return image
 
+def get_square_function_by_name(name):
+    if name == 'pad':
+        return squarepad
+    else:
+        return squarestretch
+
+
 # Returns the pad sizes for either side of the image
 def calcpadsize(currentlength, desiredlength):
     padlength = desiredlength - currentlength
