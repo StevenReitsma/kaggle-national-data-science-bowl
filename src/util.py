@@ -41,6 +41,13 @@ def load_metadata(filepath="../data/preprocessed.h5"):
     f.close()
     return attributes
 
+def load_labels(filepath="../data/preprocessed.h5"):
+    f = h5py.File(filepath)
+    dset = f["labels"]
+    
+    return [label for label in dset]
+
+
 # update_progress() : Displays or updates a console progress bar
 ## Accepts a float between 0 and 1. Any int will be converted to a float.
 ## A value under 0 represents a 'halt'.

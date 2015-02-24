@@ -37,10 +37,18 @@ def preprocess(path='../data/train',
         
     square_function = imsquare.get_square_function_by_name(square_method)
     
-    labels = get_image_paths(path) 
-    n = len(labels)
-    
     f = h5py.File(outpath, 'w')
+    
+    file_metadata = get_image_paths(path)   
+    classnames, filenames, filepaths = zip(*file_metadata)  
+    
+    label_dict = gen_label_dict(classnames)
+    labels = [label_dict[c] for c in classnames]
+    
+    
+    # Amount of images
+    n = len(file_metadata)
+    
     
     # Calculate some dimensions
     patches_per_image = impatch.npatch(image_size, patch_size)
@@ -53,6 +61,7 @@ def preprocess(path='../data/train',
     print "Amount of images: {0}".format(n)
     print "Patches per image: {0}".format(patches_per_image)
     print "Patches total: {0}".format(patches_total)
+    print "Labels: {0}".format(len(labels))
     
     #Dimension of what will be written to file
     dim_all_patches = (patches_total, patch_size**2)
@@ -60,15 +69,19 @@ def preprocess(path='../data/train',
     #Create dataset (in file)
     dset = f.create_dataset('data', dim_all_patches)
 
-    #Write metadata to file (options)
+    print "-----------------------------------------"
+    print "Writing labels"
+    write_labels(labels, f)
+    
+    print "Writing metadata (options used)" 
     write_metadata(dset, 
                    patch_size, 
                    image_size, 
                    patches_per_image,
                    square_method)
     
-    
-    for i, (classname, filename, filepath) in enumerate(labels):
+    print "Processing and writing..."
+    for i, filepath in enumerate(filepaths):
         
         image = misc.imread(filepath)
         image, patches = process(image, square_function, patch_size, image_size)
@@ -81,12 +94,33 @@ def preprocess(path='../data/train',
     
     f.close()
     util.update_progress(1.0)
-   
+    
+# Returns a dictionary from plankton name to index in ordered, unique set
+# of plankton names
+def gen_label_dict(classnames):
+    unique_list = list(set(classnames));
+    unique_list = sorted(unique_list)
+    
+    label_dict = {cname:i    for i, cname in enumerate(unique_list)}
+    
+    #print label_dict
+    return label_dict
+
+    
+def write_labels(labels, h5py_file):
+    #n = len(labels)
+    h5py_file.create_dataset('labels', data=labels)
+
+    #dset[...] = labels    
+    
+    
+
 def write_metadata(dataset, patch_size, image_size, patches_per_image, square_method):
     dataset.attrs['patch_size'] = patch_size
     dataset.attrs['image_size'] = image_size
     dataset.attrs['patches_per_image'] = patches_per_image
     dataset.attrs['square_method'] = square_method
+    
 
 def process(image, squarefunction, patch_size, image_size):
     """
@@ -103,7 +137,7 @@ def process(image, squarefunction, patch_size, image_size):
 
 def get_image_paths(path):
     
-    labels = []
+    metadata = []    
     
     # The classes are the folders in which the images reside
     classes = os.listdir(path)
@@ -111,11 +145,9 @@ def get_image_paths(path):
     for classname in classes:
         for filename in os.listdir(os.path.join(path, classname)):
                 filepath = os.path.join(path, classname, filename)
-                labels.append((classname, filename, filepath))
+                metadata.append((classname, filename, filepath))
     
-    return labels
-
-
+    return metadata
 
 
 
