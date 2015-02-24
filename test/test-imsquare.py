@@ -39,7 +39,6 @@ class TestImageSquaring(unittest.TestCase):
         ]
     
     
-    @unittest.skip("Travis scipy version dependency not met")
     def test_stretch_square_image(self):
         
         testimages = [self.alreadySquare, self.widerect, self.tallrect]        
