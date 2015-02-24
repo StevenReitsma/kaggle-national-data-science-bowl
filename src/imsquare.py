@@ -14,7 +14,7 @@ increasing one of either.
 # Square an image by stretching the shorter dimension
 # Possible interpolation values: 'nearest', 'bilinear', 'bicubic'
 # or 'cubic'
-def squarestretch(image, interp= 'bilinear'):
+def square_stretch(image, interp= 'bilinear'):
 
     height = len(image)
     width = len(image[0])
@@ -27,39 +27,39 @@ def squarestretch(image, interp= 'bilinear'):
 
 
 # Square an image by padding its sides
-def squarepad(image, padvalue=255):
+def square_pad(image, pad_value=255):
 
     height = len(image)
     width = len(image[0])
 
     #Desired width and height length.
-    desiredsize = max([height, width])
+    desired_size = max([height, width])
 
 
-    if width < desiredsize : # Pad to the left and right
+    if width < desired_size : # Pad to the left and right
 
-        leftlength, rightlength = calcpadsize(width, desiredsize)
+        leftlength, rightlength = calc_pad_size(width, desired_size)
 
 
         lpad = np.empty([height, leftlength], dtype=int)
         rpad = np.empty([height, rightlength], dtype=int)
 
-        rpad.fill(padvalue)
-        lpad.fill(padvalue)
+        rpad.fill(pad_value)
+        lpad.fill(pad_value)
 
         # Horizontally stack the paddings around the image
         image = np.hstack((lpad, image, rpad))
 
-    if height < desiredsize :  # Pad to the top and bottom
+    if height < desired_size :  # Pad to the top and bottom
 
 
-        toplength, bottomlength = calcpadsize(height, desiredsize)
+        toplength, bottomlength = calc_pad_size(height, desired_size)
 
         tpad = np.empty([toplength, width], dtype=np.uint8)
         bpad = np.empty([bottomlength, width], dtype=np.uint8)
 
-        tpad.fill(padvalue)
-        bpad.fill(padvalue)
+        tpad.fill(pad_value)
+        bpad.fill(pad_value)
 
         # Vertically stack the paddings around the image
         image = np.vstack((tpad, image, bpad))
@@ -68,17 +68,17 @@ def squarepad(image, padvalue=255):
 
 def get_square_function_by_name(name):
     if name == 'pad':
-        return squarepad
+        return square_pad
     else:
-        return squarestretch
+        return square_stretch
 
 
 # Returns the pad sizes for either side of the image
-def calcpadsize(currentlength, desiredlength):
-    padlength = desiredlength - currentlength
+def calc_pad_size(current_length, desired_length):
+    pad_length = desired_length - current_length
 
-    l = padlength // 2
-    r = padlength - l
+    l = pad_length // 2
+    r = pad_length - l
 
 
     return l, r

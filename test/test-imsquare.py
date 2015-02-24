@@ -51,7 +51,7 @@ class TestImageSquaring(unittest.TestCase):
         width = len(image[0])
         height = len(image)
         
-        squared = imsquare.squarestretch(image)
+        squared = imsquare.square_stretch(image)
         
         expectedsize = max([width, height])
 
@@ -65,7 +65,7 @@ class TestImageSquaring(unittest.TestCase):
     def test_pad_square_image(self):
         #Image is already square, output should not change
         
-        squared = imsquare.squarepad(self.alreadySquare)
+        squared = imsquare.square_pad(self.alreadySquare)
         expected = self.alreadySquare
                 
         
@@ -73,7 +73,7 @@ class TestImageSquaring(unittest.TestCase):
 
     def test_pad_wide_image(self):
         # Pad small non-square image with 1s
-        squared = imsquare.squarepad(self.widerect, 1)
+        squared = imsquare.square_pad(self.widerect, 1)
         expected = [
             [0,0,0],
             [0,0,0],
@@ -83,7 +83,7 @@ class TestImageSquaring(unittest.TestCase):
         self.assertTrue(np.array_equal(squared, expected))          
         
         # Test very wide image (requires padding to both top and bottom)
-        squared = imsquare.squarepad(self.verywiderect, 1)
+        squared = imsquare.square_pad(self.verywiderect, 1)
         expected = [
             [1,1,1,1,1],
             [0,0,0,0,0],
@@ -97,7 +97,7 @@ class TestImageSquaring(unittest.TestCase):
         
     def test_pad_tall_image(self):
         # Pad small non-square image with 1s
-        squared = imsquare.squarepad(self.tallrect, 1)
+        squared = imsquare.square_pad(self.tallrect, 1)
         expected = [
             [0,0,1],
             [0,0,1],
@@ -108,7 +108,7 @@ class TestImageSquaring(unittest.TestCase):
     
     
         # Pad very tall image (requries padding to both left and right)
-        squared = imsquare.squarepad(self.verytallrect, 1)
+        squared = imsquare.square_pad(self.verytallrect, 1)
         expected = [
             [1,0,0,1,1],
             [1,0,0,1,1],
@@ -122,16 +122,16 @@ class TestImageSquaring(unittest.TestCase):
     def test_get_square_function_by_name(self):
         
         pad = imsquare.get_square_function_by_name('pad')
-        self.assertEqual(pad, imsquare.squarepad)
+        self.assertEqual(pad, imsquare.square_pad)
         
         stretch = imsquare.get_square_function_by_name('stretch')
-        self.assertEqual(stretch, imsquare.squarestretch)
+        self.assertEqual(stretch, imsquare.square_stretch)
         
     
     
     def test_calc_pad_size(self):
         # Current width is 1, desired width is 4
-        l, r = imsquare.calcpadsize(1, 4)
+        l, r = imsquare.calc_pad_size(1, 4)
         # Expected pad sizes
         expectedl = 1
         expectedr = 2
