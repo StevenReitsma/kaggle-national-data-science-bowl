@@ -23,7 +23,7 @@ class TestPreprocessing(unittest.TestCase):
     
     def test_flatten_images(self):
         
-        flat = imutil.flattenimage(self.images[0])  
+        flat = imutil.flatten_image(self.images[0])  
         expected = np.array( [1,2,3,0,5,0,2,3,1])
         
         self.assertTrue(np.array_equal(flat, expected))         

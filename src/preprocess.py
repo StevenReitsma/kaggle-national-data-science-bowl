@@ -9,7 +9,6 @@ import impatch
 import imutil
 
 from scipy import misc
-import numpy as np
 import h5py
 
 
@@ -37,7 +36,7 @@ def preprocess(path='../data/train',
     print "Image size: {0}".format(imagesize)
     
     
-    labels = getimagepaths(path) 
+    labels = get_image_paths(path) 
     n = len(labels)
     
     print "Amount of images: {0}".format(n)
@@ -90,14 +89,14 @@ def process(image, squarefunction=imsquare.squarepad, patchsize=6, imagesize=32,
     """
     
     image = squarefunction(image)
-    image = imutil.resizeimage(image, imagesize)
+    image = imutil.resize_image(image, imagesize)
     
     patches = impatch.patch(image, patchsize = patchsize)
-    patches = [imutil.flattenimage(patch) for patch in patches]
+    patches = [imutil.flatten_image(patch) for patch in patches]
     return image, patches
     
 
-def getimagepaths(path):
+def get_image_paths(path):
     
     labels = []
     
