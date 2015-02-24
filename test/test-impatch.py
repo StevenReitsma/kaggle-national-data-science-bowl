@@ -21,19 +21,19 @@ class TestImageSquaring(unittest.TestCase):
     
     
     def test_image_patch_amount(self):
-        patches = impatch.patch(self.testImage, n=7, patchsize=2)        
+        patches = impatch.patch(self.testImage, n=7, patch_size=2)        
         
         #Requested 7 patches
         self.assertEqual(len(patches), 7)
         
     def test_image_patch_all(self):
-        patches = impatch.patch(self.testImage, patchsize=2)
+        patches = impatch.patch(self.testImage, patch_size=2)
         
         #16 patches of size 2x2 in test image
         self.assertEqual(len(patches), 16) 
        
     def test_image_patch_size(self):
-        patches = impatch.patch(self.testImage, patchsize=3)
+        patches = impatch.patch(self.testImage, patch_size=3)
        
         for patch in patches:
             # X, correct width
