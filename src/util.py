@@ -3,7 +3,7 @@ import h5py
 import numpy as np
 import sys
 
-def loadunsupervised(filepath="../data/preprocessed.h5", shuffle=True):
+def load_unsupervised(filepath="../data/preprocessed.h5", shuffle=True):
     f = h5py.File(filepath)
     dset = f["data"]    
    # rdata = []
