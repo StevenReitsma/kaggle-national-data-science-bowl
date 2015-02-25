@@ -42,9 +42,11 @@ def preprocess(path='../data/train',
     file_metadata = get_image_paths(path)   
     classnames, filenames, filepaths = zip(*file_metadata)  
     
+    
+    
     label_dict = gen_label_dict(classnames)
     labels = [label_dict[c] for c in classnames]
-    
+    class_count = len(label_dict)
     
     # Amount of images
     n = len(file_metadata)
@@ -62,6 +64,7 @@ def preprocess(path='../data/train',
     print "Patches per image: {0}".format(patches_per_image)
     print "Patches total: {0}".format(patches_total)
     print "Labels: {0}".format(len(labels))
+    print "Classes count: {0}".format(class_count)
     
     #Dimension of what will be written to file
     dim_all_patches = (patches_total, patch_size**2)
@@ -78,7 +81,8 @@ def preprocess(path='../data/train',
                    patch_size, 
                    image_size, 
                    patches_per_image,
-                   square_method)
+                   square_method,
+                   class_count)
     
     print "Processing and writing..."
     for i, filepath in enumerate(filepaths):
@@ -115,11 +119,13 @@ def write_labels(labels, h5py_file):
     
     
 
-def write_metadata(dataset, patch_size, image_size, patches_per_image, square_method):
+def write_metadata(dataset, patch_size, image_size, 
+                   patches_per_image, square_method, class_count):
     dataset.attrs['patch_size'] = patch_size
     dataset.attrs['image_size'] = image_size
     dataset.attrs['patches_per_image'] = patches_per_image
     dataset.attrs['square_method'] = square_method
+    dataset.attrs['class_count'] = class_count
     
 
 def process(image, squarefunction, patch_size, image_size):
