@@ -16,7 +16,7 @@ class supervisedKmeans():
     
         for patch in patches:   #for each patch
             patch = np.asarray(patch)#convert to np.array
-            for centroid in this.centroids:  #for each centroid
+            for centroid in self.centroids:  #for each centroid
                 centroid = np.asarray(centroid)
                 tproduct.append(np.linalg.norm(patch-centroid))#calc euclidian distance
             product.append(tproduct)# add the list of all the distance from a patch to all centroids to product
