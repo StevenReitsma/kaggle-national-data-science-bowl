@@ -5,7 +5,7 @@ from sklearn.cluster import MiniBatchKMeans
 import util
 import batchreader as br
 import h5py
-import matplotlib.pyplot as plt
+
 import matplotlib.cm as cm
 from PIL import Image
 
@@ -16,43 +16,35 @@ class kMeansTrainer():
         self.nr_centroids = nr_centroids
         self.nr_it = nr_it
         
-    def fit(self, batches):
+    def fit(self, iterations = 1):
         kmeans = MiniBatchKMeans(self.nr_centroids, n_init = self.nr_it, init='k-means++')
+        batches = br.BatchReader(batchsize = 50000) # so that we can determine the max iterations
         maxIterations = batches.nbatches
-        print maxIterations
-        for i, batch in enumerate(batches):
-            util.update_progress(i/maxIterations)
-            kmeans.partial_fit(batch)
-
+        for it in range(iterations):
+            for i, batch in enumerate(batches):
+                util.update_progress((i+(it*maxIterations))/(maxIterations*iterations))
+                kmeans.partial_fit(batch)
+            batches = br.BatchReader(batchsize = 50000) #create new batch reader for the next iteration
         util.update_progress(1.0)
         print "fitting done"
         return kmeans.cluster_centers_
         
     
-    def saveCentroids(self, centroids, filepath = "../data/centroidskmeans.h5"):
-        f = h5py.File(filepath, "w")
+    def saveCentroids(self, centroids, file_path = "../data/centroidskmeans/"):
+        if not os.path.exists(file_path):
+            os.makedirs(file_path)
+        f = h5py.File(file_path + "centroids.h5", "w")
         dataSet = f.create_dataset("centroids", centroids.shape, dtype = np.uint8)
         dataSet[...]= centroids
         f.close()
 
         
     def pipeline(self):
-        batches = br.BatchReader(batchsize = 50000)
-        centroids = self.fit(batches)
-        self.plotCentroids(centroids)
+        centroids = self.fit()
+        util.plotCentroids(centroids = centroids, file_path = "../data/centroidskmeans/")
         self.saveCentroids(centroids)         
      
 
-    def plotCentroids(self, centroids, im_size = (6,6), filepath = "../data/centroidskmeans/"): 
-        print "start plotting"        
-        for i, centroid in enumerate(centroids):
-            util.update_progress(i/len(centroids))
-            centroidMatrix = np.reshape(centroid, im_size)
-            plt.gray()
-            plt.imsave(filepath + "centroid" + str(i) + ".png", centroidMatrix)
-         
-        util.update_progress(1.0)
-        print "plotting done"
 
         
     

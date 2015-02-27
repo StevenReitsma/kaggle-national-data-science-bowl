@@ -2,6 +2,8 @@
 import h5py
 import numpy as np
 import sys
+import matplotlib.pyplot as plt
+import os
 
 def loadunsupervised(filepath="../data/preprocessed.h5", shuffle=True):
     f = h5py.File(filepath)
@@ -27,6 +29,20 @@ def flatten(collection):
 
 def normalize(images):
     return [image/float(255) for image in images]
+    
+    
+def plotCentroids(centroids, file_path, im_size = (6,6)): 
+    if not os.path.exists(file_path):
+        os.makedirs(file_path)
+    print "start plotting"        
+    for i, centroid in enumerate(centroids):
+        update_progress(i/len(centroids))
+        centroidMatrix = np.reshape(centroid, im_size)
+        plt.gray()
+        plt.imsave(file_path + "centroid" + str(i) + ".png", centroidMatrix)
+         
+    update_progress(1.0)
+    print "plotting done"
 
     
 
