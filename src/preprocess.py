@@ -29,6 +29,16 @@ Preprocessing script
 
 def preprocess(path='../data/train', 
                outpath="../data/preprocessed.h5", **kwargs):
+    """
+    Preprocesses given file, parameters (all optional):
+
+    Args:
+        path (str): Path to folder with plankton images
+        outpath (str): File to write to (.h5 file)
+        patch_size (int): Width and length of patches
+        image_size (int): Width and length to resize images to
+        square_method (str): 'pad' or 'stretch', method to make images square.
+    """    
     
     
     patch_size = kwargs.get('patch_size', 6)
