@@ -15,7 +15,7 @@ import math
 
 class BatchReader:
     
-    def __init__(self, filepath="../data/preprocessed.h5", batchsize=10000, dataset="unordered"):
+    def __init__(self, filepath="../data/preprocessed.h5", batchsize=10000, dataset="data"):
         self.path = filepath;
         self.batchsize = batchsize
         

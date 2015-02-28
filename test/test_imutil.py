@@ -23,11 +23,22 @@ class TestPreprocessing(unittest.TestCase):
     
     def test_flatten_images(self):
         
-        flat = imutil.flattenimage(self.images[0])  
+        flat = imutil.flatten_image(self.images[0])  
         expected = np.array( [1,2,3,0,5,0,2,3,1])
         
         self.assertTrue(np.array_equal(flat, expected))         
         
+    def test_resize_images(self):
+        
+        im = self.images[0]
+        
+        resized = imutil.resize_image(im, 64)
+        
+        # Square
+        self.assertEqual(len(resized), len(resized[0]))
+        
+        # Right size
+        self.assertEqual(len(resized), 64)
 
 if __name__ == '__main__':
     unittest.main()

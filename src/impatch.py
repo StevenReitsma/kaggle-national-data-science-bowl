@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import random
 
-def patch(image, n=0, patchsize=6):    
+def patch(image, n=0, patch_size=6):    
     """
        Patches an image (samples sub-images)
     """
@@ -11,13 +11,13 @@ def patch(image, n=0, patchsize=6):
     xlength = len(image[0])
     ylength = len(image)
     
-    if patchsize > xlength or patchsize > ylength:
+    if patch_size > xlength or patch_size > ylength:
         raise Exception("Patchsize too big for given image")
 
 
     # Max top left index from which patches are taken        
-    xindexmax = xlength - patchsize    
-    yindexmax = ylength - patchsize 
+    xindexmax = xlength - patch_size    
+    yindexmax = ylength - patch_size 
     
     nmaxpatches = (xindexmax+1) * (yindexmax+1)
     
@@ -41,7 +41,7 @@ def patch(image, n=0, patchsize=6):
         
         x, y = coord
 
-        patch = image[x:(x+patchsize),y:(y+patchsize)]       
+        patch = image[x:(x+patch_size),y:(y+patch_size)]       
         patches.append(patch)
     
     return patches
