@@ -30,7 +30,7 @@ Preprocessing script
 def preprocess(path='../data/train', 
                outpath="../data/preprocessed.h5", **kwargs):
     """
-    Preprocesses given file, parameters (all optional):
+    Preprocesses given folder, parameters (all optional):
 
     Args:
         path (str): Path to folder with plankton images
@@ -107,6 +107,7 @@ def preprocess(path='../data/train',
             util.update_progress(i/n)
     
     f.close()
+    
     util.update_progress(1.0)
     
 # Returns a dictionary from plankton name to index in ordered, unique set
@@ -117,15 +118,11 @@ def gen_label_dict(classnames):
     
     label_dict = {cname:i    for i, cname in enumerate(unique_list)}
     
-    #print label_dict
     return label_dict
 
     
 def write_labels(labels, h5py_file):
-    #n = len(labels)
     h5py_file.create_dataset('labels', data=labels)
-
-    #dset[...] = labels    
     
     
 
