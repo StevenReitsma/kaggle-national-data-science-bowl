@@ -31,15 +31,15 @@ def normalize(images):
     return [image/float(255) for image in images]
     
     
-def plotCentroids(centroids, file_path, im_size = (6,6)): 
+def plot_centroids(centroids, file_path, im_size = (6,6)): 
     if not os.path.exists(file_path):
         os.makedirs(file_path)
     print "start plotting"        
     for i, centroid in enumerate(centroids):
         update_progress(i/len(centroids))
-        centroidMatrix = np.reshape(centroid, im_size)
+        centroid_matrix = np.reshape(centroid, im_size)
         plt.gray()
-        plt.imsave(file_path + "centroid" + str(i) + ".png", centroidMatrix)
+        plt.imsave(file_path + "centroid" + str(i) + ".png", centroid_matrix)
          
     update_progress(1.0)
     print "plotting done"
