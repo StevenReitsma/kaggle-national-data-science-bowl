@@ -1,5 +1,3 @@
-__author__ = 'Robbert'
-# -*- coding: utf-8 -*-
 import unittest
 import numpy as np
 import sys
