@@ -8,6 +8,9 @@ def pool(activations, n_pool_regions = 4, operator = np.sum):
         np.amax
         np.mean
     """
+
+    if int(np.sqrt(n_pool_regions)) ** 2 is not n_pool_regions:
+        raise ValueError("n_pool_regions should be a perfect square")
     
     patch_size = np.sqrt(activations.shape[0])
     n_features = activations.shape[1]
@@ -16,10 +19,8 @@ def pool(activations, n_pool_regions = 4, operator = np.sum):
     reshaped = np.reshape(activations.T, (n_features, patch_size, patch_size))
 
     # Pooling
-    pool_regions_per_dimension = n_pool_regions / 2
-
+    pool_regions_per_dimension = int(np.sqrt(n_pool_regions))
     half_patch = round(patch_size / pool_regions_per_dimension)
-
     feature_vector = np.zeros((n_pool_regions * n_features))
 
     for x in range(0, pool_regions_per_dimension):
