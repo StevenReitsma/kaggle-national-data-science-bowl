@@ -33,8 +33,7 @@ class RandomBatchReader (br.BatchReader):
         # For a batch size of 100, with a random_size of 10
         # this would be 0, 10, 20, ..., 80, 90
         self.write_indices = np.arange(self.batch_size/self.random_size) * self.random_size
-    
-        print self.dimensions[0]
+        
     def next(self):
         
         if self.current >= len(self.start_indices):
