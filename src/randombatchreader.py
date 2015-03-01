@@ -3,8 +3,17 @@
 import batchreader as br
 import numpy as np
 
-
 class RandomBatchReader (br.BatchReader):
+    
+    """
+    Reads chunks of data, with sub-chunks randomly.. 
+    The sub-chunk size is set with argument random_size
+    
+    If this is set to the amount of patches per image, it will read
+    exactly the patches belonging to images randomly.
+    
+    """
+    
     
     def __init__(self, filepath="../data/preprocessed.h5", batchsize=72900, dataset="data", random_size=729):
         if not batchsize % random_size == 0:
@@ -14,8 +23,6 @@ class RandomBatchReader (br.BatchReader):
         br.BatchReader.__init__(self, filepath, batchsize, dataset)
         
         self.random_size = random_size
-        
-        
         
         # Indices to read the random batches from.
         self.start_indices = np.arange(self.dimensions[0]/self.random_size) * self.random_size 
@@ -27,7 +34,6 @@ class RandomBatchReader (br.BatchReader):
         # this would be 0, 10, 20, ..., 80, 90
         self.write_indices = np.arange(self.batch_size/self.random_size) * self.random_size
     
-        #print self.write_indices
         print self.dimensions[0]
     def next(self):
         
@@ -37,8 +43,6 @@ class RandomBatchReader (br.BatchReader):
         else:
         
             dat = np.zeros( (self.batch_size, self.dimensions[1]), dtype=np.uint8)            
-            
-            
             
             for index in self.write_indices:
                 
