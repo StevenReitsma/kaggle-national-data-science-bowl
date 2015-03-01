@@ -7,17 +7,17 @@ import math
 
 #Usage:
 #
-# for chunk_of_data in BatchReader()
+# for chunk_of_data in BatchReader():
 #     print chunk_of_data
 #
 # In the last iteration the remainder chunk is returned
 # (which may be smaller than batchsize)
 
-class BatchReader:
+class BatchReader(object):
     
     def __init__(self, filepath="../data/preprocessed.h5", batchsize=10000, dataset="data"):
         self.path = filepath;
-        self.batchsize = batchsize
+        self.batch_size = batchsize
         
         self.file = h5py.File(filepath)
         self.dset = self.file[dataset]    
@@ -27,7 +27,7 @@ class BatchReader:
         # Iteration index
         self.current = 0
         # Max iterations
-        self.nbatches = math.ceil(self.dimensions[0]/batchsize)
+        self.nbatches = math.ceil(self.dimensions[0]/self.batch_size)
 
             
     def __iter__(self):
@@ -38,8 +38,8 @@ class BatchReader:
             self.file.close()
             raise StopIteration
         else:
-            fromIndex = self.current*self.batchsize
-            toIndex = fromIndex + self.batchsize
+            fromIndex = self.current*self.batch_size
+            toIndex = fromIndex + self.batch_size
             
             dat = self.dset[fromIndex : toIndex]
 
