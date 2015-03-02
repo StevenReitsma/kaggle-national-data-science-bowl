@@ -9,6 +9,7 @@ import impatch
 import imutil
 
 from scipy import misc
+import numpy as np
 import h5py
 
 """
@@ -86,29 +87,40 @@ def preprocess(path='../data/train',
     print "Writing labels"
     write_labels(labels, f)
     
-    print "Writing metadata (options used)" 
-    write_metadata(dset, 
-                   patch_size, 
-                   image_size, 
-                   patches_per_image,
-                   square_method,
-                   class_count)
     
     print "Processing and writing..."
+    
+    #Running total (sum) of all images
+    sum_image = np.zeros(image_size**2)
+    
     for i, filepath in enumerate(filepaths):
         
         image = misc.imread(filepath)
         image, patches = process(image, square_function, patch_size, image_size)
-         
+        sum_image += imutil.flatten_image(image)
+        
         start_index = i*patches_per_image
         dset[start_index:start_index+len(patches)] = patches
         
         if i % 20 == 0:
             util.update_progress(i/n)
     
+    util.update_progress(1.0)
+    
+    mean_image = sum_image/n
+    
+    print "Writing metadata (options used)" 
+    write_metadata(dset, 
+                   patch_size, 
+                   image_size, 
+                   patches_per_image,
+                   square_method,
+                   class_count,
+                   mean_image)
+    
     f.close()
     
-    util.update_progress(1.0)
+    
     
 # Returns a dictionary from plankton name to index in ordered, unique set
 # of plankton names
@@ -126,13 +138,14 @@ def write_labels(labels, h5py_file):
     
     
 
-def write_metadata(dataset, patch_size, image_size, 
-                   patches_per_image, square_method, class_count):
+def write_metadata(dataset, patch_size, image_size, patches_per_image, 
+                   square_method, class_count, mean_image):
     dataset.attrs['patch_size'] = patch_size
     dataset.attrs['image_size'] = image_size
     dataset.attrs['patches_per_image'] = patches_per_image
     dataset.attrs['square_method'] = square_method
     dataset.attrs['class_count'] = class_count
+    dataset.attrs['mean_image'] = mean_image
     
 
 def process(image, squarefunction, patch_size, image_size):
