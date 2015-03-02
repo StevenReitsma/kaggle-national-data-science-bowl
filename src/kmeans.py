@@ -1,6 +1,5 @@
 from __future__ import division
 import os
-import csv_io
 import numpy as np
 from sklearn.cluster import MiniBatchKMeans
 import util
@@ -12,7 +11,7 @@ from numpy import array
 class kMeansTrainer():
     
     def __init__(self, nr_centroids = 100, nr_it = 1):
-        self.nr_centroids = nr_centroids
+        self.nr_centroids = nr_centroids 
         self.nr_it = nr_it
         
         
@@ -34,6 +33,7 @@ class kMeansTrainer():
     def save_centroids(self, centroids, file_path = "../data/centroidskmeans/"):
         if not os.path.exists(file_path):
             os.makedirs(file_path)       
+        print "centroids before saving: "+ str(len(centroids))
         np.savetxt(file_path + "centroids.csv", centroids, delimiter=",")
         
 
@@ -43,14 +43,26 @@ class kMeansTrainer():
             centroids = self.fit()
             self.save_centroids(centroids)   
             return centroids
-        else: 
-            return array(csv_io.read_data(file_path))    
+            
+        else:
+            f = open(file_path)
+            samples = []
+            
+            for line in f:
+                line = line.strip().split(",")
+                sample = [float(x) for x in line]
+                samples.append(sample)
+                
+            return array(samples)
 
         
     def pipeline(self):
         centroids = self.fit()
+        print "nr_centroids: " + str(len(centroids))
         util.plot_centroids(centroids = centroids, file_path = "../data/centroidskmeans/")
         self.save_centroids(centroids)
+        centroids = km.get_centroids(new = False)
+        print len(centroids)
        
     
     

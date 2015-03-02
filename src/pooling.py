@@ -8,7 +8,7 @@ def pool(activations, n_pool_regions = 4, operator = np.sum):
         np.amax
         np.mean
     """
-
+    
     if int(np.sqrt(n_pool_regions)) ** 2 is not n_pool_regions:
         raise ValueError("n_pool_regions should be a perfect square")
     
