@@ -5,6 +5,7 @@ Created on Mon Feb 23 21:49:01 2015
 @author: Luc and Tom
 """
 from __future__ import division
+from pooling import pool
 import numpy as np
 import kmeans
 import batchreader
@@ -12,7 +13,8 @@ import os
 import h5py
 import util
 
-class supervisedKmeans():
+
+class ActivationCalculation():
             
         
     def distance_to_centroids(self, patches, centroids):
@@ -26,25 +28,24 @@ class supervisedKmeans():
         activation = np.maximum(0, mu-z) # Similarity measure
 
         return activation
-        
+  
     
-    def pipeline(self, centroids, file_path = "../data/", batch_size = 729):
+    
+    def pipeline(self, centroids, file_path = "../data/", batch_size = 729, n_pool_regions = 4):
         if not os.path.exists(file_path):
             os.makedirs(file_path)
-            
-        batches = batchreader.BatchReader(batchsize = batch_size)
         
+
+        batches = batchreader.BatchReader(batchsize = batch_size)#   
         f = h5py.File(file_path + "activationkmeans.h5", "w")
-        #dimensions need to be changed after reshaping
-        dimensions = (batch_size*batches.nbatches , len(centroids))
+
+        dimensions = (batches.nbatches , len(centroids)*n_pool_regions) # Set dimensions to #imagesx4*#centroids
         dataSet = f.create_dataset("activations", dimensions, dtype = np.uint8)
-        print dimensions
+        
         
         for i, batch in enumerate(batches):
-            activation = self.distance_to_centroids(batch, centroids)
-            #add steven
-            activation  =  activation#reshape, to be made
-            dataSet[i*batch_size:(i+1)*batch_size] = activation
+            activation = self.distance_to_centroids(batch, centroids) # Calculate activations for each patch to each centroid
+            dataSet[i] = pool(activation, n_pool_regions = n_pool_regions) # Returns a vector with length 4x#centroids
             util.update_progress(i/batches.nbatches)
         
         util.update_progress(1)
@@ -53,8 +54,8 @@ class supervisedKmeans():
     
 if __name__ == '__main__':
     km = kmeans.kMeansTrainer()
-    centroids = km.get_centroids(new = False)
-    sup_km = supervisedKmeans()
+    centroids = km.get_saved_centroids()
+    sup_km = ActivationCalculation()
     sup_km.pipeline(centroids = centroids)
 
 
