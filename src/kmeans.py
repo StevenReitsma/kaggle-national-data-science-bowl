@@ -1,60 +1,57 @@
 from __future__ import division
 import os
+import csv_io
 import numpy as np
 from sklearn.cluster import MiniBatchKMeans
 import util
 import batchreader as br
-import h5py
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-from PIL import Image
+from numpy import array
+
 
 
 class kMeansTrainer():
     
-    def __init__(self, nr_centroids, nr_it):
+    def __init__(self, nr_centroids = 100, nr_it = 1):
         self.nr_centroids = nr_centroids
         self.nr_it = nr_it
         
-    def fit(self, batches):
-        kmeans = MiniBatchKMeans(self.nr_centroids, n_init = self.nr_it, init='k-means++')
-        maxIterations = batches.nbatches
-        print maxIterations
-        for i, batch in enumerate(batches):
-            util.update_progress(i/maxIterations)
-            kmeans.partial_fit(batch)
-
+        
+    def fit(self):
+        kmeans = MiniBatchKMeans(self.nr_centroids, init='k-means++')
+        
+        for it in range(self.nr_it):
+            batches = br.BatchReader(batchsize = 50000)
+            maxIterations = batches.nbatches
+            for i, batch in enumerate(batches):
+                util.update_progress((i+(it*maxIterations))/(maxIterations*self.nr_it))
+                kmeans.partial_fit(batch)
+                
         util.update_progress(1.0)
         print "fitting done"
         return kmeans.cluster_centers_
         
     
-    def saveCentroids(self, centroids, filepath = "../data/centroidskmeans.h5"):
-        f = h5py.File(filepath, "w")
-        dataSet = f.create_dataset("centroids", centroids.shape, dtype = np.uint8)
-        dataSet[...]= centroids
-        f.close()
+    def save_centroids(self, centroids, file_path = "../data/centroidskmeans/"):
+        if not os.path.exists(file_path):
+            os.makedirs(file_path)       
+        np.savetxt(file_path + "centroids.csv", centroids, delimiter=",")
+        
+
+    
+    def get_centroids(self, new = True, file_path = "../data/centroidskmeans/centroids.csv"):
+        if(new):
+            centroids = self.fit()
+            self.save_centroids(centroids)   
+            return centroids
+        else: 
+            return array(csv_io.read_data(file_path))    
 
         
     def pipeline(self):
-        batches = br.BatchReader(batchsize = 50000)
-        centroids = self.fit(batches)
-        self.plotCentroids(centroids)
-        self.saveCentroids(centroids)         
-     
-
-    def plotCentroids(self, centroids, im_size = (6,6), filepath = "../data/centroidskmeans/"): 
-        print "start plotting"        
-        for i, centroid in enumerate(centroids):
-            util.update_progress(i/len(centroids))
-            centroidMatrix = np.reshape(centroid, im_size)
-            plt.gray()
-            plt.imsave(filepath + "centroid" + str(i) + ".png", centroidMatrix)
-         
-        util.update_progress(1.0)
-        print "plotting done"
-
-        
+        centroids = self.fit()
+        util.plot_centroids(centroids = centroids, file_path = "../data/centroidskmeans/")
+        self.save_centroids(centroids)
+       
     
     
 if __name__ == '__main__':  
