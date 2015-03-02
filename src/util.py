@@ -37,7 +37,7 @@ def plot_mean_image():
     mean = meta['mean_image']
     size = int(math.sqrt(len(mean)))
     mean = np.reshape(mean, (size,size))
-    plt.imshow(mean)
+    plt.imshow(mean, cmap=plt.cm.binary)
     
 
 def plot_centroids(centroids, file_path, im_size = (6,6)): 
