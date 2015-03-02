@@ -4,6 +4,7 @@ import numpy as np
 import sys
 import matplotlib.pyplot as plt
 import os
+import math
 
 def load_unsupervised(filepath="../data/preprocessed.h5", shuffle=True):
     f = h5py.File(filepath)
@@ -31,6 +32,15 @@ def normalize(images):
     return [image/float(255) for image in images]
     
     
+def plot_mean_image():
+    meta = load_metadata()
+    mean = meta['mean_image']
+    size = int(math.sqrt(len(mean)))
+    mean = np.reshape(mean, (size,size))
+    inverted = np.ones((size,size)) - mean
+    plt.imshow(inverted, cmap=plt.cm.binary)
+    
+
 def plot_centroids(centroids, file_path, im_size = (6,6)): 
     if not os.path.exists(file_path):
         os.makedirs(file_path)
