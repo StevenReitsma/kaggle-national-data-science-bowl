@@ -54,7 +54,7 @@ class ActivationCalculation():
     
 if __name__ == '__main__':
     km = kmeans.kMeansTrainer()
-    centroids = km.get_centroids(new = False)
+    centroids = km.get_saved_centroids()
     sup_km = ActivationCalculation()
     sup_km.pipeline(centroids = centroids)
 

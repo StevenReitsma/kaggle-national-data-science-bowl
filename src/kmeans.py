@@ -38,31 +38,24 @@ class kMeansTrainer():
         
 
     
-    def get_centroids(self, new = True, file_path = "../data/centroidskmeans/centroids.csv"):
-        if(new):
-            centroids = self.fit()
-            self.save_centroids(centroids)   
-            return centroids
+    def get_saved_centroids(self, file_path = "../data/centroidskmeans/centroids.csv"):
+        f = open(file_path)
+        samples = []
+        
+        for line in f:
+            line = line.strip().split(",")
+            sample = [float(x) for x in line]
+            samples.append(sample)
             
-        else:
-            f = open(file_path)
-            samples = []
-            
-            for line in f:
-                line = line.strip().split(",")
-                sample = [float(x) for x in line]
-                samples.append(sample)
-                
-            return array(samples)
+        return array(samples)
 
         
     def pipeline(self):
         centroids = self.fit()
-        print "nr_centroids: " + str(len(centroids))
-        util.plot_centroids(centroids = centroids, file_path = "../data/centroidskmeans/")
         self.save_centroids(centroids)
-        centroids = km.get_centroids(new = False)
-        print len(centroids)
+        util.plot_centroids(centroids = centroids, file_path = "../data/centroidskmeans/")
+        
+
        
     
     
