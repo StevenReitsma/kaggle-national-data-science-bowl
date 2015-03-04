@@ -9,7 +9,7 @@ if len(sys.argv) < 3:
 fi = sys.argv[1]
 fo = sys.argv[2]
 
-cmd = "convert -resize 64x64\! -quality 100 "
+cmd = "convert -resize 64x64 -gravity center -background white -extent 64x64 -quality 100 "
 imgs = os.listdir(fi)
 
 
