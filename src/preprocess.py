@@ -126,7 +126,7 @@ def preprocess(path='../data/train',
     metadata['mean_image'] = mean_image 
     
     print "Writing metadata (options used)" 
-    write_metadata(metadata)
+    write_metadata(dset, metadata)
     
     f.close()
     
@@ -179,7 +179,7 @@ def preprocessing_is_already_done(filepath, metadata):
         
         if not inFile == inOptions:
             print "Found a different setting between file and given options"
-            print "Key: {0} has value {1} in file, and {2} in options".format(key, inFile, inOptions)
+            print "Key {0} has value {1} in file, and {2} in options".format(key, inFile, inOptions)
             f.close()
             return False
         
