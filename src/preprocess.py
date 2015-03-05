@@ -48,7 +48,6 @@ def preprocess(path='../data/train',
         
     square_function = imsquare.get_square_function_by_name(square_method)
     
-    f = h5py.File(outpath, 'w')
     
     file_metadata = get_image_paths(path)   
     classnames, filenames, filepaths = zip(*file_metadata)  
@@ -77,9 +76,22 @@ def preprocess(path='../data/train',
     print "Labels: {0}".format(len(labels))
     print "Classes count: {0}".format(class_count)
     
+    
+    metadata = {}
+    metadata['patch_size'] = patch_size
+    metadata['image_size'] = image_size
+    metadata['patches_per_image'] = patches_per_image
+    metadata['square_method'] = square_method
+    metadata['class_count'] = class_count
+    
+    if preprocessing_is_already_done(outpath, metadata):
+        return
+    
     #Dimension of what will be written to file
     dim_all_patches = (patches_total, patch_size**2)
     
+    
+    f = h5py.File(outpath, 'w')
     #Create dataset (in file)
     dset = f.create_dataset('data', dim_all_patches)
 
@@ -109,14 +121,12 @@ def preprocess(path='../data/train',
     
     mean_image = sum_image/n
     
+    
+    
+    metadata['mean_image'] = mean_image 
+    
     print "Writing metadata (options used)" 
-    write_metadata(dset, 
-                   patch_size, 
-                   image_size, 
-                   patches_per_image,
-                   square_method,
-                   class_count,
-                   mean_image)
+    write_metadata(metadata)
     
     f.close()
     
@@ -138,15 +148,10 @@ def write_labels(labels, h5py_file):
     
     
 
-def write_metadata(dataset, patch_size, image_size, patches_per_image, 
-                   square_method, class_count, mean_image):
-    dataset.attrs['patch_size'] = patch_size
-    dataset.attrs['image_size'] = image_size
-    dataset.attrs['patches_per_image'] = patches_per_image
-    dataset.attrs['square_method'] = square_method
-    dataset.attrs['class_count'] = class_count
-    dataset.attrs['mean_image'] = mean_image
-    
+def write_metadata(dataset, metadata):
+    for attr in metadata:
+        dataset.attrs[attr] = metadata[attr]
+
 
 def process(image, squarefunction, patch_size, image_size):
     """
@@ -160,6 +165,28 @@ def process(image, squarefunction, patch_size, image_size):
     patches = [imutil.flatten_image(patch) for patch in patches]
     return image, patches
     
+    
+def preprocessing_is_already_done(filepath, metadata):
+    print "Checking whether preprocess is already done for given settings"    
+    
+    f = h5py.File(filepath)
+    attrs = f['data'].attrs
+    
+    for key in metadata:
+        
+        inFile = attrs.get(key, None)
+        inOptions = metadata.get(key, None)   
+        
+        if not inFile == inOptions:
+            print "Found a different setting between file and given options"
+            print "Key: {0} has value {1} in file, and {2} in options".format(key, inFile, inOptions)
+            f.close()
+            return False
+        
+    print "Match between given options and data in file {0}".format(filepath)
+    print "Not preprocessing again"
+    f.close()
+    return True
 
 def get_image_paths(path):
     
