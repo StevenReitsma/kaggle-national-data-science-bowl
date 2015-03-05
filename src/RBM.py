@@ -6,6 +6,8 @@ from __future__ import print_function
 
 import batchreader
 import randombatchreader
+import util
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -39,6 +41,11 @@ def RBMtraining():
 
 def getWeights(rbm,data):
     return rbm.transform(data)
+    
+def save_weights(weights, file_path = "../data/weightsrbm/"):
+    if not os.path.exists(file_path):
+        os.makedirs(file_path)       
+    np.savetxt(file_path + "weights.csv", weights, delimiter=",")
 
 
 if __name__ == "__main__":
@@ -49,7 +56,9 @@ if __name__ == "__main__":
     #    print(data)
         X_train = [1-(x/float(255)) for x in data]
         weights = getWeights(rbm,X_train)
+        #save_weights(weights = weights, file_path = "../data/weightsrbm/")
         print (weights)
+        #util.plot_centroids(centroids = weights, file_path = "../data/weightsrbm/")
 
 
 
