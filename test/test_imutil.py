@@ -40,5 +40,18 @@ class TestPreprocessing(unittest.TestCase):
         # Right size
         self.assertEqual(len(resized), 64)
 
+    def test_sum_images(self):
+        images = self.images
+        total = imutil.sum_images(images)
+        
+        expected = np.array([
+            [2,2,4],
+            [0,6,0],
+            [3,3,2]
+           ])
+        
+        self.assertTrue(np.array_equal(total, expected))        
+        
+
 if __name__ == '__main__':
     unittest.main()
