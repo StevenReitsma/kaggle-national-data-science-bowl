@@ -5,7 +5,7 @@ from sklearn.cluster import MiniBatchKMeans
 import util
 import batchreader as br
 from numpy import array
-
+import randombatchreader as randbr
 
 
 class kMeansTrainer():
@@ -15,11 +15,11 @@ class kMeansTrainer():
         self.nr_it = nr_it
         
         
-    def fit(self):
+    def fit(self, batches):
         kmeans = MiniBatchKMeans(self.nr_centroids, init='k-means++')
         
         for it in range(self.nr_it):
-            batches = br.BatchReader(batchsize = 50000)
+           # batches = br.BatchReader(batchsize = 50000)
             maxIterations = batches.nbatches
             for i, batch in enumerate(batches):
                 util.update_progress((i+(it*maxIterations))/(maxIterations*self.nr_it))
@@ -51,7 +51,7 @@ class kMeansTrainer():
 
         
     def pipeline(self):
-        centroids = self.fit()
+        centroids = self.fit(br.BatchReader = 50000)
         self.save_centroids(centroids)
         util.plot_centroids(centroids = centroids, file_path = "../data/centroidskmeans/")
         
