@@ -1,6 +1,7 @@
 from sklearn.externals import joblib
 from sklearn.linear_model import SGDClassifier
 import pandas as pd
+import numpy as np
 
 def create_csv_submission(predictions, filelist):
 	# Read sample submission.
@@ -12,6 +13,12 @@ def create_csv_submission(predictions, filelist):
 
 	# Save file to disk.
 	sample_submission.to_csv('../data/submission.csv')
+ 
+ 
+def predict(features, nr_centroids):
+    clf = joblib.load('../models/sgd' + str(nr_centroids) + '/classifier.pkl')
+    predictions = clf.predict_proba(features)
+    return predictions
 
 if __name__ == "__main__":
 	# TODO load test set feature vectors into memory.

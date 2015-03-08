@@ -33,13 +33,12 @@ class kMeansTrainer():
     def save_centroids(self, centroids, file_path = "../data/centroidskmeans/"):
         if not os.path.exists(file_path):
             os.makedirs(file_path)       
-        print "centroids before saving: "+ str(len(centroids))
-        np.savetxt(file_path + "centroids.csv", centroids, delimiter=",")
+        np.savetxt(file_path + str(len(centroids)) +  "centroids.csv", centroids, delimiter=",")
         
 
     
-    def get_saved_centroids(self, file_path = "../data/centroidskmeans/centroids.csv"):
-        f = open(file_path)
+    def get_saved_centroids(self, nr_centroids, file_path = "../data/centroidskmeans/"):
+        f = open(file_path + str(nr_centroids) + "centroids.csv")
         samples = []
         
         for line in f:
@@ -51,7 +50,7 @@ class kMeansTrainer():
 
         
     def pipeline(self):
-        centroids = self.fit(br.BatchReader = 50000)
+        centroids = self.fit(br.BatchReader(batchsize = 50000))
         self.save_centroids(centroids)
         util.plot_centroids(centroids = centroids, file_path = "../data/centroidskmeans/")
         

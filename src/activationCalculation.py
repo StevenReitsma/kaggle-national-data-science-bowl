@@ -39,7 +39,7 @@ class ActivationCalculation():
   
     
     
-    def pipeline(self, centroids, file_path = "../data/activationkmeans.h5", batch_size = 729, n_pool_regions = 4):
+    def pipeline(self, centroids, file_path = "../data/activations/", batch_size = 729, n_pool_regions = 4):
         if not os.path.exists(file_path):
             os.makedirs(file_path)
         
@@ -62,11 +62,13 @@ class ActivationCalculation():
         activations = self.normalize(activations)
         print "Normalizing done"
         print "Writing activations to file:"
-        f = h5py.File(file_path, "w")
-        dataSet = f.create_dataset("activations", dimensions, dtype = np.uint8)
+        f = h5py.File(file_path + str(len(centroids)) + "activationkmeans.h5", "w")
+        dataSet = f.create_dataset("activations", dimensions, dtype = np.float64)
         dataSet[...] = activations
         f.close()
         print "Writing done"
+        
+        return activations
 
         
     

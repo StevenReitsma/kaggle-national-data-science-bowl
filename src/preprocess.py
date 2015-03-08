@@ -129,8 +129,7 @@ def preprocess(path='../data/train',
     write_metadata(dset, metadata)
     
     f.close()
-    
-    
+
     
 # Returns a dictionary from plankton name to index in ordered, unique set
 # of plankton names

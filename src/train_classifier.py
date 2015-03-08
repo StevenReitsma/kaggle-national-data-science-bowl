@@ -1,18 +1,10 @@
 from sklearn.externals import joblib
 from sklearn.linear_model import SGDClassifier
+import os
 
-if __name__ == "__main__":
-	# Use the SGD classifier defined below for a fast regularizing classifier.
-	# Lots of comments so you know what to tune.
 
-	# TODO load feature vectors into memory.
-	# X = 
-
-	# TODO load labels into memory.
-	# Y = 
-
-	# Define the amount of samples
-	samples = X.shape[0]
+def trainSGD(features, labels, nr_centroids):
+    	samples = features.shape[0]
 
 	# Bottou recommends showing at least 10e06 samples to the SGD classifier.
 	iters = 10e06 / samples
@@ -30,8 +22,12 @@ if __name__ == "__main__":
 	alpha = 10e-4
 
 	# Initialize classifier and fit on data
-	clf = SGDClassifier(loss = 'log', penalty = penalty, n_iter = iters, l1_ratio = l1_ratio, shuffle = True, n_jobs = n_jobs, alpha = alpha)
-	clf.fit(X, Y)
+	clf = SGDClassifier(loss = 'log', penalty = penalty, n_iter = iters, l1_ratio = l1_ratio, shuffle = True, n_jobs = n_jobs, alpha = alpha, verbose = 1)
+	clf.fit(features, labels)
 
 	# Save model to file.
-	joblib.dump(clf, '../models/sgd/classifier.pkl')
+	file_path = '../models/sgd' + str(nr_centroids) + '/'
+	if not os.path.exists(file_path):
+              os.makedirs(file_path)
+          
+    	joblib.dump(clf, file_path + '/classifier.pkl')
