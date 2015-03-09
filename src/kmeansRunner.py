@@ -33,7 +33,7 @@ def singlePipeline(nr_centroids, label_path = "../data/preprocessed.h5"):
 #    features = feature_data["activations"]
 #    
 #    
-#    train.trainSGD(features, labels, nr_centroids)
+    train.trainSGD(features, labels, nr_centroids)
 
     classified = classifier.predict(features, nr_centroids)
     
