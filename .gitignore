@@ -1,5 +1,7 @@
 # Ignore data files
 data/
+# Ignore learned models
+models/
 
 # Ignore Spyder workspace definitions
 *.spyderproject
