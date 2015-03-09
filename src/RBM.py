@@ -1,6 +1,8 @@
 from __future__ import print_function
 
 import numpy as np
+import os
+import util
 
 class RBM:
 
@@ -177,6 +179,11 @@ class RBM:
 
   def _logistic(self, x):
     return 1.0 / (1 + np.exp(-x))
+    
+  def save_weights(self, weights, file_path = "../data/weightsrbm/"):
+    if not os.path.exists(file_path):
+        os.makedirs(file_path)       
+    np.savetxt(file_path + "weights.csv", weights, delimiter=",")
 
 if __name__ == '__main__':
   r = RBM(num_visible = 6, num_hidden = 2)
@@ -185,4 +192,11 @@ if __name__ == '__main__':
   print(r.weights)
   user = np.array([[0,0,0,1,1,0]])
   print(r.run_visible(user))
+  
+  # Visualize weights
+  r.save_weights(r.weights)
+  # In the images the name is still centroids, this has to be adjusted in util to generalize it.
+  # This doesn't work yet, due to size of try-out data instead of real data
+  #util.plot_centroids(centroids = r.weights, file_path = "../data/weightsrbm/")
+  
 
