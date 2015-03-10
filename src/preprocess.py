@@ -49,7 +49,7 @@ def preprocess(path='../data/train',
     square_function = imsquare.get_square_function_by_name(square_method)
     
     
-    file_metadata = get_image_paths(path)   
+    file_metadata, is_train = get_image_paths(path)   
     classnames, filenames, filepaths = zip(*file_metadata)  
     
     
@@ -83,6 +83,8 @@ def preprocess(path='../data/train',
     metadata['patches_per_image'] = patches_per_image
     metadata['square_method'] = square_method
     metadata['class_count'] = class_count
+    metadata['train_data'] = is_train
+    
     
     if preprocessing_is_already_done(outpath, metadata):
         return
@@ -217,10 +219,41 @@ def preprocessing_is_already_done(filepath, metadata):
 
 def get_image_paths(path):
     
+    
+    is_train = True
+    
+    for file_or_folder in os.listdir(path):
+        if os.path.isdir(file_or_folder):
+            is_train = False
+            break
+    
+    if is_train:
+        print "Specified folder is train data"
+        return get_image_paths_train(path), is_train
+    else:
+        print "Specified folder is test data"
+        return get_image_paths_test(path), is_train
+
+def get_image_paths_test(path):
+    metadata = []
+    
+    classname = "UNLABELED"
+
+    for filename in os.listdir(path):
+        filepath = os.path.join(path, filename)
+        metadata.append((classname, filename, filepath) )
+        
+    return metadata
+        
+    
+
+def get_image_paths_train(path):
+    
     metadata = []    
     
     # The classes are the folders in which the images reside
     classes = os.listdir(path)
+    
     
     for classname in classes:
         for filename in os.listdir(os.path.join(path, classname)):
@@ -228,7 +261,6 @@ def get_image_paths(path):
                 metadata.append((classname, filename, filepath))
     
     return metadata
-
 
 
 if __name__ == '__main__':
