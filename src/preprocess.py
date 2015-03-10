@@ -90,7 +90,11 @@ def preprocess(path='../data/train',
     metadata['image_size'] = image_size
     metadata['patches_per_image'] = patches_per_image
     metadata['square_method'] = square_method
+    
+    metadata['patches_count'] = patches_total
+    metadata['image_count'] = n
     metadata['class_count'] = class_count
+    
     metadata['train_data'] = is_train
     metadata['version'] = __PREPROCESS_VERSION__
     
@@ -226,8 +230,13 @@ def preprocessing_is_already_done(filepath, metadata):
     f.close()
     return True
 
+
+# Determines whether folder is train or test data
+# Returns list of tuples of
+# <classname of plankton, image filename, path to file>
+#
+# This classname is "UNLABELED" for test data
 def get_image_paths(path):
-    
     
     is_train = False
     
