@@ -151,10 +151,14 @@ def preprocess(path='../data/train',
     std_image = np.sqrt(variance_image)
     
     
-    
-    metadata['mean_image'] = mean_image 
-    metadata['std_image'] = std_image
-    metadata['var_image'] = variance_image
+    if is_train:
+        metadata['mean_image'] = mean_image 
+        metadata['std_image' ] = std_image
+        metadata['var_image' ] = variance_image
+    else: #Prevent wrong usage of Mean/std/var of test images
+        metadata['mean_image'] = None 
+        metadata['std_image' ] = None
+        metadata['var_image' ] = None
     
     print "Writing metadata (options used)" 
     write_metadata(dset, metadata)
@@ -241,7 +245,7 @@ def get_image_paths(path):
     is_train = False
     
     for file_or_folder in os.listdir(path):
-        if os.path.isdir(file_or_folder):
+        if os.path.isdir(os.path.join(path,file_or_folder)):
             is_train = True
             break
     
