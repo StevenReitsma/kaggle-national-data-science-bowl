@@ -37,7 +37,6 @@ def singlePipeline(nr_centroids, label_path = "../data/preprocessed.h5"):
     
 #    feature_data = h5py.File("../data/activations/200activationkmeans.h5")
 #    features = feature_data["activations"]
-
     
     
     #Train the SGD classifier
@@ -81,6 +80,5 @@ def singlePipeline(nr_centroids, label_path = "../data/preprocessed.h5"):
 
 
 if __name__ == '__main__':
-    singlePipeline(1200)
-#    for nr_centroids in range(200, 800, 100):
-#        singlePipeline(nr_centroids)
+    nr_centroids = 100
+    singlePipeline(nr_centroids)
