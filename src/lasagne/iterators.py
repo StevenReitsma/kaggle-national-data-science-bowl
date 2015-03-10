@@ -7,6 +7,11 @@ from params import *
 
 class DataAugmentationBatchIterator(BatchIterator):
 
+	def __init__(self, batch_size, mean, std):
+		super(DataAugmentationBatchIterator, self).__init__(batch_size)
+		self.mean = mean
+		self.std = std
+
 	def transform(self, Xb, yb):
 		Xb, yb = super(DataAugmentationBatchIterator, self).transform(Xb, yb)
 
@@ -56,8 +61,28 @@ class DataAugmentationBatchIterator(BatchIterator):
 		tform_identity = skimage.transform.AffineTransform()
 		tform_ds = skimage.transform.AffineTransform()
 
-		# For some reason we need to build another vector instead of changing the old one
 		for i in range(Xb.shape[0]):
 			Xbb[i, 0, :, :] = fast_warp(Xb[i][0], tform_ds + tform_augment + tform_identity, output_shape=(PIXELS,PIXELS), mode='nearest').astype('float32')
+
+			# Subtract mean and divide by std
+			Xbb[i, 0, :, :] -= self.mean
+			Xbb[i, 0, :, :] /= self.std
+
+		return Xbb, yb
+
+class ScalingBatchIterator(BatchIterator):
+	def __init__(self, batch_size, mean, std):
+		super(ScalingBatchIterator, self).__init__(batch_size)
+		self.mean = mean
+		self.std = std
+
+	def transform(self, Xb, yb):
+		Xb, yb = super(ScalingBatchIterator, self).transform(Xb, yb)
+
+		Xbb = np.zeros((Xb.shape[0], Xb.shape[1], Xb.shape[2], Xb.shape[3]), dtype=np.float32)
+
+		for i in range(Xb.shape[0]):
+			Xbb[i, 0, :, :] = Xb[i, 0, :, :] - self.mean
+			Xbb[i, 0, :, :] /= self.std
 
 		return Xbb, yb

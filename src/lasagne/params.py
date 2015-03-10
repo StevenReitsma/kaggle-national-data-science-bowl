@@ -8,9 +8,11 @@ PIXELS = 64
 USE_GPU = True
 
 AUGMENTATION_PARAMS = {
-			'zoom_range': (1/1.1, 1.1),
+			'zoom_range': (1.0, 1.0),
 			'rotation_range': (0, 360),
 			'shear_range': (0, 0),
-			'translation_range': (-10, 10),
+			'translation_range': (-5, 5),
 			'do_flip': True
 		}
+		
+BATCH_SIZE = 128

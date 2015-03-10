@@ -5,6 +5,8 @@ from sklearn.cross_validation import train_test_split
 import h5py
 from params import *
 from sklearn.utils import shuffle
+from augmenter import Augmenter
+import matplotlib.pyplot as plt
 
 class ImageIO():
 	def __init__(self):
@@ -71,7 +73,9 @@ class ImageIO():
 					if i in report: print np.ceil(i *100.0 / num_rows), "% done"
 			label += 1
 
-		return X,y
+		labels = map(lambda s: s.split('/')[-1], namesClasses)
+
+		return X,y,labels
 
 	def _load_test_images_from_disk(self):
 		maxPixel = PIXELS
@@ -96,35 +100,43 @@ class ImageIO():
 			i += 1
 			if i in report: print np.ceil(i *100.0 / numberofTestImages), "% done"
 
-		return X_test
+		return X_test, images
 
-	def im2bin_cv(self):
-		X,y = self._load_train_images_from_disk()
-		X = self.scaler.fit_transform(X)
+	def get_variants(self, X):
+		flips = [False, True]
+		rotations = range(0, 360, 2)
+		translations = range(-10, 10, 2)
+		stack_pred = []
 
-		### Create the training set with 90% of data
-		X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
+		for tranX in translations:
+			for tranY in translations:
+				for flip in flips:
+					for rot in rotations:
+						aug = Augmenter(np.array([[X]]), rot, (tranX, tranY), 1.0, 0, flip, None, None)
+						augmented = aug.transform()
+						stack_pred.append(augmented)
 
-		### Split the testing set to 50/50 for validation and testing
-		X_val, X_test, y_val, y_test = train_test_split(X_test, y_test, test_size=0.5, random_state=42)
+		return np.array(stack_pred)
 
-		f = h5py.File(IM2BIN_OUTPUT, "w")
-		dset = f.create_dataset("X_train", X_train.shape, dtype=np.float64, compression="gzip")
-		dset[...] = X_train
-		dset = f.create_dataset("y_train", y_train.shape, dtype=np.float64, compression="gzip")
-		dset[...] = y_train
-		dset = f.create_dataset("X_val", X_val.shape, dtype=np.float64, compression="gzip")
-		dset[...] = X_val
-		dset = f.create_dataset("y_val", y_val.shape, dtype=np.float64, compression="gzip")
-		dset[...] = y_val
-		dset = f.create_dataset("X_test", X_test.shape, dtype=np.float64, compression="gzip")
-		dset[...] = X_test
-		dset = f.create_dataset("y_test", y_test.shape, dtype=np.float64, compression="gzip")
-		dset[...] = y_test
+	def augment_mean_std(self, mean, std):
+		"""
+		This method augments the mean and variance to consider data augmentation.
+		"""
+
+		augmented_mean = self.get_variants(mean.reshape(PIXELS, PIXELS))
+		mean = augmented_mean.mean(axis=0).reshape((1,PIXELS*PIXELS))
+
+		augmented_std = self.get_variants(std.reshape(PIXELS, PIXELS))
+		std = np.sqrt((np.square(augmented_std) + np.square(augmented_mean)).mean(axis=0) - np.square(mean.reshape(PIXELS, PIXELS)))
+		std = std.reshape((1, PIXELS*PIXELS))
+		
+		return mean, std
 
 	def im2bin_full(self):
-		X,y = self._load_train_images_from_disk()
-		X = self.scaler.fit_transform(X)
+		X,y,labels = self._load_train_images_from_disk()
+		self.scaler.fit(X)
+
+		mean,std = self.augment_mean_std(self.scaler.mean_, self.scaler.std_)
 
 		f = h5py.File(IM2BIN_OUTPUT, "w")
 		dset = f.create_dataset("X_train", X.shape, dtype=np.float64, compression="gzip")
@@ -133,31 +145,30 @@ class ImageIO():
 		dset = f.create_dataset("y_train", y.shape, dtype=np.float64, compression="gzip")
 		dset[...] = y
 
+		dset = f.create_dataset("labels", (len(labels),), dtype=h5py.special_dtype(vlen=bytes), compression="gzip")
+		dset[...] = labels
+
 		X = None
 		y = None
 
 		print("Done loading train images")
 
-		X_test = self._load_test_images_from_disk()
-		X_test = self.scaler.transform(X_test)
+		X_test, images = self._load_test_images_from_disk()
 
 		print("Done loading test images")
 
 		dset = f.create_dataset("X_test", X_test.shape, dtype=np.float64, compression="gzip")
 		dset[...] = X_test
 
-	def load_data_cv(self):
-		f = h5py.File(IM2BIN_OUTPUT, "r")
-		X = np.hstack(([f['X_train']], [f['X_val']], [f['X_test']]))
-		y = np.hstack(([f['y_train']], [f['y_val']], [f['y_test']]))
+		dset = f.create_dataset("image_names", (len(images),), dtype=h5py.special_dtype(vlen=bytes), compression="gzip")
+		dset[...] = images
 
-		X = X[0].astype(np.float32, copy=False)
-		Y = y[0].astype(np.int32, copy=False)
+		# Save mean and std
+		dset = f.create_dataset("mean", mean.shape, dtype=np.float64, compression="gzip")
+		dset[...] = mean
 
-		X,y = shuffle(X, y, random_state = 42)
-		X = X.reshape(-1, 1, PIXELS, PIXELS)
-
-		return X,y
+		dset = f.create_dataset("std", std.shape, dtype=np.float64, compression="gzip")
+		dset[...] = std
 
 	def load_train_full(self):
 		f = h5py.File(IM2BIN_OUTPUT, "r")
@@ -176,10 +187,25 @@ class ImageIO():
 		f = h5py.File(IM2BIN_OUTPUT, "r")
 		X = f['X_test']
 
-		X = X.astype(np.float32, copy=False)
+		X = X[:].astype(np.float32, copy=False)
 		X = X.reshape(-1, 1, PIXELS, PIXELS)
 
-		return X
+		images = f['image_names']
+
+		return X,images
+
+	def load_labels(self):
+		f = h5py.File(IM2BIN_OUTPUT, "r")
+		labels = f['labels']
+
+		return labels
+
+	def load_mean_std(self):
+		f = h5py.File(IM2BIN_OUTPUT, "r")
+		mean = f['mean']
+		std = f['std']
+
+		return mean, std
 
 if __name__ == "__main__":
 	ImageIO().im2bin_full()

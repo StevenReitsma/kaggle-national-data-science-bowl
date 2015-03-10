@@ -1,0 +1,105 @@
+from lasagne import layers
+from lasagne.layers import dnn
+from lasagne import nonlinearities
+from nolearn.lasagne import BatchIterator
+from nolearn.lasagne import NeuralNet
+import theano
+from params import *
+from util import *
+from iterators import DataAugmentationBatchIterator, ScalingBatchIterator
+from learning_rate import AdjustVariable
+from early_stopping import EarlyStopping, EarlyStoppingTraining
+from imageio import ImageIO
+from lasagne.objectives import multinomial_nll
+import pickle
+from custom_layers import SliceLayer, MergeLayer
+import random
+from modelsaver import ModelSaver
+
+if USE_GPU:
+	Conv2DLayer = layers.dnn.Conv2DDNNLayer
+	MaxPool2DLayer = layers.dnn.MaxPool2DDNNLayer
+else:
+	Conv2DLayer = layers.Conv2DLayer
+	MaxPool2DLayer = layers.MaxPool2DLayer
+
+Maxout = layers.pool.FeaturePoolLayer
+
+# Fix seeds
+np.random.seed(42)
+random.seed(42)
+
+def fit(output):
+	X, y = ImageIO().load_train_full()
+	mean, std = ImageIO().load_mean_std()
+
+	net = NeuralNet(
+		layers=[
+			('input', layers.InputLayer),
+			('slicer', SliceLayer),
+			('conv1', Conv2DLayer),
+			('pool1', MaxPool2DLayer),
+			#('dropout1', layers.DropoutLayer),
+			('conv2', Conv2DLayer),
+			('pool2', MaxPool2DLayer),
+			#('dropout2', layers.DropoutLayer),
+			('conv3', Conv2DLayer),
+			#('dropout3', layers.DropoutLayer),
+			('conv4', Conv2DLayer),
+			('pool3', MaxPool2DLayer),
+			#('dropout4', layers.DropoutLayer),
+			('merger', MergeLayer),
+			('hidden1', layers.DenseLayer),
+			('maxout1', Maxout),
+			('dropouthidden1', layers.DropoutLayer),
+			('hidden2', layers.DenseLayer),
+			('maxout2', Maxout),
+			('dropouthidden2', layers.DropoutLayer),
+			('output', layers.DenseLayer),
+			],
+
+		input_shape=(None, 1, PIXELS, PIXELS),
+		slicer_part_size = PIXELS, slicer_flip = False,
+		merger_nr_views = 4,
+		conv1_num_filters=32, conv1_filter_size=(6, 6), conv1_pad = 0, pool1_ds=(2, 2), pool1_strides = (2, 2),
+		#dropout1_p=0.2,
+		conv2_num_filters=64, conv2_filter_size=(5, 5), conv2_pad = 0, pool2_ds=(2, 2), pool2_strides = (2, 2),
+		#dropout2_p=0.2,
+		conv3_num_filters=128, conv3_filter_size=(3, 3), conv3_pad = 0,
+		#dropout3_p=0.2,
+		conv4_num_filters=128, conv4_filter_size=(3, 3), conv4_pad = 0, pool3_ds=(2, 2), pool3_strides = (2, 2),
+		#dropout4_p=0.2,
+
+		hidden1_num_units=2048,
+		dropouthidden1_p=0.5,
+		maxout1_ds=2,
+		hidden2_num_units=2048,
+		dropouthidden2_p=0.5,
+		maxout2_ds=2,
+
+		output_num_units=121,
+		output_nonlinearity=nonlinearities.softmax,
+
+		update_learning_rate=theano.shared(float32(0.03)),
+		update_momentum=theano.shared(float32(0.9)),
+
+		regression=False,
+		batch_iterator_train=DataAugmentationBatchIterator(batch_size=BATCH_SIZE, mean=np.reshape(mean, (PIXELS, PIXELS)), std=np.reshape(std, (PIXELS, PIXELS))),
+		batch_iterator_test=ScalingBatchIterator(batch_size=BATCH_SIZE, mean=np.reshape(mean, (PIXELS, PIXELS)), std=np.reshape(std, (PIXELS, PIXELS))),
+		on_epoch_finished=[
+			AdjustVariable('update_learning_rate', start=0.03, stop=0.0003),
+			EarlyStopping(patience=20),
+			ModelSaver(epochs=5, output=output), # saves model every 5 epochs
+		],
+		max_epochs=300,
+		verbose=1,
+		eval_size=0.2,
+	)
+
+	net.fit(X, y)
+
+	with open(output, 'wb') as f:
+		pickle.dump(net, f, -1)
+
+if __name__ == "__main__":
+	fit('model.pkl')

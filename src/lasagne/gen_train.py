@@ -19,7 +19,7 @@ for cls in classes:
 		pass
 	imgs = os.listdir(fi + cls)
 	for img in imgs:
-		md = "convert -resize 64x64 -gravity center -background white -extent 64x64 -quality 100 "
+		md = "convert -resize 64x64\! -quality 100 " #padding: -gravity center -background white -extent 64x64 
 		md += fi + cls + "/" + img
 		md += " " + fo + cls + "/" + img
 		os.system(md)
