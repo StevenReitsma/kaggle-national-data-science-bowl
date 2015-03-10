@@ -12,6 +12,9 @@ from scipy import misc
 import numpy as np
 import h5py
 
+__PREPROCESS_VERSION__ = 1
+
+
 """
 Preprocessing script
 
@@ -53,10 +56,15 @@ def preprocess(path='../data/train',
     classnames, filenames, filepaths = zip(*file_metadata)  
     
     
+    if is_train:
+        label_dict = gen_label_dict(classnames)
+        labels = [label_dict[c] for c in classnames]
+        class_count = len(label_dict)
+    else:
+        labels = [-1 for _ in range(len(classnames))]
+        class_count = 0
+        
     
-    label_dict = gen_label_dict(classnames)
-    labels = [label_dict[c] for c in classnames]
-    class_count = len(label_dict)
     
     # Amount of images
     n = len(file_metadata)
@@ -84,6 +92,7 @@ def preprocess(path='../data/train',
     metadata['square_method'] = square_method
     metadata['class_count'] = class_count
     metadata['train_data'] = is_train
+    metadata['version'] = __PREPROCESS_VERSION__
     
     
     if preprocessing_is_already_done(outpath, metadata):
@@ -220,11 +229,11 @@ def preprocessing_is_already_done(filepath, metadata):
 def get_image_paths(path):
     
     
-    is_train = True
+    is_train = False
     
     for file_or_folder in os.listdir(path):
         if os.path.isdir(file_or_folder):
-            is_train = False
+            is_train = True
             break
     
     if is_train:
