@@ -57,19 +57,20 @@ def train():
     rbm = RBMtraining()
     pooled_images = []
     imagesdone = 0
-    for data in batchreader.BatchReader():
+    for data in batchreader.BatchReader(batchsize=50*729):
     #    print(data)
         X_train = [1-(x/float(255)) for x in data]
         weights = transform(rbm,X_train)
         mean = np.mean(weights, axis=0)
         std = np.std(weights, axis=0)
-        weights = weights -  mean / std
+        weights = (weights -  mean) / std
         for i in range(0,len(data)/729):
-            dim = weights[i*729:i*729+729,:]
+            dim = weights[i*729:i*729+729,1:]
+            print(dim.shape)
             feature_vector = pooling.pool(dim)
             pooled_images.append(feature_vector)
 #            print(feature_vector)
-            if i % 50 == 0:
+            if i % 49 == 0 and i != 0:
                 print(str(imagesdone) + " images done")
                 imagesdone+=50
 #        break
