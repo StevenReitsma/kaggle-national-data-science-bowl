@@ -33,12 +33,26 @@ def normalize(images):
     
     
 def plot_mean_image():
+    plot_meta_image('mean_image', invert=True, cmap=plt.cm.binary)
+
+def plot_std_image():
+    plot_meta_image('std_image')
+    
+def plot_var_image():
+    plot_meta_image('var_image')
+
+    
+def plot_meta_image(attr_name, invert = False, cmap=None):
     meta = load_metadata()
-    mean = meta['mean_image']
-    size = int(math.sqrt(len(mean)))
-    mean = np.reshape(mean, (size,size))
-    inverted = np.ones((size,size)) - mean
-    plt.imshow(inverted, cmap=plt.cm.binary)
+    im = meta[attr_name]
+    size = int(math.sqrt(len(im)))
+    im = np.reshape(im, (size,size))
+    
+    if invert:
+        im = np.ones((size,size)) - im
+
+    plt.imshow(im, cmap=cmap)   
+    
     
 
 def plot_centroids(centroids, file_path, im_size = (6,6)): 

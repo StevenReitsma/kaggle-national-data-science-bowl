@@ -103,13 +103,24 @@ def preprocess(path='../data/train',
     print "Processing and writing..."
     
     #Running total (sum) of all images
-    sum_image = np.zeros(image_size**2)
+    count_so_far = 0
+    mean = np.zeros(image_size**2)
+    M2 = np.zeros(image_size**2)    
+    
+    
     
     for i, filepath in enumerate(filepaths):
         
         image = misc.imread(filepath)
         image, patches = process(image, square_function, patch_size, image_size)
-        sum_image += imutil.flatten_image(image)
+        
+        # Online statistics
+        flat_image = imutil.flatten_image(image)        
+        count_so_far = count_so_far+1
+        delta = flat_image - mean
+        mean = mean + delta/count_so_far
+        M2 = M2 + delta * (flat_image -mean )
+
         
         start_index = i*patches_per_image
         dset[start_index:start_index+len(patches)] = patches
@@ -119,11 +130,16 @@ def preprocess(path='../data/train',
     
     util.update_progress(1.0)
     
-    mean_image = sum_image/n
+    
+    mean_image = mean
+    variance_image = M2/(n-1)
+    std_image = np.sqrt(variance_image)
     
     
     
     metadata['mean_image'] = mean_image 
+    metadata['std_image'] = std_image
+    metadata['var_image'] = variance_image
     
     print "Writing metadata (options used)" 
     write_metadata(dset, metadata)
@@ -169,7 +185,18 @@ def process(image, squarefunction, patch_size, image_size):
 def preprocessing_is_already_done(filepath, metadata):
     print "Checking whether preprocess is already done for given settings"    
     
+    if not os.path.exists(filepath):
+        print "File {0} not found!".format(filepath)
+        return False
+    
     f = h5py.File(filepath)
+    
+    if not 'data' in f:
+        print "Dataset not found in file"
+        f.close()
+        return False
+        
+    
     attrs = f['data'].attrs
     
     for key in metadata:
