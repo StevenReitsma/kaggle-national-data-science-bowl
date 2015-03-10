@@ -87,6 +87,8 @@ class RBM:
     hidden_activations = np.dot(data, self.weights)
     # Calculate the probabilities of turning the hidden units on.
     hidden_probs = self._logistic(hidden_activations)
+
+    return hidden_activations
     # Turn the hidden units on with their specified probabilities.
     hidden_states[:,:] = hidden_probs > np.random.rand(num_examples, self.num_hidden + 1)
     # Always fix the bias unit to 1.
