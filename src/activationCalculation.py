@@ -31,8 +31,9 @@ class ActivationCalculation():
         
     
     def normalize(self, activations):
+        std = np.std(activations, axis = 0)
         activations = activations - np.mean(activations, axis = 0)
-        activations = activations/np.std(activations, axis = 0)
+        activations = activations/std
         
         
         return activations
