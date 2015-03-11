@@ -36,7 +36,11 @@ def plot_std_image():
 def plot_var_image():
     plot_meta_image('var_image')
 
-def plot(image, cmap=plt.cm.binary):
+def plot(image, invert = False, cmap=plt.cm.binary):
+    
+    if invert:
+        image = np.ones(len(image)) - image
+    
     plt.imshow(image, cmap=cmap)
 
     
@@ -44,10 +48,7 @@ def plot_meta_image(attr_name, invert = False, cmap=None):
     meta = load_metadata()
     im = meta[attr_name]
     
-    if invert:
-        im = np.ones(len(im)) - im
-
-    plt.imshow(im, cmap=cmap)   
+    plot(im, invert, cmap) 
     
     
 
