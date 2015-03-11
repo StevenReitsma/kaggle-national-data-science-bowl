@@ -135,7 +135,6 @@ def preprocess(path='../data/train',
     print "Writing labels"
     write_labels(labels, f)
     
-    
     print "Processing and writing..."
     
     for i, filepath in enumerate(filepaths):

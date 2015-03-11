@@ -14,4 +14,4 @@ def sum_images(sequence_of_images):
     return sum(sequence_of_images)
     
 def normalize(image, mean_image, std_image):
-    return (image - mean_image / std_image)
+    return (image - mean_image) / std_image
