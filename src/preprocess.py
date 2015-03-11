@@ -106,7 +106,9 @@ def preprocess(path='../data/train',
     
     
     if preprocessing_is_already_done(outpath, metadata):
+        print "----------------------------------------"
         return
+    print "----------------------------------------"
     
     # Extract statistics such as the mean/std of image
     # Necessary for normalization of images
@@ -192,6 +194,9 @@ def extract_stats(filepaths, image_size, square_function):
     variance_image = M2/(n-1)
     std_image = np.sqrt(variance_image)
     
+    print "Plotting mean image (only shows afterwards)"
+    util.plot(mean_image)
+    
     return mean_image, variance_image, std_image
     
     
@@ -237,6 +242,7 @@ def extract_patches(image, patch_size):
     
     
 def preprocessing_is_already_done(filepath, metadata):
+    print "----------------------------------------"
     print "Checking whether preprocess is already done for given settings"    
     
     if not os.path.exists(filepath):
