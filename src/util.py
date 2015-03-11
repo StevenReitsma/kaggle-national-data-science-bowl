@@ -36,15 +36,16 @@ def plot_std_image():
 def plot_var_image():
     plot_meta_image('var_image')
 
+def plot(image, cmap=plt.cm.binary):
+    plt.imshow(image, cmap=cmap)
+
     
 def plot_meta_image(attr_name, invert = False, cmap=None):
     meta = load_metadata()
     im = meta[attr_name]
-    size = int(math.sqrt(len(im)))
-    im = np.reshape(im, (size,size))
     
     if invert:
-        im = np.ones((size,size)) - im
+        im = np.ones(len(im)) - im
 
     plt.imshow(im, cmap=cmap)   
     
