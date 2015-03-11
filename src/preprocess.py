@@ -141,8 +141,8 @@ def preprocess(path='../data/train',
         image = misc.imread(filepath)
         image = process(image, square_function, image_size)
         
-        # Normalize image        
-        image = (image - mean_image)/std_image
+        # Normalize image     
+        image = imutil.normalize(image, mean_image, std_image)
         
         patches = extract_patches(image, patch_size)
         
@@ -183,7 +183,7 @@ def extract_stats(filepaths, image_size, square_function):
         mean = mean + delta/count_so_far
         M2 = M2 + delta * (image-mean )
     
-        if i % 20 == 0:
+        if i % 50 == 0:
             util.update_progress(i/n)
 
     util.update_progress(1.0)

@@ -26,11 +26,6 @@ def load_unsupervised(filepath="../data/preprocessed.h5", shuffle=True):
 
 def flatten(collection):
     return [item for sublist in collection for item in sublist]
-
-
-def normalize(images):
-    return [image/float(255) for image in images]
-    
     
 def plot_mean_image():
     plot_meta_image('mean_image', invert=True, cmap=plt.cm.binary)
