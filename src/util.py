@@ -12,7 +12,7 @@ def load_unsupervised(filepath="../data/preprocessed.h5", shuffle=True):
    # rdata = []
     dimensions = (len(dset), len(dset[0]))
     #dimensions = len(dset)
-    rdata = np.zeros(dimensions, dtype=np.uint8)
+    rdata = np.zeros(dimensions, dtype=np.float32)
     
     dset.read_direct(rdata)
     

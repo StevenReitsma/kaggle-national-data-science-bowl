@@ -41,7 +41,7 @@ class RandomBatchReader (br.BatchReader):
                 raise StopIteration  
         else:
         
-            dat = np.zeros( (self.batch_size, self.dimensions[1]), dtype=np.uint8)            
+            dat = np.zeros( (self.batch_size, self.dimensions[1]), dtype=np.float32)            
             
             for index in self.write_indices:
                 
