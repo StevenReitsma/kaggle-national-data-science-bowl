@@ -195,7 +195,7 @@ def extract_stats(filepaths, image_size, square_function):
     std_image = np.sqrt(variance_image)
     
     print "Plotting mean image (only shows afterwards)"
-    util.plot(mean_image)
+    util.plot(mean_image, invert=True)
     
     return mean_image, variance_image, std_image
     
@@ -266,7 +266,7 @@ def preprocessing_is_already_done(filepath, metadata):
         
         if not inFile == inOptions:
             print "Found a different setting between file and given options"
-            print "Key {0} has value {1} in file, and {2} in options".format(key, inFile, inOptions)
+            print "Key \"{0}\" has value \"{1}\" in file, and \"{2}\" in options".format(key, inFile, inOptions)
             f.close()
             return False
         
