@@ -7,7 +7,7 @@ import skimage
 from params import *
 
 class Augmenter():
-	def __init__(self, X, rotation = 0, translation = (0,0), zoom = 1.0, shear = 0, do_flip = False, mean = None, std = None):
+	def __init__(self, X, rotation = 0, translation = (0,0), zoom = 1.0, shear = 0, do_flip = False):
 		self.X = copy.copy(X)
 
 		self.IMAGE_WIDTH = PIXELS
@@ -17,17 +17,12 @@ class Augmenter():
 		self.zoom = zoom
 		self.shear = shear
 		self.do_flip = do_flip
-		self.mean = mean
-		self.std = std
 
 	def fast_warp(self, img, tf, output_shape=(PIXELS,PIXELS), mode='nearest'):
 		"""
 		This wrapper function is about five times faster than skimage.transform.warp, for our use case.
 		"""
-		m = tf.params
-		img_wf = np.empty((output_shape[0], output_shape[1]), dtype='float32')
-		img_wf = skimage.transform._warps_cy._warp_fast(img, m, output_shape=output_shape, mode=mode)
-		return img_wf
+		return skimage.transform._warps_cy._warp_fast(img, tf.params, output_shape=output_shape, mode=mode)
 
 	def _transform(self):
 		rotation = self.rotation
@@ -61,10 +56,6 @@ class Augmenter():
 		for i in range(self.X.shape[0]):
 			new = self.fast_warp(self.X[i][0], tform_ds + tform_augment + tform_identity, 
 								 output_shape=(PIXELS,PIXELS), mode='nearest').astype('float32')
-			if self.mean is not None:
-				new -= self.mean
-			if self.std is not None:
-				new /= self.std
 			self.X[i, 0, :, :] = new
 
 		return self.X

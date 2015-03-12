@@ -4,7 +4,9 @@ from skimage import transform
 import skimage
 import theano
 import theano.tensor as T
+from theano import printing
 from params import *
+from augmenter import Augmenter
 
 class SliceLayer(layers.MultipleInputsLayer):
 	def __init__(self, incomings, part_size, flip, **kwargs):
@@ -52,5 +54,5 @@ class MergeLayer(layers.Layer):
 		feature_count = int(np.prod(self.input_shape[1:]))
 		new_mb_size = input.shape[0] // self.nr_views
 
-		input_r = input.reshape((self.nr_views, new_mb_size, feature_count)) # split out the 4* dimension
-		return input_r.transpose(1, 0, 2).reshape((new_mb_size, self.nr_views*feature_count)) #first transpose to batch * view * features, then flatten view*features
+		input_r = input.reshape((self.nr_views, new_mb_size, feature_count))
+		return input_r.dimshuffle(1, 0, 2).reshape((new_mb_size, self.nr_views*feature_count))

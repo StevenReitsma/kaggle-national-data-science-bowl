@@ -1,4 +1,5 @@
 import numpy as np
+import pickle
 
 class ModelSaver(object):
     def __init__(self, output, epochs = 10):

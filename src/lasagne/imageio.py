@@ -112,7 +112,7 @@ class ImageIO():
 			for tranY in translations:
 				for flip in flips:
 					for rot in rotations:
-						aug = Augmenter(np.array([[X]]), rot, (tranX, tranY), 1.0, 0, flip, None, None)
+						aug = Augmenter(np.array([[X]]), rot, (tranX, tranY), 1.0, 0, flip)
 						augmented = aug.transform()
 						stack_pred.append(augmented)
 

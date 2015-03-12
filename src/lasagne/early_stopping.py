@@ -21,23 +21,15 @@ class EarlyStopping(object):
             nn.load_weights_from(self.best_weights)
             raise StopIteration()
 
-class EarlyStoppingTraining(object):
-    def __init__(self, patience=10):
-        self.patience = patience
-        self.best_train = np.inf
-        self.best_train_epoch = 0
-        self.best_weights = None
+class EarlyStoppingNoValidation(object):
+    def __init__(self, training_loss_threshold):
+        self.threshold = training_loss_threshold
 
     def __call__(self, nn, train_history):
         current_train = train_history[-1]['train_loss']
         current_epoch = train_history[-1]['epoch']
-        if current_train < self.best_train:
-            self.best_train = current_train
-            self.best_train_epoch = current_epoch
-            self.best_weights = [w.get_value() for w in nn.get_all_params()]
-        elif self.best_train_epoch + self.patience < current_epoch:
+        if current_train < self.threshold:
             print("Early stopping.")
-            print("Best train loss was {:.6f} at epoch {}.".format(
-                self.best_train, self.best_train_epoch))
-            nn.load_weights_from(self.best_weights)
+            print("Threshold reached, train loss is {:.6f} at epoch {}.".format(
+                current_train, current_epoch))
             raise StopIteration()

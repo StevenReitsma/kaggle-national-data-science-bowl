@@ -7,6 +7,8 @@ from skimage import transform
 import skimage
 from params import *
 from augmenter import Augmenter
+import matplotlib.pyplot as plt
+from subprocess import call
 
 header = "acantharia_protist_big_center,acantharia_protist_halo,acantharia_protist,amphipods,\
 appendicularian_fritillaridae,appendicularian_s_shape,appendicularian_slight_curve,appendicularian_straight,\
@@ -37,7 +39,7 @@ trichodesmium_multiple,trichodesmium_puff,trichodesmium_tuft,trochophore_larvae,
 tunicate_doliolid,tunicate_partial,tunicate_salp_chains,tunicate_salp,unknown_blobs_and_smudges,unknown_sticks,\
 unknown_unclassified".split(',')
 
-def diversive_augment(y_pred, model, mean, std):
+def diversive_augment(y_pred, model):
 	flips = [False, True]
 	rotations = [0, 45, 90, 135, 180, 225, 270, 315]
 	stack_pred = []
@@ -45,7 +47,7 @@ def diversive_augment(y_pred, model, mean, std):
 	for flip in flips:
 		for rot in rotations:
 			print "Flip: %r, rot: %i" % (flip, rot)
-			aug = Augmenter(y_pred, rot, (0,0), 1.0, 0, flip, mean, std)
+			aug = Augmenter(y_pred, rot, (0,0), 1.0, 0, flip)
 			augmented = aug.transform()
 			pred = model.predict_proba(augmented)
 			stack_pred.append(pred)
@@ -65,12 +67,11 @@ def predict(filename):
 	print "Loading test images..."
 
 	labels = ImageIO().load_labels()
-	mean, std = ImageIO().load_mean_std()
 	X,images = ImageIO().load_test_full()
 
 	print "Performing diversive augmentation and prediction..."
 
-	y_pred = diversive_augment(X, model, np.reshape(mean, (PIXELS, PIXELS)), np.reshape(std, (PIXELS, PIXELS)))
+	y_pred = diversive_augment(X, model)
 
 	print "Writing to file..."
 
@@ -79,5 +80,10 @@ def predict(filename):
 	df = df[header]
 	df.to_csv('out.csv')
 
+	print "Gzipping..."
+
+	call("gzip -c out.csv > out.csv.gz", shell=True)
+
+
 if __name__ == "__main__":
-	predict('model.pkl')
+	predict('model.pkl_full')

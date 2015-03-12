@@ -8,7 +8,7 @@ from params import *
 from util import *
 from iterators import DataAugmentationBatchIterator, ScalingBatchIterator
 from learning_rate import AdjustVariable
-from early_stopping import EarlyStopping, EarlyStoppingTraining
+from early_stopping import EarlyStopping, EarlyStoppingNoValidation
 from imageio import ImageIO
 from lasagne.objectives import multinomial_nll
 import pickle
@@ -39,15 +39,11 @@ def fit(output):
 			('slicer', SliceLayer),
 			('conv1', Conv2DLayer),
 			('pool1', MaxPool2DLayer),
-			#('dropout1', layers.DropoutLayer),
 			('conv2', Conv2DLayer),
 			('pool2', MaxPool2DLayer),
-			#('dropout2', layers.DropoutLayer),
 			('conv3', Conv2DLayer),
-			#('dropout3', layers.DropoutLayer),
 			('conv4', Conv2DLayer),
 			('pool3', MaxPool2DLayer),
-			#('dropout4', layers.DropoutLayer),
 			('merger', MergeLayer),
 			('hidden1', layers.DenseLayer),
 			('maxout1', Maxout),
@@ -59,35 +55,33 @@ def fit(output):
 			],
 
 		input_shape=(None, 1, PIXELS, PIXELS),
-		slicer_part_size = PIXELS, slicer_flip = False,
-		merger_nr_views = 4,
-		conv1_num_filters=32, conv1_filter_size=(6, 6), conv1_pad = 0, pool1_ds=(2, 2), pool1_strides = (2, 2),
-		#dropout1_p=0.2,
-		conv2_num_filters=64, conv2_filter_size=(5, 5), conv2_pad = 0, pool2_ds=(2, 2), pool2_strides = (2, 2),
-		#dropout2_p=0.2,
-		conv3_num_filters=128, conv3_filter_size=(3, 3), conv3_pad = 0,
-		#dropout3_p=0.2,
-		conv4_num_filters=128, conv4_filter_size=(3, 3), conv4_pad = 0, pool3_ds=(2, 2), pool3_strides = (2, 2),
-		#dropout4_p=0.2,
 
-		hidden1_num_units=2048,
+		slicer_part_size = 64, slicer_flip = True,
+		merger_nr_views = 16,
+
+		conv1_num_filters=32, conv1_filter_size=(6, 6), conv1_pad = 0, pool1_ds=(2, 2), pool1_strides = (2, 2),
+		conv2_num_filters=64, conv2_filter_size=(5, 5), conv2_pad = 0, pool2_ds=(2, 2), pool2_strides = (2, 2),
+		conv3_num_filters=128, conv3_filter_size=(3, 3), conv3_pad = 0,
+		conv4_num_filters=128, conv4_filter_size=(3, 3), conv4_pad = 0, pool3_ds=(2, 2), pool3_strides = (2, 2),
+
+		hidden1_num_units=4096,
 		dropouthidden1_p=0.5,
 		maxout1_ds=2,
-		hidden2_num_units=2048,
+		hidden2_num_units=4096,
 		dropouthidden2_p=0.5,
 		maxout2_ds=2,
 
 		output_num_units=121,
 		output_nonlinearity=nonlinearities.softmax,
 
-		update_learning_rate=theano.shared(float32(0.03)),
-		update_momentum=theano.shared(float32(0.9)),
+		update_learning_rate=theano.shared(float32(START_LEARNING_RATE)),
+		update_momentum=theano.shared(float32(MOMENTUM)),
 
 		regression=False,
 		batch_iterator_train=DataAugmentationBatchIterator(batch_size=BATCH_SIZE, mean=np.reshape(mean, (PIXELS, PIXELS)), std=np.reshape(std, (PIXELS, PIXELS))),
 		batch_iterator_test=ScalingBatchIterator(batch_size=BATCH_SIZE, mean=np.reshape(mean, (PIXELS, PIXELS)), std=np.reshape(std, (PIXELS, PIXELS))),
 		on_epoch_finished=[
-			AdjustVariable('update_learning_rate', start=0.03, stop=0.0003),
+			AdjustVariable('update_learning_rate', start=START_LEARNING_RATE),
 			EarlyStopping(patience=20),
 			ModelSaver(epochs=5, output=output), # saves model every 5 epochs
 		],

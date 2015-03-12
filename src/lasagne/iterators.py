@@ -4,8 +4,34 @@ from skimage import transform
 import skimage
 from skimage.io import imsave
 from params import *
+import random
 
-class DataAugmentationBatchIterator(BatchIterator):
+class ShufflingBatchIterator(object):
+	def __init__(self, batch_size):
+		self.batch_size = batch_size
+
+	def __call__(self, X, y=None):
+		self.X, self.y = X, y
+		return self
+
+	def __iter__(self):
+		n_samples = self.X.shape[0]
+		bs = self.batch_size
+		v = range((n_samples + bs - 1) // bs)
+		random.shuffle(v)
+		for i in v:
+			sl = slice(i * bs, (i + 1) * bs)
+			Xb = self.X[sl]
+			if self.y is not None:
+				yb = self.y[sl]
+			else:
+				yb = None
+			yield self.transform(Xb, yb)
+
+	def transform(self, Xb, yb):
+		return Xb, yb
+
+class DataAugmentationBatchIterator(ShufflingBatchIterator):
 
 	def __init__(self, batch_size, mean, std):
 		super(DataAugmentationBatchIterator, self).__init__(batch_size)
@@ -20,14 +46,13 @@ class DataAugmentationBatchIterator(BatchIterator):
 		IMAGE_WIDTH = PIXELS
 		IMAGE_HEIGHT = PIXELS
 
+		random_flip = np.random.randint(2)
+
 		def fast_warp(img, tf, output_shape=(PIXELS,PIXELS), mode='nearest'):
 			"""
 			This wrapper function is about five times faster than skimage.transform.warp, for our use case.
 			"""
-			m = tf.params
-			img_wf = np.empty((output_shape[0], output_shape[1]), dtype='float32')
-			img_wf = skimage.transform._warps_cy._warp_fast(img, m, output_shape=output_shape, mode=mode)
-			return img_wf
+			return skimage.transform._warps_cy._warp_fast(img, tf.params, output_shape=output_shape, mode=mode)
 
 		def random_perturbation_transform(zoom_range, rotation_range, shear_range, translation_range, do_flip=True):
 			shift_x = np.random.uniform(*translation_range)
@@ -39,7 +64,7 @@ class DataAugmentationBatchIterator(BatchIterator):
 			log_zoom_range = [np.log(z) for z in zoom_range]
 			zoom = np.exp(np.random.uniform(*log_zoom_range))
 
-			if do_flip and (np.random.randint(2) > 0): # flip half of the time
+			if do_flip and random_flip > 0: # flip half of the time
 				shear += 180
 				rotation += 180
 

@@ -4,10 +4,12 @@ import pickle
 from predict import Augmenter, diversive_augment
 from imageio import ImageIO
 from sklearn.svm import SVC
+from subprocess import call
 
 # Averages over Kaggle submission files
 def combine_mean(filenames):
 	dfs = []
+	print "Reading files..."
 	for f in filenames:
 		dfs.append(pd.DataFrame.from_csv(f))
 
@@ -15,7 +17,15 @@ def combine_mean(filenames):
 	df_concat = pd.concat(dfs)
 	df_mean = df_concat.groupby(level=0).mean()
 	
+	print "Averaging..."
+
 	df_mean.to_csv('out_averaged.csv')
+
+	print "Gzipping..."
+
+	call("gzip -c out_averaged.csv > out_averaged.csv.gz", shell=True)
+
+	print "Done"
 
 # Doesn't work at all
 def combine_rf(model_names, filenames):
@@ -58,5 +68,4 @@ def combine_rf(model_names, filenames):
 	df.to_csv('out_averaged_rf.csv')
 
 if __name__ == "__main__":
-	#combine_mean(['MODEL_BEST.csv', 'MODEL_NAIVE_RESIZING.csv'])
-	combine_rf(['MODEL_BEST.pkl', 'MODEL_NAIVE_RESIZING.pkl'], ['MODEL_BEST.csv', 'MODEL_NAIVE_RESIZING.csv'])
+	combine_mean(['MODEL_CONCURRENT.csv', 'MODEL_MORE_FILTERS.csv', 'MODEL_CONCURRENT_FLIPS_100.csv'])
