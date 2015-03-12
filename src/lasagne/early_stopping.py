@@ -1,7 +1,10 @@
 import numpy as np
 
 class EarlyStopping(object):
-    def __init__(self, patience=100):
+    """
+    Stops training when the validation loss has not decreased for `patience` epochs.
+    """
+    def __init__(self, patience=20):
         self.patience = patience
         self.best_valid = np.inf
         self.best_valid_epoch = 0
@@ -22,6 +25,9 @@ class EarlyStopping(object):
             raise StopIteration()
 
 class EarlyStoppingNoValidation(object):
+    """
+    Stops training when a certain training loss is reached.
+    """
     def __init__(self, training_loss_threshold):
         self.threshold = training_loss_threshold
 

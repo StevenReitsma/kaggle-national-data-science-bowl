@@ -1,6 +1,7 @@
 import os
 import sys
 import subprocess
+from params import *
 
 if len(sys.argv) < 3:
 	print "Usage: python gen_train.py input_folder output_folder"
@@ -11,6 +12,11 @@ fo = sys.argv[2]
 
 classes = os.listdir(fi)
 
+if NAIVE:
+	cmd = "convert -resize 64x64\! -quality 100 "
+else:
+	cmd = "convert -resize 64x64 padding: -gravity center -background white -extent 64x64 -quality 100 "
+
 os.chdir(fo)
 for cls in classes:
 	try:
@@ -19,7 +25,7 @@ for cls in classes:
 		pass
 	imgs = os.listdir(fi + cls)
 	for img in imgs:
-		md = "convert -resize 64x64\! -quality 100 " #padding: -gravity center -background white -extent 64x64 
+		md = cmd
 		md += fi + cls + "/" + img
 		md += " " + fo + cls + "/" + img
 		os.system(md)

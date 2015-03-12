@@ -61,9 +61,6 @@ def predict(filename):
 	with open(filename, 'rb') as f:
 		model = pickle.load(f)
 
-	model.layers_['dropouthidden1'].deterministic = True
-	model.layers_['dropouthidden2'].deterministic = True
-
 	print "Loading test images..."
 
 	labels = ImageIO().load_labels()
@@ -84,6 +81,7 @@ def predict(filename):
 
 	call("gzip -c out.csv > out.csv.gz", shell=True)
 
+	print "Done! File saved to out.csv and out.csv.gz"
 
 if __name__ == "__main__":
-	predict('model.pkl_full')
+	predict('model.pkl')

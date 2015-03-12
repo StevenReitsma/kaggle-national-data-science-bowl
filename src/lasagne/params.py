@@ -1,6 +1,3 @@
-import glob
-import os
-
 IMAGE_SOURCE = "../../data/lasagne"
 IM2BIN_OUTPUT = "../../data/lasagne/images.hdf5"
 
@@ -18,3 +15,7 @@ AUGMENTATION_PARAMS = {
 BATCH_SIZE = 64
 START_LEARNING_RATE = 0.01
 MOMENTUM = 0.9
+
+# Whether to  naively resize images. False pads the image.
+# Rerun gen_test.py and gen_train.py for changes to take effect.
+NAIVE = True

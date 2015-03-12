@@ -1,6 +1,9 @@
 import numpy as np
 
 class AdjustVariable(object):
+    """
+    Adjusts the learning rate according to a set scheme.
+    """
     def __init__(self, name, start=0.03):
         self.name = name
         self.start = start

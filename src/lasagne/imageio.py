@@ -1,12 +1,10 @@
 import numpy as np
 from skimage.io import imread
 from sklearn import preprocessing
-from sklearn.cross_validation import train_test_split
 import h5py
 from params import *
 from sklearn.utils import shuffle
 from augmenter import Augmenter
-import matplotlib.pyplot as plt
 
 class ImageIO():
 	def __init__(self):
@@ -102,7 +100,11 @@ class ImageIO():
 
 		return X_test, images
 
-	def get_variants(self, X):
+	def _get_variants(self, X):
+		"""
+		Returns all possible rotations and translations of a certain image.
+		Useful for generating an augmented mean and variance tensor.
+		"""
 		flips = [False, True]
 		rotations = range(0, 360, 2)
 		translations = range(-10, 10, 2)
@@ -118,12 +120,12 @@ class ImageIO():
 
 		return np.array(stack_pred)
 
-	def augment_mean_std(self, mean, std):
+	def _augment_mean_std(self, mean, std):
 		"""
 		This method augments the mean and variance to consider data augmentation.
 		"""
 
-		augmented_mean = self.get_variants(mean.reshape(PIXELS, PIXELS))
+		augmented_mean = self._get_variants(mean.reshape(PIXELS, PIXELS))
 		mean = augmented_mean.mean(axis=0).reshape((1,PIXELS*PIXELS))
 
 		augmented_std = self.get_variants(std.reshape(PIXELS, PIXELS))
@@ -133,10 +135,13 @@ class ImageIO():
 		return mean, std
 
 	def im2bin_full(self):
+		"""
+		Writes all images to a binary file.
+		"""
 		X,y,labels = self._load_train_images_from_disk()
 		self.scaler.fit(X)
 
-		mean,std = self.augment_mean_std(self.scaler.mean_, self.scaler.std_)
+		mean,std = self._augment_mean_std(self.scaler.mean_, self.scaler.std_)
 
 		f = h5py.File(IM2BIN_OUTPUT, "w")
 		dset = f.create_dataset("X_train", X.shape, dtype=np.float64, compression="gzip")

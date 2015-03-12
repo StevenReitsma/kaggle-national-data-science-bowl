@@ -1,12 +1,14 @@
 import numpy as np
 from nolearn.lasagne import BatchIterator
 from skimage import transform
-import skimage
-from skimage.io import imsave
+import skimagef
 from params import *
 import random
 
 class ShufflingBatchIterator(object):
+	"""
+	Shuffles minibatches.
+	"""
 	def __init__(self, batch_size):
 		self.batch_size = batch_size
 
@@ -32,7 +34,12 @@ class ShufflingBatchIterator(object):
 		return Xb, yb
 
 class DataAugmentationBatchIterator(ShufflingBatchIterator):
+	"""
+	Randomly changes images in the batch. Behaviour can be defined in params.py.
+	Give mean and std of training set.
 
+	Note: Shuffles minibatches.
+	"""
 	def __init__(self, batch_size, mean, std):
 		super(DataAugmentationBatchIterator, self).__init__(batch_size)
 		self.mean = mean
@@ -96,6 +103,10 @@ class DataAugmentationBatchIterator(ShufflingBatchIterator):
 		return Xbb, yb
 
 class ScalingBatchIterator(BatchIterator):
+	"""
+	Scales images by subtracting mean and dividing by standard deviation.
+	Note: Does not shuffle data.
+	"""
 	def __init__(self, batch_size, mean, std):
 		super(ScalingBatchIterator, self).__init__(batch_size)
 		self.mean = mean

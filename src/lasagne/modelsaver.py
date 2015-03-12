@@ -2,6 +2,9 @@ import numpy as np
 import pickle
 
 class ModelSaver(object):
+	"""
+	Saves the model every `epochs` epochs to `output`_{current_epoch}.
+	"""
     def __init__(self, output, epochs = 10):
     	self.output = output
         self.epochs = epochs
