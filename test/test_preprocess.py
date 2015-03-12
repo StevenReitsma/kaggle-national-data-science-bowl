@@ -36,10 +36,11 @@ class TestPreprocess(unittest.TestCase):
         
         expected_patches_amount = (resize_size-patch_size+1)**2 # = 3249
         
-        processed, patches = preprocess.process(self.image, 
+        processed = preprocess.process(self.image, 
                                                 square_function, 
-                                                patch_size, 
                                                 resize_size)
+                                                
+        patches = preprocess.extract_patches(processed, patch_size)
         
         self.assertEqual(expected_patches_amount, len(patches))
         self.assertEqual( (64,64), np.shape(processed))
