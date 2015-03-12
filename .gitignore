@@ -1,6 +1,11 @@
 # Ignore data files
 data/
 models/
+*.pkl*
+.idea/
+
+*.sublime-project
+*.sublime-workspace
 
 # PYTHON
 # Byte-compiled / optimized / DLL files
