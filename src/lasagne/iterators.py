@@ -1,7 +1,7 @@
 import numpy as np
 from nolearn.lasagne import BatchIterator
 from skimage import transform
-import skimagef
+import skimage
 from params import *
 import random
 
