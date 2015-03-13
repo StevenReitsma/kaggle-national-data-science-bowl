@@ -222,9 +222,12 @@ def write_metadata(dataset, metadata):
 
 def process(image, squarefunction, image_size):
     """
-        Process a single image (make square, resize)
+        Process a single image 
+        - make horizontal by rotating 90 degrees if necessary
+        - make square
+        - resize
     """
-    
+    image = imutil.image_horizontal(image)
     image = squarefunction(image)
     image = imutil.resize_image(image, image_size)
     

@@ -1,7 +1,12 @@
 # Ignore data files
 data/
-# Ignore learned models
+
 models/
+*.pkl*
+.idea/
+
+*.sublime-project
+*.sublime-workspace
 
 # Ignore Spyder workspace definitions
 *.spyderproject
