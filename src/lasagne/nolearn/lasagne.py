@@ -358,7 +358,8 @@ class NeuralNet(BaseEstimator):
     def predict_proba(self, X):
         probas = []
         for Xb, yb in self.batch_iterator_test(X):
-            probas.append(self.predict_iter_(Xb))
+            new_xb = self._include_45_rotations(Xb)
+            probas.append(self.predict_iter_(new_xb))
         return np.vstack(probas)
 
     def predict(self, X):
