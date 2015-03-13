@@ -19,6 +19,34 @@ class TestPreprocessing(unittest.TestCase):
             [0,1,0],
             [1,0,1]
            ]])
+           
+        self.h_image = np.array([
+            [0,1,4,3,0],
+            [5,0,0,0,2]
+        ])
+        
+        self.v_image = np.array([
+            [1,0],
+            [0,2],
+            [3,4]
+        ])
+        
+    
+    def test_horizontalize_image(self):
+        p_h_image = imutil.image_horizontal(self.h_image)
+        
+        expected_p_h_image = self.h_image
+        
+        self.assertTrue(np.array_equal(p_h_image, expected_p_h_image))    
+        
+        p_v_image = imutil.image_horizontal(self.v_image)
+        
+        expected_p_v_image = np.array([
+            [0,2,4],
+            [1,0,3]
+        ])
+        
+        self.assertTrue(np.array_equal(p_v_image, expected_p_v_image)) 
         
     
     def test_flatten_images(self):
