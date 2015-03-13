@@ -27,8 +27,7 @@ def singlePipeline(nr_centroids, label_path = "../data/preprocessed.h5"):
     
     #Calculates the activaiton of the test set
     act_calc = act.ActivationCalculation()
-    features = act_calc.pipeline(centroids)
-#   
+    features = act_calc.pipeline(centroids)  
     #get the labels
     f = h5py.File(label_path)
     labels = f["labels"]
@@ -43,10 +42,10 @@ def singlePipeline(nr_centroids, label_path = "../data/preprocessed.h5"):
     
     #Train SVC classifier
     print "Begin training"
-    model = svc.train_svc(features,labels)
+    model = svc.train_svc(features,labels, nr_centroids)
 
-    #Classify the testset (the same as the training set in this case)
-#    classified = classifier.predict(features, nr_centroids)
+#    Classify the testset (the same as the training set in this case)
+    classified = classifier.predict(features, nr_centroids)
     print "begin classification"
     classified = model.predict_proba(features)
     print "done"
@@ -70,7 +69,7 @@ def singlePipeline(nr_centroids, label_path = "../data/preprocessed.h5"):
     summing = -summing/len(labels)
     print summing 
     print correct/len(labels)
-#    print np.min(classified)
+    print np.min(classified)
    
 #    print summing
 #    np.savetxt( "realLabel.csv", labels, delimiter=";")
