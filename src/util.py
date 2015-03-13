@@ -12,7 +12,7 @@ def load_unsupervised(filepath="../data/preprocessed.h5", shuffle=True):
    # rdata = []
     dimensions = (len(dset), len(dset[0]))
     #dimensions = len(dset)
-    rdata = np.zeros(dimensions, dtype=np.uint8)
+    rdata = np.zeros(dimensions, dtype=np.float32)
     
     dset.read_direct(rdata)
     
@@ -26,19 +26,30 @@ def load_unsupervised(filepath="../data/preprocessed.h5", shuffle=True):
 
 def flatten(collection):
     return [item for sublist in collection for item in sublist]
-
-
-def normalize(images):
-    return [image/float(255) for image in images]
-    
     
 def plot_mean_image():
+    plot_meta_image('mean_image', invert=True, cmap=plt.cm.binary)
+
+def plot_std_image():
+    plot_meta_image('std_image')
+    
+def plot_var_image():
+    plot_meta_image('var_image')
+
+def plot(image, invert = False, cmap=plt.cm.binary):
+    
+    if invert:
+        image = np.ones(len(image)) - image
+    
+    plt.imshow(image, cmap=cmap)
+
+    
+def plot_meta_image(attr_name, invert = False, cmap=None):
     meta = load_metadata()
-    mean = meta['mean_image']
-    size = int(math.sqrt(len(mean)))
-    mean = np.reshape(mean, (size,size))
-    inverted = np.ones((size,size)) - mean
-    plt.imshow(inverted, cmap=plt.cm.binary)
+    im = meta[attr_name]
+    
+    plot(im, invert, cmap) 
+    
     
 
 def plot_centroids(centroids, file_path, im_size = (6,6)): 
