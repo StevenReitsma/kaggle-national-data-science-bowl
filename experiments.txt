@@ -1,0 +1,9 @@
+Warp			1.564342
+Nothing			1.575588
+Augment			1.541501
+Old method		1.575019
+
+Naive			1.578334
+Naive trim		1.789856
+Extent			1.564657
+Extent trim		2.269757
