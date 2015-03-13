@@ -9,6 +9,8 @@ import randombatchreader
 import numpy as np
 import RBM
 import pooling
+import os
+import util
 
 #from preprocess import preprocess #For using code from different branch
 
@@ -30,10 +32,18 @@ def RBMtraining():
         if counter == 3:
             break
     print ("DONE")
-    print(rbm.weights)
+    #print(rbm.weights)
+    plotweights = np.transpose(rbm.weights[1:,1:])
+    save_weights(plotweights, file_path = "../data/weightsrbm/")
+    util.plot_centroids(plotweights, file_path = "../data/weightsrbm/", )
 
     return rbm
 
+def save_weights(weights, file_path = "../data/weightsrbm/"):
+    if not os.path.exists(file_path):
+        os.makedirs(file_path)       
+    np.savetxt(file_path + str(len(weights)) +  "weights.csv", weights, delimiter=",")
+    
 #Finds the hidden layer probability values belonging to data
 #TODO find the correct bias!!
 def transform(rbm,data):
@@ -66,12 +76,12 @@ def train():
         weights = (weights -  mean) / std
         for i in range(0,len(data)/729):
             dim = weights[i*729:i*729+729,1:]
-            print(dim.shape)
+            #print(dim.shape)
             feature_vector = pooling.pool(dim)
             pooled_images.append(feature_vector)
 #            print(feature_vector)
             if i % 49 == 0 and i != 0:
-                print(str(imagesdone) + " images done")
+                #print(str(imagesdone) + " images done")
                 imagesdone+=50
 #        break
     return pooled_images
