@@ -13,9 +13,9 @@ AUGMENTATION_PARAMS = {
 		}
 		
 BATCH_SIZE = 64
-START_LEARNING_RATE = 0.01
+START_LEARNING_RATE = 0.03
 MOMENTUM = 0.9
 
 # Whether to  naively resize images. False pads the image.
 # Rerun gen_test.py and gen_train.py for changes to take effect.
-NAIVE = True
+NAIVE = False
