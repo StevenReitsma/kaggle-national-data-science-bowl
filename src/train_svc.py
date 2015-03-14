@@ -10,7 +10,7 @@ from sklearn.externals import joblib
 import os
 
 def train_svc(samples, labels, nr_centroids):
-    clf = svm.SVC(degree=3, cache_size = 4000, probability = True, verbose = 1)
+    clf = svm.SVC(degree=2, cache_size = 4000, probability = True, verbose = 1)
     clf.fit(samples, labels)
     
     file_path = '../models/svc' + str(nr_centroids) + '/'

@@ -69,7 +69,9 @@ def preprocess(path='../data/train',
     else:
         labels = [-1 for _ in range(len(classnames))]
         class_count = 0
-        
+   
+    
+    label_names = [key for key in labels]
     
     
     # Amount of images
@@ -105,6 +107,7 @@ def preprocess(path='../data/train',
     metadata['version'] = __PREPROCESS_VERSION__
     
     
+    
     if preprocessing_is_already_done(outpath, metadata):
         print "----------------------------------------"
         return
@@ -123,7 +126,7 @@ def preprocess(path='../data/train',
         metadata['std_image' ] = None
         metadata['var_image' ] = None
     
-    
+    print "---"
     #Dimension of what will be written to file
     dim_all_patches = (patches_total, patch_size**2)
     
@@ -134,6 +137,9 @@ def preprocess(path='../data/train',
     print "-----------------------------------------"
     print "Writing labels"
     write_labels(labels, f)
+    
+    print "Writing label names"
+    write_label_names(label_names, f)
     
     print "Processing and writing..."
     
@@ -147,6 +153,15 @@ def preprocess(path='../data/train',
         
         patches = extract_patches(image, patch_size)
         
+        
+        for j, patch in enumerate(patches):
+            mean = np.mean(patch)
+            std = np.std(patch)
+            patches[j] = imutil.normalize(patch, mean, std)
+        
+        
+        patches = np.nan_to_num(patches)
+        
         start_index = i*patches_per_image
         dset[start_index:start_index+len(patches)] = patches
         
@@ -154,6 +169,7 @@ def preprocess(path='../data/train',
             util.update_progress(i/n)
     
     util.update_progress(1.0)
+    
     
     
     print "Writing metadata (options used)" 
@@ -193,7 +209,7 @@ def extract_stats(filepaths, image_size, square_function):
     std_image = np.sqrt(variance_image)
     
     print "Plotting mean image (only shows afterwards)"
-    util.plot(mean_image, invert=True)
+   # util.plot(mean_image, invert=True)
     
     return mean_image, variance_image, std_image
     
@@ -210,6 +226,9 @@ def gen_label_dict(classnames):
     
 def write_labels(labels, h5py_file):
     h5py_file.create_dataset('labels', data=labels)
+    
+def write_label_names(label_names, h5py_file):
+    h5py_file.create_dataset('label_names', data=label_names)
     
     
 
@@ -237,6 +256,7 @@ def extract_patches(image, patch_size):
     """
     patches = impatch.patch(image, patch_size = patch_size)
     patches = [imutil.flatten_image(patch) for patch in patches]
+    patches = np.array(patches)
     return patches
     
     

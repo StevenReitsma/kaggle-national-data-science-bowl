@@ -59,5 +59,5 @@ class kMeansTrainer():
     
     
 if __name__ == '__main__':    
-    km = kMeansTrainer(100, 10)
+    km = kMeansTrainer(100, 1)
     km.pipeline()
