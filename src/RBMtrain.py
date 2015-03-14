@@ -30,7 +30,7 @@ def maxImage():
 
 def RBMtraining():
     counter = 1
-    for data in randombatchreader.RandomBatchReader():
+    for data in randombatchreader.RandomBatchReader(batchsize = 200*729):
     #for data in batchreader.BatchReader():
         if counter == 1:
             rbm = RBM.RBM(len(data[0]), _hidden_units)
