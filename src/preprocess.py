@@ -12,7 +12,7 @@ from scipy import misc
 import numpy as np
 import h5py
 
-__PREPROCESS_VERSION__ = 3
+__PREPROCESS_VERSION__ = 4
 
 
 """
@@ -54,6 +54,7 @@ def preprocess(path='../data/train',
     patch_size = kwargs.get('patch_size', 6)
     image_size = kwargs.get('image_size', 32)
     square_method = kwargs.get('square_method', 'pad')
+    train_data_file = kwargs.get('train_data_file', '../data/preprocessed.h5')
         
     square_function = imsquare.get_square_function_by_name(square_method)
     
@@ -67,6 +68,7 @@ def preprocess(path='../data/train',
         labels = [label_dict[c] for c in classnames]
         class_count = len(label_dict)
     else:
+        label_dict = {'UNLABELED':-1}
         labels = [-1 for _ in range(len(classnames))]
         class_count = 0
    
@@ -114,16 +116,20 @@ def preprocess(path='../data/train',
     
     # Extract statistics such as the mean/std of image
     # Necessary for normalization of images
-    mean_image, variance_image, std_image = extract_stats(filepaths, image_size, square_function)
-    
+
     if is_train:
-        metadata['mean_image'] = mean_image 
-        metadata['std_image' ] = std_image
-        metadata['var_image' ] = variance_image
-    else: #Prevent wrong usage of Mean/std/var of test images
-        metadata['mean_image'] = None 
-        metadata['std_image' ] = None
-        metadata['var_image' ] = None
+        mean_image, variance_image, std_image = extract_stats(filepaths, image_size, square_function)
+
+    else:
+        meta = util.load_metadata(train_data_file)
+        mean_image = meta['mean_image']
+        std_image = meta['std_image']
+        variance_image = meta['var_image']
+    
+    
+    metadata['mean_image'] = mean_image 
+    metadata['std_image' ] = std_image
+    metadata['var_image' ] = variance_image
     
     print "---"
     #Dimension of what will be written to file
@@ -209,7 +215,7 @@ def extract_stats(filepaths, image_size, square_function):
     std_image = np.sqrt(variance_image)
     
     print "Plotting mean image (only shows afterwards)"
-   # util.plot(mean_image, invert=True)
+    util.plot(mean_image, invert=True)
     
     return mean_image, variance_image, std_image
     
@@ -234,6 +240,7 @@ def write_label_names(label_names, h5py_file):
     
 
 def write_metadata(dataset, metadata):
+
     for attr in metadata:
         dataset.attrs[attr] = metadata[attr]
 
@@ -347,4 +354,4 @@ def get_image_paths_train(path):
 
 
 if __name__ == '__main__':
-    preprocess(patch_size = 4, image_size = 16)
+    preprocess(patch_size = 4, image_size = 16, path='../data/test', outpath='../data/preprocessed_test.h5')
