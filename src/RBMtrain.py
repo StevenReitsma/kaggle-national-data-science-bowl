@@ -12,11 +12,21 @@ import pooling
 import os
 import util
 
+
 #from preprocess import preprocess #For using code from different branch
 
 _hidden_units = 100
 
 #
+def maxImage():
+    meta_data = util.load_metadata()
+    print (meta_data)
+    mean = meta_data["mean_image"]
+    std = meta_data["std_image"]
+    max = (255-np.max(mean))/np.max(std)
+    min = (0-np.max(mean))/np.max(std)
+    print (max)
+    print(min)
 
 def RBMtraining():
     counter = 1
@@ -89,4 +99,5 @@ def train():
 
 
 
-
+if __name__ == '__main__':
+    maxImage()
