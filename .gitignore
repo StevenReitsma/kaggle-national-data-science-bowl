@@ -1,15 +1,22 @@
 # Ignore data files
 data/
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Ignore learned models
 models/
 =======
+=======
+
+>>>>>>> master
 models/
 *.pkl*
 .idea/
 
 *.sublime-project
 *.sublime-workspace
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 
 # Ignore Spyder workspace definitions
