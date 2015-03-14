@@ -93,13 +93,11 @@ class ActivationCalculation():
             
             #self.visualize_activation(activation.T)            
             
-            
             activations[i] = pool(activation, n_pool_regions = n_pool_regions) # Returns a vector with length 4x#centroids
             util.update_progress(i/batches.nbatches)
             
         util.update_progress(1)
-        
-        
+       
         print "Normalizing activations..."
         activations = self.normalize(activations)
         print "Normalizing done"
@@ -139,7 +137,6 @@ class ActivationCalculation():
     def visualize_activation_alt(self, activations):
         patch_size = np.sqrt(activations.shape[0])
         n_features = activations.shape[1]
-        print activations.shape
         
         one = activations[:,0]
         
