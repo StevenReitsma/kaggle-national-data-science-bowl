@@ -17,40 +17,65 @@ import time
 import sys
 
 
-def singlePipeline(nr_centroids, label_path = "../data/preprocessed.h5"):
+def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", clsfr = "SGD", calc_centroids = True):
     
     
-    #Finds the features using kmeans
-    kmTrainer = kmeans.kMeansTrainer(nr_centroids = nr_centroids, nr_it = 1)    
-    centroids = kmTrainer.fit()
-    kmTrainer.save_centroids(centroids)
     
-    #Calculates the activaiton of the test set
-    act_calc = act.ActivationCalculation()
-    features = act_calc.pipeline(centroids)  
+    if calc_centroids == True:
+        print "calculating centroids..."
+        #Finds the features using kmeans
+        kmTrainer = kmeans.kMeansTrainer(nr_centroids = nr_centroids, nr_it = nr_it)    
+        centroids = kmTrainer.fit()
+        kmTrainer.save_centroids(centroids)
+        
+        print "calculating activations..."
+        #Calculates the activaiton of the test set
+        act_calc = act.ActivationCalculation()
+        features = act_calc.pipeline(centroids)  
+    else:
+        print "loading centroids from file..."
+        #loads feature data
+        feature_data = h5py.File("../data/activations/"+nr_centroids+"activationkmeans.h5")
+        features = feature_data["activations"]
+    
+    print "Getting labels..."
     #get the labels
     f = h5py.File(label_path)
     labels = f["labels"]
+    print "Got labels"
 
-    #loads feature data
-#    feature_data = h5py.File("../data/activations/200activationkmeans.h5")
-#    features = feature_data["activations"]
     
-    
-    #Train the SGD classifier
-#    train.trainSGD(features, labels, nr_centroids)
-    
-    #Train SVC classifier
-    print "Begin training"
-    model = svc.train_svc(features,labels, nr_centroids)
 
-#    Classify the testset (the same as the training set in this case)
-    classified = classifier.predict(features, nr_centroids)
-    print "begin classification"
-    classified = model.predict_proba(features)
-    print "done"
     
-   
+    
+    
+    if clsfr == "SGD": 
+        #Train the SGD classifier
+        print "Begin training of SGD..."
+        train.trainSGD(features, labels, nr_centroids)
+        print "Training done"
+        
+        #Predict based on SGD training
+        print "Begin SGD predictions..."
+        classified = classifier.predict(features, nr_centroids)
+        print "Predicting done"        
+        
+    elif clsfr == "SVC": 
+        #Train SVC classifier
+        print "Begin training of SVC..."
+        model = svc.train_svc(features, labels, nr_centroids)
+        print "Training done"
+        
+        #Predict based on SVC training
+        print "Begin SVC predictions..."
+        classified = model.predict_proba(features)
+        print "Predicting done"
+        
+    else:
+        print "Selected classifier not available, please use an available classifier"
+        return
+       
+    print "Calculating log loss..."
     summing = 0
     correct = 0
     
@@ -63,13 +88,13 @@ def singlePipeline(nr_centroids, label_path = "../data/preprocessed.h5"):
         if labels[i] == np.argmax(classified[i]):
 #            print classified[i][np.argmax(classified[i])]
             correct += 1
-      
+    print "Calculation finished"  
 
        
     summing = -summing/len(labels)
-    print summing 
-    print correct/len(labels)
-    print np.min(classified)
+    print "log loss: " + summing 
+    print "correct/amount_of_labels: " + correct/len(labels)
+    print "lowesr classification score: " + np.min(classified)
    
 #    print summing
 #    np.savetxt( "realLabel.csv", labels, delimiter=";")
@@ -84,5 +109,9 @@ def singlePipeline(nr_centroids, label_path = "../data/preprocessed.h5"):
 
 
 if __name__ == '__main__':
-    nr_centroids = 100
-    singlePipeline(nr_centroids)
+    nr_centroids = 100  
+    nr_it = 2           # Only used when calc_centroids is True
+    clsfr = "SVC"       # Choice between SVC and SGD
+    calc_centroids = True # Whether to calculate the centroids, 
+                          # do NOT forget to set the nr_centroids to the desired centroidactivation file if False is selected.
+    singlePipeline(nr_centroids, nr_it, clsfr, calc_centroids)
