@@ -21,7 +21,7 @@ def singlePipeline(nr_centroids, label_path = "../data/preprocessed.h5"):
     
     
     #Finds the features using kmeans
-    kmTrainer = kmeans.kMeansTrainer(nr_centroids = nr_centroids, nr_it = 1)    
+    kmTrainer = kmeans.kMeansTrainer(nr_centroids = nr_centroids, nr_it = 10)    
     centroids = kmTrainer.fit()
     kmTrainer.save_centroids(centroids)
     
@@ -87,5 +87,5 @@ def singlePipeline(nr_centroids, label_path = "../data/preprocessed.h5"):
 
 
 if __name__ == '__main__':
-    nr_centroids = 100
+    nr_centroids = 500
     singlePipeline(nr_centroids)
