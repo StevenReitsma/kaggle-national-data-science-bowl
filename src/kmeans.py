@@ -10,16 +10,16 @@ import randombatchreader as randbr
 
 class kMeansTrainer():
     
-    def __init__(self, nr_centroids = 100, nr_it = 1):
+    def __init__(self, nr_centroids = 100, nr_it = 10):
         self.nr_centroids = nr_centroids 
         self.nr_it = nr_it
         
         
-    def fit(self, batches):
+    def fit(self):
         kmeans = MiniBatchKMeans(self.nr_centroids, init='k-means++')
         
         for it in range(self.nr_it):
-           # batches = br.BatchReader(batchsize = 50000)
+            batches = randbr.RandomBatchReader()
             maxIterations = batches.nbatches
             for i, batch in enumerate(batches):
                 util.update_progress((i+(it*maxIterations))/(maxIterations*self.nr_it))
@@ -50,7 +50,7 @@ class kMeansTrainer():
 
         
     def pipeline(self):
-        centroids = self.fit(br.BatchReader(batchsize = 50000))
+        centroids = self.fit()
         self.save_centroids(centroids)
         util.plot_centroids(centroids = centroids, file_path = "../data/centroidskmeans/")
         
@@ -58,6 +58,6 @@ class kMeansTrainer():
        
     
     
-if __name__ == '__main__':  
+if __name__ == '__main__':    
     km = kMeansTrainer(100, 10)
     km.pipeline()
