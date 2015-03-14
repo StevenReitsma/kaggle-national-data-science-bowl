@@ -15,6 +15,8 @@ import train_svc as svc
 import h5py
 import util
 import sys
+import scipy
+from sklearn import metrics
 
 
 def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", clsfr = "SGD", calc_centroids = True):
@@ -42,12 +44,8 @@ def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", 
     #get the labels
     labels = util.load_labels(label_path)
     label_names = util.load_label_names(label_path)
-
     print "Got labels"
 
-    
-
-    
     
     
     if clsfr == "SGD": 
@@ -80,34 +78,58 @@ def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", 
     summing = 0
     correct = 0
     
- 
+    np.savetxt("meuk.csv", classified, delimiter=";")
+    
+    loss = metrics.log_loss(labels, classified)
+    print loss
+
+    print -np.mean(np.log(classified)[np.arange(len(labels)), labels])
     
     #calculate the log loss
     for i, label in enumerate(labels):
+        
+        actual = labels[i]   
+        
         
         if(classified[i][label] == 0):
             summing+= np.log(10e-15)
         else:
             summing+= np.log(classified[i][label])
-        if labels[i] == np.argmax(classified[i]):
+        if actual == np.argmax(classified[i]):
 #            print classified[i][np.argmax(classified[i])]
             
             correct += 1
         else:
             classified_as = label_names[np.argmax(classified[i])]
-            but_was_actually = label_names[labels[i]]
-             print "Classified as \"{0}\", but was \"{1}\"".format(classified_as, but_was_actually)
+            but_was_actually = label_names[actual]
+            #print "Classified as \"{0}\", but was \"{1}\"".format(classified_as, but_was_actually)
+    
+    image = np.zeros((len(label_names),len(labels)))  
+    
+    for j, label_index in enumerate(labels):
+        image[label_index,j] = 1
+
+    scipy.misc.imsave('correct.png', image)
+    scipy.misc.imsave('predicted.png', classified.T)
+    
+    error = image - classified.T
+    
+    scipy.misc.imsave('error.png', error)
+    
+    
+        
+    
+    
     print "Calculation finished"  
 
-       
     summing = -summing/len(labels)
     print "log loss: ", summing 
     print "correct/amount_of_labels: ", correct/len(labels)
     print "lowesr classification score: ", np.min(classified)
    
 #    print summing
-#    np.savetxt( "realLabel.csv", labels, delimiter=";")
-#    np.savetxt( "SGD_label.csv", max_SGD, delimiter=";")  
+    np.savetxt( "realLabel.csv", labels, delimiter=";")
+   # np.savetxt( "SGD_label.csv", max_SGD, delimiter=";")  
     
 
     feature_data.close()       
@@ -118,7 +140,7 @@ def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", 
 
 if __name__ == '__main__':
     nr_centroids = 100  
-    nr_it = 2           # Only used when calc_centroids is True
+    nr_it = 1           # Only used when calc_centroids is True
     clsfr = "SGD"       # Choice between SVC and SGD
     calc_centroids = False # Whether to calculate the centroids, 
                           # do NOT forget to set the nr_centroids to the desired centroidactivation file if False is selected.
