@@ -28,6 +28,9 @@ def singlePipeline(nr_centroids, label_path = "../data/preprocessed.h5"):
     #Calculates the activaiton of the test set
     act_calc = act.ActivationCalculation()
     features = act_calc.pipeline(centroids)  
+    
+    
+    print "Getting labels..."
     #get the labels
     f = h5py.File(label_path)
     labels = f["labels"]
@@ -36,18 +39,18 @@ def singlePipeline(nr_centroids, label_path = "../data/preprocessed.h5"):
 #    feature_data = h5py.File("../data/activations/200activationkmeans.h5")
 #    features = feature_data["activations"]
     
-    
+    print "Begin training"
     #Train the SGD classifier
-#    train.trainSGD(features, labels, nr_centroids)
+    train.trainSGD(features, labels, nr_centroids)
     
     #Train SVC classifier
-    print "Begin training"
-    model = svc.train_svc(features,labels, nr_centroids)
+    #model = svc.train_svc(features,labels, nr_centroids)
 
-#    Classify the testset (the same as the training set in this case)
+    print "begin prediction"
+    #    Classify the testset (the same as the training set in this case)
     classified = classifier.predict(features, nr_centroids)
-    print "begin classification"
-    classified = model.predict_proba(features)
+    
+    #classified = model.predict_proba(features)
     print "done"
     
    

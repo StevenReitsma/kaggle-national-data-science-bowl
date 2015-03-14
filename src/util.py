@@ -52,13 +52,14 @@ def plot_meta_image(attr_name, invert = False, cmap=None):
     
     
 
-def plot_centroids(centroids, file_path, im_size = (6,6)): 
+def plot_centroids(centroids, file_path): 
     if not os.path.exists(file_path):
         os.makedirs(file_path)
     print "start plotting"        
     for i, centroid in enumerate(centroids):
         update_progress(i/len(centroids))
-        centroid_matrix = np.reshape(centroid, im_size)
+        im_size = np.sqrt(len(centroids[0]))
+        centroid_matrix = np.reshape(centroid, (im_size,im_size))
         plt.gray()
         plt.imsave(file_path + "centroid" + str(i) + ".png", centroid_matrix)
          
