@@ -13,7 +13,7 @@ import train_classifier as train
 import predict_classifier as classifier
 import train_svc as svc
 import h5py
-import time
+import util
 import sys
 
 
@@ -21,7 +21,7 @@ def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", 
     
     
     
-    if calc_centroids == True:
+    if calc_centroids:
         print "calculating centroids..."
         #Finds the features using kmeans
         kmTrainer = kmeans.kMeansTrainer(nr_centroids = nr_centroids, nr_it = nr_it)    
@@ -35,13 +35,13 @@ def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", 
     else:
         print "loading centroids from file..."
         #loads feature data
-        feature_data = h5py.File("../data/activations/"+nr_centroids+"activationkmeans.h5")
+        feature_data = h5py.File("../data/activations/"+str(nr_centroids)+"activationkmeans.h5")
         features = feature_data["activations"]
     
     print "Getting labels..."
     #get the labels
-    f = h5py.File(label_path)
-    labels = f["labels"]
+    labels = util.load_labels(label_path)
+
     print "Got labels"
 
     
@@ -82,7 +82,7 @@ def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", 
     #calculate the log loss
     for i, label in enumerate(labels):
         if(classified[i][label] == 0):
-            summing+= np.log(sys.float_info.min)
+            summing+= np.log(10e-15)
         else:
             summing+= np.log(classified[i][label])
         if labels[i] == np.argmax(classified[i]):
@@ -92,17 +92,16 @@ def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", 
 
        
     summing = -summing/len(labels)
-    print "log loss: " + summing 
-    print "correct/amount_of_labels: " + correct/len(labels)
-    print "lowesr classification score: " + np.min(classified)
+    print "log loss: ", summing 
+    print "correct/amount_of_labels: ", correct/len(labels)
+    print "lowesr classification score: ", np.min(classified)
    
 #    print summing
 #    np.savetxt( "realLabel.csv", labels, delimiter=";")
 #    np.savetxt( "SGD_label.csv", max_SGD, delimiter=";")  
     
-    f.close()
 
-#    feature_data.close()       
+    feature_data.close()       
 
     
 
@@ -111,7 +110,7 @@ def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", 
 if __name__ == '__main__':
     nr_centroids = 100  
     nr_it = 2           # Only used when calc_centroids is True
-    clsfr = "SVC"       # Choice between SVC and SGD
-    calc_centroids = True # Whether to calculate the centroids, 
+    clsfr = "SGD"       # Choice between SVC and SGD
+    calc_centroids = False # Whether to calculate the centroids, 
                           # do NOT forget to set the nr_centroids to the desired centroidactivation file if False is selected.
-    singlePipeline(nr_centroids, nr_it, clsfr, calc_centroids)
+    singlePipeline(nr_centroids, nr_it, clsfr=clsfr, calc_centroids = calc_centroids)
