@@ -12,3 +12,12 @@ def resize_image(image, size=32, interp='bilinear'):
 
 def sum_images(sequence_of_images):
     return sum(sequence_of_images)
+    
+def normalize(image, mean_image, std_image):
+    return (image - mean_image) / std_image
+    
+def image_horizontal(image):
+    if len(image) > len(image[0]):
+        image = np.rot90(image)
+        
+    return image
