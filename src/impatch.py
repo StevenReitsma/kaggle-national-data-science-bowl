@@ -32,7 +32,7 @@ def patch(image, n=0, patch_size=6):
     coords = [(x,y) for x in range(xindexmax+1) for y in range(yindexmax+1)]
     
     # Shuffle list of coords
-    random.shuffle(coords)
+    #random.shuffle(coords)
     
     
     for i, coord in enumerate(coords):

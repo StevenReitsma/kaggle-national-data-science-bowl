@@ -29,6 +29,36 @@ class ActivationCalculation():
         activation = np.maximum(0, mu-z) # Similarity measure
 
         return activation
+ 
+    def _distance_to_centroids(self, patches, centroids):
+        #self.visualize_activation(centroids)
+        
+        activations = np.zeros((patches.shape[0],centroids.shape[0]) )
+        
+        for i, patch in enumerate(patches):
+            for j, centroid in enumerate(centroids):
+
+                #print "Centroid/patch"
+                #plt.imshow(centroid.reshape(6, 6), interpolation='nearest')
+                #plt.show()
+                #plt.imshow(patch.reshape(6,6), interpolation='nearest')
+                #plt.show()
+                
+                act = np.square(centroid - patch)
+                
+                #print "Activation"
+                #plt.imshow(act.reshape(6,6), interpolation='nearest')
+                #plt.show()
+                
+                #print i, j
+                #print np.max(centroid), np.max(patch)
+               # print np.mean(centroid), np.mean(patch)
+
+                
+                activations[i, j] = np.sum(act)
+            
+        return activations
+        
         
     
     def normalize(self, activations):
@@ -61,7 +91,7 @@ class ActivationCalculation():
         for i, batch in enumerate(batches):
             activation = self.distance_to_centroids(batch, centroids) # Calculate activations for each patch to each centroid
             
-            self.visualize_activation(activation)            
+            #self.visualize_activation(activation.T)            
             
             
             activations[i] = pool(activation, n_pool_regions = n_pool_regions) # Returns a vector with length 4x#centroids
@@ -86,11 +116,12 @@ class ActivationCalculation():
         
         
     def visualize_activation(self, activations):
-        patch_size = np.sqrt(activations.shape[0])
-        n_features = activations.shape[1]
+        print activations.shape
+        patch_size = np.sqrt(activations.shape[1])
+        n_features = activations.shape[0]
     
         # Reshape to 2D slabs
-        reshaped = np.reshape(activations.T, (n_features, patch_size, patch_size))
+        reshaped = np.reshape(activations, (n_features, patch_size, patch_size))
         
 
         length = int(np.sqrt(reshaped.shape[0]))
@@ -103,12 +134,25 @@ class ActivationCalculation():
              ax[i, j].axis('off')
         
         plt.show()
+        
+        
+    def visualize_activation_alt(self, activations):
+        patch_size = np.sqrt(activations.shape[0])
+        n_features = activations.shape[1]
+        print activations.shape
+        
+        one = activations[:,0]
+        
+        im = np.reshape(one, (patch_size,patch_size))
 
+        plt.imshow(im, cmap='Greys', interpolation= 'nearest')        
+        
+        plt.show()
     
 if __name__ == '__main__':
     km = kmeans.kMeansTrainer()
     centroids = km.get_saved_centroids(100)
-    util.plot_centroids(centroids, "../data/centroidskmeans")
+    #util.plot_centroids(centroids, "../data/centroidskmeans")
     sup_km = ActivationCalculation()
     sup_km.pipeline(centroids = centroids)
 
