@@ -41,6 +41,7 @@ def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", 
     print "Getting labels..."
     #get the labels
     labels = util.load_labels(label_path)
+    label_names = util.load_label_names(label_path)
 
     print "Got labels"
 
@@ -79,15 +80,23 @@ def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", 
     summing = 0
     correct = 0
     
+ 
+    
     #calculate the log loss
     for i, label in enumerate(labels):
+        
         if(classified[i][label] == 0):
             summing+= np.log(10e-15)
         else:
             summing+= np.log(classified[i][label])
         if labels[i] == np.argmax(classified[i]):
 #            print classified[i][np.argmax(classified[i])]
+            
             correct += 1
+        else:
+            classified_as = label_names[np.argmax(classified[i])]
+            but_was_actually = label_names[labels[i]]
+             print "Classified as \"{0}\", but was \"{1}\"".format(classified_as, but_was_actually)
     print "Calculation finished"  
 
        

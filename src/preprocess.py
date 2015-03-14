@@ -69,7 +69,9 @@ def preprocess(path='../data/train',
     else:
         labels = [-1 for _ in range(len(classnames))]
         class_count = 0
-        
+   
+    
+    label_names = [key for key in labels]
     
     
     # Amount of images
@@ -105,6 +107,7 @@ def preprocess(path='../data/train',
     metadata['version'] = __PREPROCESS_VERSION__
     
     
+    
     if preprocessing_is_already_done(outpath, metadata):
         print "----------------------------------------"
         return
@@ -134,6 +137,9 @@ def preprocess(path='../data/train',
     print "-----------------------------------------"
     print "Writing labels"
     write_labels(labels, f)
+    
+    print "Writing label names"
+    write_label_names(label_names, f)
     
     print "Processing and writing..."
     
@@ -222,6 +228,9 @@ def gen_label_dict(classnames):
     
 def write_labels(labels, h5py_file):
     h5py_file.create_dataset('labels', data=labels)
+    
+def write_label_names(label_names, h5py_file):
+    h5py_file.create_dataset('label_names', data=label_names)
     
     
 
