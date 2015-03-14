@@ -28,28 +28,49 @@ class ActivationCalculation():
         activation = np.maximum(0, mu-z) # Similarity measure
 
         return activation
+        
+    
+    def normalize(self, activations):
+        std = np.std(activations, axis = 0)
+        activations = activations - np.mean(activations, axis = 0)
+        activations = activations/std
+        
+        
+        return activations
   
     
     
-    def pipeline(self, centroids, file_path = "../data/", batch_size = 729, n_pool_regions = 4):
+    def pipeline(self, centroids, file_path = "../data/activations/", batch_size = 729, n_pool_regions = 4):
         if not os.path.exists(file_path):
             os.makedirs(file_path)
         
 
         batches = batchreader.BatchReader(batchsize = batch_size)#   
-        f = h5py.File(file_path + "activationkmeans.h5", "w")
+        
 
         dimensions = (batches.nbatches , len(centroids)*n_pool_regions) # Set dimensions to #imagesx4*#centroids
-        dataSet = f.create_dataset("activations", dimensions, dtype = np.uint8)
+        activations = np.zeros(dimensions)
+        
         
         
         for i, batch in enumerate(batches):
             activation = self.distance_to_centroids(batch, centroids) # Calculate activations for each patch to each centroid
-            dataSet[i] = pool(activation, n_pool_regions = n_pool_regions) # Returns a vector with length 4x#centroids
+            activations[i] = pool(activation, n_pool_regions = n_pool_regions) # Returns a vector with length 4x#centroids
             util.update_progress(i/batches.nbatches)
-        
+            
         util.update_progress(1)
+        print "Normalizing activations..."
+        activations = self.normalize(activations)
+        print "Normalizing done"
+        print "Writing activations to file:"
+        f = h5py.File(file_path + str(len(centroids)) + "activationkmeans.h5", "w")
+        dataSet = f.create_dataset("activations", dimensions, dtype = np.float64)
+        dataSet[...] = activations
         f.close()
+        print "Writing done"
+        
+        return activations
+
         
     
 if __name__ == '__main__':

@@ -160,7 +160,7 @@ def preprocess(path='../data/train',
     write_metadata(dset, metadata)
     
     f.close()
-    
+  
 
 
 def extract_stats(filepaths, image_size, square_function):
@@ -197,7 +197,6 @@ def extract_stats(filepaths, image_size, square_function):
     util.plot(mean_image, invert=True)
     
     return mean_image, variance_image, std_image
-    
     
     
 # Returns a dictionary from plankton name to index in ordered, unique set

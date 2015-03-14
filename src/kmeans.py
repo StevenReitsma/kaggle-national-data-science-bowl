@@ -5,12 +5,12 @@ from sklearn.cluster import MiniBatchKMeans
 import util
 import batchreader as br
 from numpy import array
-
+import randombatchreader as randbr
 
 
 class kMeansTrainer():
     
-    def __init__(self, nr_centroids = 100, nr_it = 1):
+    def __init__(self, nr_centroids = 100, nr_it = 10):
         self.nr_centroids = nr_centroids 
         self.nr_it = nr_it
         
@@ -19,7 +19,7 @@ class kMeansTrainer():
         kmeans = MiniBatchKMeans(self.nr_centroids, init='k-means++')
         
         for it in range(self.nr_it):
-            batches = br.BatchReader(batchsize = 50000)
+            batches = randbr.RandomBatchReader()
             maxIterations = batches.nbatches
             for i, batch in enumerate(batches):
                 util.update_progress((i+(it*maxIterations))/(maxIterations*self.nr_it))
@@ -33,13 +33,12 @@ class kMeansTrainer():
     def save_centroids(self, centroids, file_path = "../data/centroidskmeans/"):
         if not os.path.exists(file_path):
             os.makedirs(file_path)       
-        print "centroids before saving: "+ str(len(centroids))
-        np.savetxt(file_path + "centroids.csv", centroids, delimiter=",")
+        np.savetxt(file_path + str(len(centroids)) +  "centroids.csv", centroids, delimiter=",")
         
 
     
-    def get_saved_centroids(self, file_path = "../data/centroidskmeans/centroids.csv"):
-        f = open(file_path)
+    def get_saved_centroids(self, nr_centroids, file_path = "../data/centroidskmeans/"):
+        f = open(file_path + str(nr_centroids) + "centroids.csv")
         samples = []
         
         for line in f:
@@ -59,6 +58,6 @@ class kMeansTrainer():
        
     
     
-if __name__ == '__main__':  
+if __name__ == '__main__':    
     km = kMeansTrainer(100, 10)
     km.pipeline()
