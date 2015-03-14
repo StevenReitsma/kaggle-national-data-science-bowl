@@ -82,8 +82,11 @@ def load_metadata(filepath="../data/preprocessed.h5"):
 def load_labels(filepath="../data/preprocessed.h5"):
     f = h5py.File(filepath)
     dset = f["labels"]
+    labels = [label for label in dset]
+    f.close()
+    return labels
     
-    return [label for label in dset]
+
 
 
 # update_progress() : Displays or updates a console progress bar

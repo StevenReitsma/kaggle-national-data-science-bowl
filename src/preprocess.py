@@ -69,7 +69,9 @@ def preprocess(path='../data/train',
     else:
         labels = [-1 for _ in range(len(classnames))]
         class_count = 0
-        
+   
+    
+    label_names = [key for key in labels]
     
     
     # Amount of images
@@ -103,6 +105,7 @@ def preprocess(path='../data/train',
     
     metadata['train_data'] = is_train
     metadata['version'] = __PREPROCESS_VERSION__
+    metadata['label_names'] = label_names
     
     
     if preprocessing_is_already_done(outpath, metadata):
