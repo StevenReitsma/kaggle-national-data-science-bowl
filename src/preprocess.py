@@ -105,7 +105,7 @@ def preprocess(path='../data/train',
     
     metadata['train_data'] = is_train
     metadata['version'] = __PREPROCESS_VERSION__
-    metadata['label_names'] = label_names
+    
     
     
     if preprocessing_is_already_done(outpath, metadata):
@@ -137,6 +137,9 @@ def preprocess(path='../data/train',
     print "-----------------------------------------"
     print "Writing labels"
     write_labels(labels, f)
+    
+    print "Writing label names"
+    write_label_names(label_names, f)
     
     print "Processing and writing..."
     
@@ -225,6 +228,9 @@ def gen_label_dict(classnames):
     
 def write_labels(labels, h5py_file):
     h5py_file.create_dataset('labels', data=labels)
+    
+def write_label_names(label_names, h5py_file):
+    h5py_file.create_dataset('label_names', data=label_names)
     
     
 
