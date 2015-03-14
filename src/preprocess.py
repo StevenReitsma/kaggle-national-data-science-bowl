@@ -12,7 +12,7 @@ from scipy import misc
 import numpy as np
 import h5py
 
-__PREPROCESS_VERSION__ = 2
+__PREPROCESS_VERSION__ = 3
 
 
 """
@@ -71,9 +71,8 @@ def preprocess(path='../data/train',
         class_count = 0
    
     
-    label_names = [key for key in labels]
-    
-    
+    label_names = [key for key in label_dict]
+    label_names = np.sort(label_names)
     # Amount of images
     n = len(file_metadata)
     
@@ -348,4 +347,4 @@ def get_image_paths_train(path):
 
 
 if __name__ == '__main__':
-    preprocess()
+    preprocess(patch_size = 4, image_size = 16)
