@@ -84,5 +84,5 @@ def singlePipeline(nr_centroids, label_path = "../data/preprocessed.h5"):
 
 
 if __name__ == '__main__':
-    nr_centroids = 200
+    nr_centroids = 100
     singlePipeline(nr_centroids)

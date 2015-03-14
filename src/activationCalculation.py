@@ -40,11 +40,15 @@ class ActivationCalculation():
   
     
     
-    def pipeline(self, centroids, file_path = "../data/activations/", batch_size = 729, n_pool_regions = 4):
+    def pipeline(self, centroids, file_path = "../data/activations/", batch_size = -1, n_pool_regions = 4):
         if not os.path.exists(file_path):
             os.makedirs(file_path)
         
 
+        if batch_size == -1:
+            meta = util.load_metadata()
+            batch_size = meta['patches_per_image']
+        
         batches = batchreader.BatchReader(batchsize = batch_size)#   
         
 
