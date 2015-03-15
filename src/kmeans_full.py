@@ -52,7 +52,7 @@ kernel = 'rbf'
 
 #----------------------------------------------------
 # PREPROCESS
-# Filesize with default settings above 2.96GB and 
+# Filesize with default settings above 2.96GB and 12.7GB
 
 def one():
     #Train images, takes 5 min
@@ -124,6 +124,8 @@ def five():
 #!!!
 
 def six():
+    
+    model_filename = '../models/'+classifier.lower()+str(nr_centroids)+'/classifier.pkl'
     #Also creates nice visualizations of predictions as png files
     #in src folder
     kmeans_runner.singlePipeline(nr_centroids, 
@@ -132,7 +134,8 @@ def six():
                                  clsfr = classifier,
                                  calc_centroids = False,
                                  dogfeed = True,
-                                 train_model = False)
+                                 train_model = False,
+                                 model_file = model_filename)
     
     
 #----------------------------------------------------

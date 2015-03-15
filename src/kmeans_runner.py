@@ -10,6 +10,7 @@ import numpy as np
 import activationCalculation as act
 import train_classifier as train
 import predict_classifier as classifier
+from sklearn.externals import joblib
 import train_svc as svc
 import h5py
 import util
@@ -27,7 +28,8 @@ def singlePipeline(nr_centroids, nr_it,
                    degree=3,
                    tol=1e-3,
                    max_iter=-1,
-                   kernel='rbf'):
+                   kernel='rbf',
+                   model_file='UNSPECIFIED'):
     
     
     
@@ -98,8 +100,12 @@ def singlePipeline(nr_centroids, nr_it,
                                       tol=tol,
                                       max_iter=max_iter,
                                       kernel=kernel)    
-                
             print "Training done"
+        else:
+            print "Loading model"
+            model = joblib.load(model_file)
+            
+        
         if not dogfeed:
             return   
         
