@@ -26,7 +26,8 @@ def singlePipeline(nr_centroids, nr_it,
                    cache_size=4000,
                    degree=3,
                    tol=1e-3,
-                   max_iter=-1):
+                   max_iter=-1,
+                   kernel='rbf'):
     
     
     
@@ -85,7 +86,8 @@ def singlePipeline(nr_centroids, nr_it,
                                       degree=degree,
                                       cache_size=cache_size,
                                       tol=tol,
-                                      max_iter=max_iter)
+                                      max_iter=max_iter,
+                                      kernel = kernel)
             else :
                 #Train SVC classifier
                 model = svc.train_svc(features, 
@@ -94,7 +96,8 @@ def singlePipeline(nr_centroids, nr_it,
                                       degree=degree,
                                       cache_size=cache_size,
                                       tol=tol,
-                                      max_iter=max_iter)    
+                                      max_iter=max_iter,
+                                      kernel=kernel)    
                 
             print "Training done"
         if not dogfeed:
