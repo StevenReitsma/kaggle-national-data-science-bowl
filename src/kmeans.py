@@ -9,10 +9,11 @@ import randombatchreader as randbr
 
 class kMeansTrainer():
     
-    def __init__(self, nr_centroids = 100, nr_it = 10, rotational_invariant_training = False):
+    def __init__(self, nr_centroids = 100, nr_it = 10, rotational_invariant_training = False, mirror_invariant_training = False):
         self.nr_centroids = nr_centroids 
         self.nr_it = nr_it
         self.rotational_invariant_training = rotational_invariant_training
+        self.mirror_invariant_training = mirror_invariant_training
         
         meta = util.load_metadata()
         self.patch_width = meta['patch_size']
@@ -22,10 +23,24 @@ class kMeansTrainer():
         dup = np.copy(batch)
         
         for i, patch in enumerate(dup):
-			temp = np.rot90(patch.reshape((self.patch_width, self.patch_width)), times)
-			dup[i,:] = np.reshape(temp, self.patch_width**2)
+		temp = np.rot90(patch.reshape(self.patch_width, self.patch_width), times)
+		dup[i,:] = np.reshape(temp, self.patch_width**2)
 
-	return dup
+        return dup
+ 
+    def mirror_patches(self, batch, direction):
+        
+        dup = np.copy(batch)
+        
+        for i, patch in enumerate(dup):
+            if direction == "lr":
+                temp = np.fliplr(patch.reshape(self.patch_width, self.patch_width))
+                dup[i,:] = np.reshape(temp, self.patch_width**2)
+            else:
+                temp = np.flipud(patch.reshape(self.patch_width, self.patch_width))
+                dup[i,:] = np.reshape(temp, self.patch_width**2)
+            
+        return dup
         
     
     def fit(self):
@@ -46,6 +61,14 @@ class kMeansTrainer():
                     
                     util.update_progress((i+(it*maxIterations))/(maxIterations*self.nr_it))
                     kmeans.partial_fit(batch, batch90, batch180, batch270)
+                    
+                elif self.mirror_invariant_training:
+                    # mirror the batch left-right, and up-down
+                    batchlr = self.mirror_patches(batch, "lr")
+                    batchud = self.mirror_patches(batch, "ud")
+                    
+                    util.update_progress((i+(it*maxIterations))/(maxIterations*self.nr_it))
+                    kmeans.partial_fit(batch, batchlr, batchud)
                     
                 else:
                  # Normal training   
