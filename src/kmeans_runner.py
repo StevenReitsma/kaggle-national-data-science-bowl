@@ -125,14 +125,14 @@ def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", 
     summing = -summing/len(labels)
     print "log loss: ", summing 
     print "correct/amount_of_labels: ", correct/len(labels)
-    print "lowesr classification score: ", np.min(classified)
+    print "lowest classification score: ", np.min(classified)
    
 #    print summing
     np.savetxt( "realLabel.csv", labels, delimiter=";")
    # np.savetxt( "SGD_label.csv", max_SGD, delimiter=";")  
     
-
-    feature_data.close()       
+    if calc_centroids is False:
+        feature_data.close()       
 
     
 
@@ -142,6 +142,6 @@ if __name__ == '__main__':
     nr_centroids = 100  
     nr_it = 1           # Only used when calc_centroids is True
     clsfr = "SGD"       # Choice between SVC and SGD
-    calc_centroids = False # Whether to calculate the centroids, 
+    calc_centroids = True # Whether to calculate the centroids, 
                           # do NOT forget to set the nr_centroids to the desired centroidactivation file if False is selected.
-    singlePipeline(nr_centroids, nr_it, clsfr=clsfr, calc_centroids = calc_centroids)
+    singlePipeline(nr_centroids=nr_centroids, nr_it=nr_it, clsfr=clsfr, calc_centroids = calc_centroids)
