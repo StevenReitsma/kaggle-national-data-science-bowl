@@ -105,5 +105,4 @@ class kMeansTrainer():
     
 if __name__ == '__main__':    
     km = kMeansTrainer(100, 1)
-    #km.pipeline()
-    km.test_rotation() # Test for patch rotation
+    km.pipeline()
