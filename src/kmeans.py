@@ -22,8 +22,8 @@ class kMeansTrainer():
         dup = np.copy(batch)
         
         for i, patch in enumerate(dup):
-			temp = np.rot90(patch.reshape((self.patch_width, self.patch_width), order="F"), times)
-			dup[i,:] = np.reshape(temp, self.patch_width**2, order="F")
+			temp = np.rot90(patch.reshape((self.patch_width, self.patch_width)), times)
+			dup[i,:] = np.reshape(temp, self.patch_width**2)
 
 	return dup
         
