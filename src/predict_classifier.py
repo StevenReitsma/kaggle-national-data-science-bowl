@@ -78,7 +78,7 @@ def predict_classifier(model='../models/svc100/classifier.pkl',
                        nr_centroids=100):
           
     print "Loading model ", model                 
-    clf = joblib.load('../models/svc100/classifier.pkl')
+    clf = joblib.load(model)
 
     print "Loading activations"
     feature_file = h5py.File(activations_folder+str(nr_centroids)+"activationkmeans.h5")

@@ -4,8 +4,8 @@ from sklearn import svm
 from sklearn.externals import joblib
 import os
 
-def train_svc(samples, labels, nr_centroids, degree=3, cache_size=4000, max_iter = -1, tol = 1e-3):
-    clf = svm.SVC(degree=degree, 
+def train_nusvr(samples, labels, nr_centroids, degree=3, cache_size=4000, max_iter = -1, tol = 1e-3):
+    clf = svm.NuSVR(degree=degree, 
                   cache_size = cache_size, 
                   probability = True, 
                   verbose = 1,
@@ -13,7 +13,7 @@ def train_svc(samples, labels, nr_centroids, degree=3, cache_size=4000, max_iter
                   max_iter = max_iter)
     clf.fit(samples, labels)
     
-    file_path = '../models/svc' + str(nr_centroids) + '/'
+    file_path = '../models/nusvr' + str(nr_centroids) + '/'
     if not os.path.exists(file_path):
               os.makedirs(file_path)
           

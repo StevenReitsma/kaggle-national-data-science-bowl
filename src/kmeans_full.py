@@ -14,7 +14,7 @@ import predict_classifier as pc
 #OPTIONS
 
 #Classifier
-classifier="SVC" #'SGD' or 'SVC', only tested for SVC
+classifier="SVC" #'SGD', 'SVC', 'NUSVR', only tested for SVC
 
 #Preprocessing options
 square_method = 'pad' #Either 'pad' or 'stretch'
@@ -41,7 +41,9 @@ nr_pool_regions = 4
 
 #Classifier options
 degree = 3
-cache_size = 40000 #In Kilobytes
+cache_size = 4000 #In Kilobytes
+max_iter = -1
+tol = 1e-3
 
 
 #----------------------------------------------------
@@ -81,6 +83,7 @@ def three():
     
     
 # ACTIVATIONS OF TRAIN SET
+# 5 min
 def four():
     calculator = ac.ActivationCalculation()
     
@@ -107,7 +110,9 @@ def five():
                                  dogfeed = False,
                                  train_model = True,
                                  cache_size = cache_size,
-                                 degree = degree)
+                                 degree = degree,
+                                 tol = tol,
+                                 max_iter = max_iter)
 
 #!!!
 # OPTIONAL, Predict train data to see some performance measure

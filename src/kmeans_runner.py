@@ -8,13 +8,11 @@ from __future__ import division
 import kmeans
 import numpy as np
 import activationCalculation as act
-import randombatchreader as randbr
 import train_classifier as train
 import predict_classifier as classifier
 import train_svc as svc
 import h5py
 import util
-import sys
 import scipy
 from sklearn import metrics
 
@@ -26,7 +24,9 @@ def singlePipeline(nr_centroids, nr_it,
                    dogfeed=True, 
                    train_model=True,
                    cache_size=4000,
-                   degree=3):
+                   degree=3,
+                   tol=1e-3,
+                   max_iter=-1):
     
     
     
@@ -73,14 +73,30 @@ def singlePipeline(nr_centroids, nr_it,
         classified = classifier.predict(features, nr_centroids, degree=degree, cache_size=cache_size)
         print "Predicting done"        
         
-    elif clsfr == "SVC": 
+    elif clsfr == "SVC" or clsfr == "NUSVR": 
         
         if train_model:
-            #Train SVC classifier
-            print "Begin training of SVC..."
-            model = svc.train_svc(features, labels, nr_centroids)
+            print "Begin training of Model..."
+            if clsfr=="SVC":
+                #Train SVC classifier
+                model = svc.train_svc(features, 
+                                      labels, 
+                                      nr_centroids,
+                                      degree=degree,
+                                      cache_size=cache_size,
+                                      tol=tol,
+                                      max_iter=max_iter)
+            else :
+                #Train SVC classifier
+                model = svc.train_svc(features, 
+                                      labels, 
+                                      nr_centroids,
+                                      degree=degree,
+                                      cache_size=cache_size,
+                                      tol=tol,
+                                      max_iter=max_iter)    
+                
             print "Training done"
-            
         if not dogfeed:
             return   
         
@@ -89,6 +105,7 @@ def singlePipeline(nr_centroids, nr_it,
         classified = model.predict_proba(features)
         print "Predicting done"
         
+    
     else:
         print "Selected classifier not available, please use an available classifier"
         return
@@ -137,9 +154,6 @@ def singlePipeline(nr_centroids, nr_it,
     error = image - classified.T
     
     scipy.misc.imsave('error.png', error)
-    
-    
-        
     
     
     print "Calculation finished"  
