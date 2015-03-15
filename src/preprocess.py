@@ -354,4 +354,4 @@ def get_image_paths_train(path):
 
 
 if __name__ == '__main__':
-    preprocess(patch_size = 4, image_size = 16, path='../data/test', outpath='../data/preprocessed_test.h5')
+    preprocess()
