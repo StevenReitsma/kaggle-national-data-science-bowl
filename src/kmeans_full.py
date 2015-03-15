@@ -151,7 +151,7 @@ def steven():
     calculator.pipeline(centroids, 
                         n_pool_regions = nr_pool_regions,
                         file_path = activations_folder_test,
-                        data_file = processed_train_filename)
+                        data_file = processed_test_filename)
     print "Done"
     
     
