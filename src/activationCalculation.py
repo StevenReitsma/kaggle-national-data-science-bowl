@@ -71,7 +71,7 @@ class ActivationCalculation():
   
     
     
-    def pipeline(self, centroids, file_path = "../data/activations/", batch_size = -1, n_pool_regions = 4):
+    def pipeline(self, centroids, data_file = "../data/preprocessed.h5", file_path = "../data/activations/", batch_size = -1, n_pool_regions = 4):
         if not os.path.exists(file_path):
             os.makedirs(file_path)
         
@@ -80,7 +80,7 @@ class ActivationCalculation():
             meta = util.load_metadata()
             batch_size = meta['patches_per_image']
         
-        batches = batchreader.BatchReader(batchsize = batch_size)#   
+        batches = batchreader.BatchReader(batchsize = batch_size, filepath=data_file)#   
         
 
         dimensions = (batches.nbatches , len(centroids)*n_pool_regions) # Set dimensions to #imagesx4*#centroids
@@ -136,7 +136,6 @@ class ActivationCalculation():
         
     def visualize_activation_alt(self, activations):
         patch_size = np.sqrt(activations.shape[0])
-        n_features = activations.shape[1]
         
         one = activations[:,0]
         
@@ -145,12 +144,16 @@ class ActivationCalculation():
         plt.imshow(im, cmap='Greys', interpolation= 'nearest')        
         
         plt.show()
+
+    
     
 if __name__ == '__main__':
     km = kmeans.kMeansTrainer()
     centroids = km.get_saved_centroids(100)
     #util.plot_centroids(centroids, "../data/centroidskmeans")
     sup_km = ActivationCalculation()
-    sup_km.pipeline(centroids = centroids)
+    sup_km.pipeline(centroids = centroids, data_file="../data/preprocessed_test.h5")
+    
+    
 
 
