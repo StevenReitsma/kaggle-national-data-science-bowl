@@ -19,6 +19,8 @@ class kMeansTrainer():
         kmeans = MiniBatchKMeans(self.nr_centroids, init='k-means++')
         
         for it in range(self.nr_it):
+            print "Iteration {0} out of {1}".format(it, self.nr_it)            
+            
             batches = randbr.RandomBatchReader()
             maxIterations = batches.nbatches
             for i, batch in enumerate(batches):

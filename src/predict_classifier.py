@@ -72,17 +72,27 @@ def create_csv(probabilities,filenames):
 #    df1.replace(df1.index,newfile)
      df.to_csv('k-means_out.csv')
 
-if __name__ == "__main__":
 
-    # Load the trained model into memory
+def predict_classifier(model='../models/svc100/classifier.pkl',
+                       activations_folder="../data/activations/", 
+                       nr_centroids=100):
+          
+    print "Loading model ", model                 
     clf = joblib.load('../models/svc100/classifier.pkl')
 
-    feature_file = h5py.File("../data/activations/"+str(100)+"activationkmeans.h5")
+    print "Loading activations"
+    feature_file = h5py.File(activations_folder+str(nr_centroids)+"activationkmeans.h5")
     features = feature_file["activations"]
 
+    print "Creating predictions, will take lan"
     # Predict samples
     predictions = clf.predict_proba(features)
     feature_file.close()
 
+    print "Creatings CSV file for submission to Kaggle"
     # Create CSV file for submission to Kaggle
     create_csv(predictions,load_filenames())
+
+
+if __name__ == "__main__":
+    predict_classifier()
