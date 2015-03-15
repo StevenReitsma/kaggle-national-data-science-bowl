@@ -19,7 +19,14 @@ import scipy
 from sklearn import metrics
 
 
-def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", clsfr = "SGD", calc_centroids = True):
+def singlePipeline(nr_centroids, nr_it, 
+                   label_path = "../data/preprocessed.h5", 
+                   clsfr = "SGD", 
+                   calc_centroids = True, 
+                   dogfeed=True, 
+                   train_model=True,
+                   cache_size=4000,
+                   degree=3):
     
     
     
@@ -40,6 +47,9 @@ def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", 
         feature_data = h5py.File("../data/activations/"+str(nr_centroids)+"activationkmeans.h5")
         features = feature_data["activations"]
     
+    
+
+    
     print "Getting labels..."
     #get the labels
     labels = util.load_labels(label_path)
@@ -49,21 +59,30 @@ def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", 
     
     
     if clsfr == "SGD": 
-        #Train the SGD classifier
-        print "Begin training of SGD..."
-        train.trainSGD(features, labels, nr_centroids)
-        print "Training done"
+        if train_model:
+            #Train the SGD classifier
+            print "Begin training of SGD..."
+            train.trainSGD(features, labels, nr_centroids)
+            print "Training done"
+        
+        if not dogfeed:
+            return
         
         #Predict based on SGD training
         print "Begin SGD predictions..."
-        classified = classifier.predict(features, nr_centroids)
+        classified = classifier.predict(features, nr_centroids, degree=degree, cache_size=cache_size)
         print "Predicting done"        
         
     elif clsfr == "SVC": 
-        #Train SVC classifier
-        print "Begin training of SVC..."
-        model = svc.train_svc(features, labels, nr_centroids)
-        print "Training done"
+        
+        if train_model:
+            #Train SVC classifier
+            print "Begin training of SVC..."
+            model = svc.train_svc(features, labels, nr_centroids)
+            print "Training done"
+            
+        if not dogfeed:
+            return   
         
         #Predict based on SVC training
         print "Begin SVC predictions..."
@@ -73,6 +92,9 @@ def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", 
     else:
         print "Selected classifier not available, please use an available classifier"
         return
+       
+    
+       
        
     print "Calculating log loss..."
     summing = 0
@@ -141,7 +163,7 @@ def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", 
 if __name__ == '__main__':
     nr_centroids = 100  
     nr_it = 1           # Only used when calc_centroids is True
-    clsfr = "SGD"       # Choice between SVC and SGD
+    clsfr = "SVC"       # Choice between SVC and SGD
     calc_centroids = True # Whether to calculate the centroids, 
                           # do NOT forget to set the nr_centroids to the desired centroidactivation file if False is selected.
     singlePipeline(nr_centroids=nr_centroids, nr_it=nr_it, clsfr=clsfr, calc_centroids = calc_centroids)
