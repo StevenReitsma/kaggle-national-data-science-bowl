@@ -16,6 +16,9 @@ import predict_classifier as pc
 #Classifier
 classifier="SVC" #'SGD', 'SVC', 'NUSVR', only tested for SVC
 
+# NUSVR does not seem to work :c
+# Can output likelihood-order, but not probabilities, meh.
+
 #Preprocessing options
 square_method = 'pad' #Either 'pad' or 'stretch'
 patch_size = 6
@@ -40,10 +43,11 @@ activations_folder_train = "../data/activations_train/"
 nr_pool_regions = 4
 
 #Classifier options
-degree = 3
-cache_size = 4000 #In Kilobytes
+degree = 2
+cache_size = 200 #In MB
 max_iter = -1
 tol = 1e-3
+kernel = 'rbf'
 
 
 #----------------------------------------------------
@@ -100,7 +104,7 @@ def four():
     print "Done"
 
 #----------------------------------------------------
-# TRAIN CLASSIFIER (SVC OR SGD)
+# TRAIN CLASSIFIER (SVC, NUSVR OR SGD)
 def five():
     kmeans_runner.singlePipeline(nr_centroids, 
                                  nr_iterations, 
