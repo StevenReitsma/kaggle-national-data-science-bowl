@@ -99,9 +99,9 @@ def singlePipeline(nr_centroids, nr_it, label_path = "../data/preprocessed.h5", 
 #            print classified[i][np.argmax(classified[i])]
             
             correct += 1
-        else:
-            classified_as = label_names[np.argmax(classified[i])]
-            but_was_actually = label_names[actual]
+        #else:
+          #  classified_as = label_names[np.argmax(classified[i])]
+          #  but_was_actually = label_names[actual]
             #print "Classified as \"{0}\", but was \"{1}\"".format(classified_as, but_was_actually)
     
     image = np.zeros((len(label_names),len(labels)))  
