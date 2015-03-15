@@ -53,7 +53,7 @@ def singlePipeline(nr_centroids, nr_it,
     
 
     
-    print "Getting labels..."
+    print "Loading labels from file..."
     #get the labels
     labels = util.load_labels(label_path)
     label_names = util.load_label_names(label_path)
@@ -71,6 +71,7 @@ def singlePipeline(nr_centroids, nr_it,
         if not dogfeed:
             return
         
+        print "Dogfeeding"
         #Predict based on SGD training
         print "Begin SGD predictions..."
         classified = classifier.predict(features, nr_centroids, degree=degree, cache_size=cache_size)
@@ -109,6 +110,7 @@ def singlePipeline(nr_centroids, nr_it,
         if not dogfeed:
             return   
         
+        print "Dogfeeding"
         #Predict based on SVC training
         print "Begin SVC predictions..."
         classified = model.predict_proba(features)
@@ -144,14 +146,8 @@ def singlePipeline(nr_centroids, nr_it,
         else:
             summing+= np.log(classified[i][label])
         if actual == np.argmax(classified[i]):
-#            print classified[i][np.argmax(classified[i])]
-            
             correct += 1
-        #else:
-          #  classified_as = label_names[np.argmax(classified[i])]
-          #  but_was_actually = label_names[actual]
-            #print "Classified as \"{0}\", but was \"{1}\"".format(classified_as, but_was_actually)
-    
+
     image = np.zeros((len(label_names),len(labels)))  
     
     for j, label_index in enumerate(labels):
