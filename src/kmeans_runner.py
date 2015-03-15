@@ -47,7 +47,7 @@ def singlePipeline(nr_centroids, nr_it,
     else:
         print "loading centroids from file..."
         #loads feature data
-        feature_data = h5py.File("../data/activations/"+str(nr_centroids)+"activationkmeans.h5")
+        feature_data = h5py.File("../data/activations_train/"+str(nr_centroids)+"activationkmeans.h5")
         features = feature_data["activations"]
     
     
