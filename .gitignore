@@ -191,3 +191,6 @@ sympy-plots-for-*.tex/
 # xindy
 *.xdy
 *.spyderworkspace
+*.png
+src/meuk.csv
+*.csv

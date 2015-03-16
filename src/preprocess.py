@@ -12,7 +12,7 @@ from scipy import misc
 import numpy as np
 import h5py
 
-__PREPROCESS_VERSION__ = 2
+__PREPROCESS_VERSION__ = 4
 
 
 """
@@ -54,6 +54,7 @@ def preprocess(path='../data/train',
     patch_size = kwargs.get('patch_size', 6)
     image_size = kwargs.get('image_size', 32)
     square_method = kwargs.get('square_method', 'pad')
+    train_data_file = kwargs.get('train_data_file', '../data/preprocessed.h5')
         
     square_function = imsquare.get_square_function_by_name(square_method)
     
@@ -67,11 +68,13 @@ def preprocess(path='../data/train',
         labels = [label_dict[c] for c in classnames]
         class_count = len(label_dict)
     else:
+        label_dict = {'UNLABELED':-1}
         labels = [-1 for _ in range(len(classnames))]
         class_count = 0
-        
+   
     
-    
+    label_names = [key for key in label_dict]
+    label_names = np.sort(label_names)
     # Amount of images
     n = len(file_metadata)
     
@@ -105,6 +108,7 @@ def preprocess(path='../data/train',
     metadata['version'] = __PREPROCESS_VERSION__
     
     
+    
     if preprocessing_is_already_done(outpath, metadata):
         print "----------------------------------------"
         return
@@ -112,18 +116,22 @@ def preprocess(path='../data/train',
     
     # Extract statistics such as the mean/std of image
     # Necessary for normalization of images
-    mean_image, variance_image, std_image = extract_stats(filepaths, image_size, square_function)
-    
+
     if is_train:
-        metadata['mean_image'] = mean_image 
-        metadata['std_image' ] = std_image
-        metadata['var_image' ] = variance_image
-    else: #Prevent wrong usage of Mean/std/var of test images
-        metadata['mean_image'] = None 
-        metadata['std_image' ] = None
-        metadata['var_image' ] = None
+        mean_image, variance_image, std_image = extract_stats(filepaths, image_size, square_function)
+
+    else:
+        meta = util.load_metadata(train_data_file)
+        mean_image = meta['mean_image']
+        std_image = meta['std_image']
+        variance_image = meta['var_image']
     
     
+    metadata['mean_image'] = mean_image 
+    metadata['std_image' ] = std_image
+    metadata['var_image' ] = variance_image
+    
+    print "---"
     #Dimension of what will be written to file
     dim_all_patches = (patches_total, patch_size**2)
     
@@ -134,6 +142,9 @@ def preprocess(path='../data/train',
     print "-----------------------------------------"
     print "Writing labels"
     write_labels(labels, f)
+    
+    print "Writing label names"
+    write_label_names(label_names, f)
     
     print "Processing and writing..."
     
@@ -147,6 +158,15 @@ def preprocess(path='../data/train',
         
         patches = extract_patches(image, patch_size)
         
+        
+        for j, patch in enumerate(patches):
+            mean = np.mean(patch)
+            std = np.std(patch)
+            patches[j] = imutil.normalize(patch, mean, std)
+        
+        
+        patches = np.nan_to_num(patches)
+        
         start_index = i*patches_per_image
         dset[start_index:start_index+len(patches)] = patches
         
@@ -154,6 +174,7 @@ def preprocess(path='../data/train',
             util.update_progress(i/n)
     
     util.update_progress(1.0)
+    
     
     
     print "Writing metadata (options used)" 
@@ -213,9 +234,13 @@ def gen_label_dict(classnames):
 def write_labels(labels, h5py_file):
     h5py_file.create_dataset('labels', data=labels)
     
+def write_label_names(label_names, h5py_file):
+    h5py_file.create_dataset('label_names', data=label_names)
+    
     
 
 def write_metadata(dataset, metadata):
+
     for attr in metadata:
         dataset.attrs[attr] = metadata[attr]
 
@@ -239,6 +264,7 @@ def extract_patches(image, patch_size):
     """
     patches = impatch.patch(image, patch_size = patch_size)
     patches = [imutil.flatten_image(patch) for patch in patches]
+    patches = np.array(patches)
     return patches
     
     

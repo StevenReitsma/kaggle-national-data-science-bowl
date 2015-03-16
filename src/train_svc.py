@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Mar 13 14:44:05 2015
-
-@author: Luc
-"""
 
 from sklearn import svm
 from sklearn.externals import joblib
 import os
 
-def train_svc(samples, labels, nr_centroids):
-    clf = svm.SVC(degree=2, cache_size = 4000, probability = True, verbose = 1)
+def train_svc(samples, labels, nr_centroids, degree=3, cache_size=4000, max_iter = -1, tol = 1e-3, kernel='rbf'):
+    clf = svm.SVC(degree=degree, 
+                  cache_size = cache_size, 
+                  probability = True, 
+                  verbose = 1,
+                  tol = tol,
+                  max_iter = max_iter,
+                  kernel = kernel)
     clf.fit(samples, labels)
     
     file_path = '../models/svc' + str(nr_centroids) + '/'
@@ -19,5 +20,3 @@ def train_svc(samples, labels, nr_centroids):
           
     joblib.dump(clf, file_path + '/classifier.pkl')
     return clf 
-
-    
