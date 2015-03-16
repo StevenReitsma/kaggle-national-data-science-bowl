@@ -60,7 +60,8 @@ class kMeansTrainer():
                     batch270 = self.rotate_patches_90_degrees(batch,3)
                     
                     util.update_progress((i+(it*maxIterations))/(maxIterations*self.nr_it))
-                    kmeans.partial_fit(batch, batch90, batch180, batch270)
+                    batch = np.concatenate((batch, np.concatenate((batch90, np.concatenate((batch180,batch270))))))
+                    kmeans.partial_fit(batch)
                     
                 elif self.mirror_invariant_training:
                     # mirror the batch left-right, and up-down
@@ -68,7 +69,8 @@ class kMeansTrainer():
                     batchud = self.mirror_patches(batch, "ud")
                     
                     util.update_progress((i+(it*maxIterations))/(maxIterations*self.nr_it))
-                    kmeans.partial_fit(batch, batchlr, batchud)
+                    batch = np.concatenate((batch, np.concatenate((batchlr,batchud))))
+                    kmeans.partial_fit(batch)
                     
                 else:
                  # Normal training   
