@@ -63,8 +63,12 @@ class ActivationCalculation():
     
     def normalize(self, activations):
         std = np.std(activations, axis = 0)
-        activations = activations - np.mean(activations, axis = 0)
-        activations = activations/std
+        mean = np.mean(activations, axis = 0)
+        
+        for i, act in enumerate(activations):
+            activations[i] = (act-mean)/std
+        #activations = activations - np.mean(activations, axis = 0)
+        #activations = activations/std
         
         
         return activations
