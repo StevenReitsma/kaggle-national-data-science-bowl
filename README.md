@@ -1,3 +1,3 @@
 # ML in Practice
 
-[![Build Status](https://magnum.travis-ci.com/StevenReitsma/ml-in-practice.svg?token=xrmeJ1o7mqs9fEkzJw9e&branch=master)](https://magnum.travis-ci.com/StevenReitsma/ml-in-practice)
+[![Build Status](https://travis-ci.org/StevenReitsma/kaggle-national-data-science-bowl.svg)](https://travis-ci.org/StevenReitsma/kaggle-national-data-science-bowl)
