@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Best Whale Wow</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body {
+        font-family: 'Droid Serif';
+      }
+      h1, h2, h3, h4 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: 400;
+        margin-bottom: 0;
+      }
+
+      .remark-slide-content h1 { font-size: 3em; color: #ccc}
+      .remark-slide-content h2 { font-size: 2em; color: #aaa}
+      .remark-slide-content h3 { font-size: 1.6em; }
+      .remark-slide-content h4 { font-size: 1.3em; }
+      .footnote {
+        position: absolute;
+        bottom: 3em;
+      }
+      li p { line-height: 1.25em; }
+      .red { color: #fa0000; }
+      .large { font-size: 2em; }
+      a, a > code {
+        color: rgb(249, 38, 114);
+        text-decoration: none;
+      }
+      code {
+        -moz-border-radius: 5px;
+        -web-border-radius: 5px;
+        background: #e7e8e2;
+        border-radius: 5px;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      .remark-code-line-highlighted     { background-color: #373832; }
+      .pull-left {
+        float: left;
+        width: 47%;
+      }
+      .pull-right {
+        float: right;
+        width: 47%;
+      }
+      .pull-right ~ p {
+        clear: both;
+      }
+      #slideshow .slide .content code {
+        font-size: 0.8em;
+      }
+      #slideshow .slide .content pre code {
+        font-size: 0.9em;
+        padding: 15px;
+      }
+      .inverse {
+        background: #272822;
+        color: #777872;
+        text-shadow: 0 0 20px #333;
+      }
+      .inverse h1, .inverse h2 {
+        color: #f3f3f3;
+        line-height: 0.8em;
+      }
+
+      /* Slide-specific styling */
+      #slide-inverse .footnote {
+        bottom: 12px;
+        left: 20px;
+      }
+      #slide-how .slides {
+        font-size: 0.9em;
+        position: absolute;
+        top:  151px;
+        right: 140px;
+      }
+
+
+      #slide-how .slides h3 {
+        margin-top: 0.2em;
+      }
+      #slide-how .slides .first, #slide-how .slides .second {
+        padding: 1px 20px;
+        height: 90px;
+        width: 120px;
+        -moz-box-shadow: 0 0 10px #777;
+        -webkit-box-shadow: 0 0 10px #777;
+        box-shadow: 0 0 10px #777;
+      }
+      #slide-how .slides .first {
+        background: #fff;
+        position: absolute;
+        top: 20%;
+        left: 20%;
+        z-index: 1;
+      }
+      #slide-how .slides .second {
+        position: relative;
+        background: #fff;
+        z-index: 0;
+      }
+
+      /* Two-column layout */
+      .left-column {
+        color: #777;
+        width: 18%;
+        height: 92%;
+        float: left;
+      }
+        .left-column h2:last-of-type, .left-column h3:last-child {
+          color: #000;
+        }
+      .right-column {
+        width: 80%;
+        float: right;
+        padding-top: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle, inverse
+
+# Best Whale Wow
+### Steven Reitsma, Robbert van der Gugten, <br>Luc Nies, Planktom van de Poll, Inez Wijnando, Guido Zuidhof
+
+---
+
+
+.left-column[
+  ### Approach
+]
+.right-column[
+## Two approaches
+- Single-layer unsupervised feature extraction [Coates et al.]
+- Convolutional neural networks [Krizhevsky et al.]
+]
+---
+
+.left-column[
+  ### Approach
+  ### K-Means
+]
+.right-column[
+## Single-layer unsupervised feature extraction 
+
+* Preprocessing
+* Unsupervised feature learning
+  * K-means
+  * Restricted Boltzmann Machines (RBM)
+* Activation calculation and pooling
+* Train classifier *(SVM, SGD)*
+* Predict test set
+
+<img src="kmeans.png" style="width:95%">
+
+]
+
+---
+
+<img src="kmeans.png" style="width:95%; display: block;
+    margin-left: auto;
+    margin-right: auto ">
+
+---
+
+.left-column[
+  ### Approach
+  ### K-Means
+]
+.right-column[
+## Results
+* Either not a good fit for this data set, or erroneous implementation
+* Best *log loss of* **2.66**
+]
+
+
+
+
+
+---
+
+.left-column[
+  ### Approach
+  ### K-Means
+  ### CNN
+]
+.right-column[
+## Architecture
+
+### 4 convolutional layers
+- 6x6, 5x5, 3x3, 3x3
+- 96, 128, 256, 256 filters
+
+<br>
+
+<img src="cnn.png" style="width:105%; display: block;
+    margin-left: auto;
+    margin-right: auto ">
+
+]
+
+---
+
+.left-column[
+  ### Approach
+  ### K-Means
+  ### CNN
+]
+.right-column[
+## Architecture
+
+### 3 max-pooling layers
+- 2x2
+
+<br><br>
+
+
+<img src="cnn.png" style="width:105%; display: block;
+    margin-left: auto;
+    margin-right: auto ">
+
+]
+
+---
+
+.left-column[
+  ### Approach
+  ### K-Means
+  ### CNN
+]
+.right-column[
+## Architecture
+
+### Fully-connected layers
+- 4096, 4096, 121
+- *Dropout*
+- *Maxout* <br><br>
+
+
+
+<img src="cnn.png" style="width:105%; display: block;
+    margin-left: auto;
+    margin-right: auto ">
+    ]
+
+
+---
+
+.left-column[
+  ### Approach
+  ### K-Means
+  ### CNN
+]
+.right-column[
+## Data Augmentation
+
+Our base model achieved a score of **1.547409**
+
+###Add rotations and flips to the training set
+* Reduces overfitting
+* Score: **1.022004** (-0.53)
+
+###Taking this one step further using real time augmentation
+* Every image is rotated, flipped and resized randomly before feeding it through the network
+* Requires a lower learning rate and more iterations
+* Score: **0.931495** (-0.091)
+
+]
+
+---
+.left-column[
+  ### Approach
+  ### K-Means
+  ### CNN
+]
+.right-column[
+## Test-time augmentation
+
+* When predicting an image, also predict the distribution for its rotations and flips
+* Average predictions uniformly
+
+This method was also used by the winner
+
+* Score: **0.860739** (-0.071)
+
+]
+
+---
+.left-column[
+  ### Approach
+  ### K-Means
+  ### CNN
+]
+.right-column[
+## Concurrent parameter sharing
+
+* Every image (already perturbed by the real time augmentation) is rotated 90, 180 and 270 degrees, and flipped
+* This results in 8 versions per image
+* Each image is fed through the network, filters are shared
+* Filter activations in final convolutional layer are concatenated
+* Reduces overfitting and increases rotation invariance
+
+* Score: **0.794818** (-0.066)
+* Our best single model score
+
+]
+
+
+---
+.left-column[
+  ### Approach
+  ### K-Means
+  ### CNN
+]
+.right-column[
+## Other improvements
+
+* Leaky ReLU's
+* Top-hat filter
+]
+
+---
+.left-column[
+  ### Approach
+  ### K-Means
+  ### CNN
+]
+.right-column[
+## Model blending
+
+We blended the predictions of four networks uniformly
+* Score: **0.719978** (-0.074)
+]
+---
+.left-column[
+  ### Approach
+  ### K-Means
+  ### CNN
+]
+.right-column[
+## Further improvements
+
+* Weighted blending
+* Pseudolabeling
+* Cyclic rolls
+]
+
+---
+.left-column[
+  ### Approach
+  ### K-Means
+  ### CNN
+  ### Improvements
+]
+.right-column[
+## General improvements
+
+* Coates method working correctly
+* Combining the two approaches hierarchically
+]
+
+---
+.left-column[
+  ### Approach
+  ### K-Means
+  ### CNN
+  ### Improvements
+  ### References
+]
+.right-column[
+
+1. **Adam Coates, Andrew Y. Ng, and Honglak Lee.** *"An analysis of single-layer networks in unsupervised feature learning."*
+  International Conference on Artificial Intelligence and Statistics. 2011.
+2. **Alex Krizhevsky, Ilya Sutskever, and Geoffrey E. Hinton.** *"Imagenet classification with deep convolutional neural networks."*
+  Advances in neural information processing systems. 2012.
+3. **Steven Reitsma.** *“Rotation invariant feature extraction in the classification of galaxy morphologies.”*
+  The 26th Benelux Conference on Artificial Intelligence. 2014.
+]
+
+
+
+
+
+
+
+
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
