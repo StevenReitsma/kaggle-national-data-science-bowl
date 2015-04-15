@@ -192,5 +192,6 @@ sympy-plots-for-*.tex/
 *.xdy
 *.spyderworkspace
 *.png
+!presentation/*.png
 src/meuk.csv
 *.csv
