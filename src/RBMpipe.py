@@ -4,7 +4,7 @@ __author__ = 'Robbert'
 
 
 import numpy as np
-import train_classifier as train
+import train_svc as train
 import predict_classifier as classifier
 import h5py
 import sys
@@ -32,7 +32,14 @@ def singlePipeline(hidden_units,label_path = "../data/preprocessed.h5"):
     #Classify the testset (the same as the training set in this case)
     classified = classifier.predict(features, hidden_units)
 
-
+    #Train SVC classifier
+#    print "Begin training"
+#    model = train.train_svc(features,labels, hidden_units)
+#
+##    Classify the testset (the same as the training set in this case)
+#    print "begin classification"
+#    classified = model.predict_proba(features)
+#    print "done"
 
     summing = 0
     correct = 0

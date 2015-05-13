@@ -52,13 +52,14 @@ def plot_meta_image(attr_name, invert = False, cmap=None):
     
     
 
-def plot_centroids(centroids, file_path, im_size = (6,6)): 
+def plot_centroids(centroids, file_path): 
     if not os.path.exists(file_path):
         os.makedirs(file_path)
     print "start plotting"        
     for i, centroid in enumerate(centroids):
         update_progress(i/len(centroids))
-        centroid_matrix = np.reshape(centroid, im_size)
+        im_size = np.sqrt(len(centroids[0]))
+        centroid_matrix = np.reshape(centroid, (im_size,im_size))
         plt.gray()
         plt.imsave(file_path + "centroid" + str(i) + ".png", centroid_matrix)
          
@@ -81,9 +82,16 @@ def load_metadata(filepath="../data/preprocessed.h5"):
 def load_labels(filepath="../data/preprocessed.h5"):
     f = h5py.File(filepath)
     dset = f["labels"]
+    labels = [label for label in dset]
+    f.close()
+    return labels
     
-    return [label for label in dset]
-
+def load_label_names(filepath="../data/preprocessed.h5"):
+    f = h5py.File(filepath)
+    dset = f["label_names"]
+    names = [name for name in dset]
+    f.close()
+    return names
 
 # update_progress() : Displays or updates a console progress bar
 ## Accepts a float between 0 and 1. Any int will be converted to a float.

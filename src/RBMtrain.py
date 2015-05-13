@@ -11,42 +11,41 @@ import RBM
 import pooling
 import os
 import util
-from sklearn.preprocessing import MinMaxScaler
+
 
 #from preprocess import preprocess #For using code from different branch
 
 _hidden_units = 100
-_max = 1.14232
-_min = -34.5815
+
 #
 def maxImage():
     meta_data = util.load_metadata()
     print (meta_data)
     mean = meta_data["mean_image"]
     std = meta_data["std_image"]
-    max = (255-np.min(mean))/np.min(std)
+    max = (255-np.max(mean))/np.max(std)
     min = (0-np.max(mean))/np.max(std)
-    print(max)
+    print (max)
     print(min)
 
 def RBMtraining():
     counter = 1
-    scaler = MinMaxScaler()
-    for data in randombatchreader.RandomBatchReader(batchsize=200*729):
+    for data in randombatchreader.RandomBatchReader(batchsize = 200*729):
     #for data in batchreader.BatchReader():
         if counter == 1:
             rbm = RBM.RBM(len(data[0]), _hidden_units)
         print ("FITTING CHUNK :" + str(counter))
-        data2 = (data-_min)/(_max-_min)
+        data2 = np.array([1-(x/float(255)) for x in data])
     #    print(data)
-        rbm.train(data2,max_epochs=2)
+        rbm.train(data2,max_epochs=4)
         counter+=1
-
+        if counter == 3:
+            break
     print ("DONE")
     #print(rbm.weights)
-    # plotweights = np.transpose(rbm.weights[1:,1:])
-    # save_weights(plotweights, file_path = "../data/weightsrbm/")
-    # util.plot_centroids(plotweights, file_path = "../data/weightsrbm/", )
+    plotweights = np.transpose(rbm.weights[1:,1:])
+    save_weights(plotweights, file_path = "../data/weightsrbm/")
+    util.plot_centroids(plotweights, file_path = "../data/weightsrbm/", )
 
     return rbm
 
@@ -58,6 +57,15 @@ def save_weights(weights, file_path = "../data/weightsrbm/"):
 #Finds the hidden layer probability values belonging to data
 #TODO find the correct bias!!
 def transform(rbm,data):
+#    X = []
+
+#     for dat in data:
+#         Y = np.zeros(_hidden_units)
+#         for i in range(_hidden_units):
+#             Y[i] = logistic(rbm.weights[0,i] + sum(rbm.weights[1:,i] * dat))
+# #           print(rbm.weights[1:,i])
+# #           print(dat)
+#         X.append(Y)
     return rbm.run_visible(np.array(data))
 
 def logistic(x):
@@ -71,7 +79,7 @@ def train():
     imagesdone = 0
     for data in batchreader.BatchReader(batchsize=50*729):
     #    print(data)
-        X_train = (data-_min)/(_max-_min)
+        X_train = [1-(x/float(255)) for x in data]
         weights = transform(rbm,X_train)
         #mean = np.mean(weights, axis=0)
         #std = np.std(weights, axis=0)
@@ -89,19 +97,7 @@ def train():
     return pooled_images
 
 
-# For finding the min and max of the data
-# ====================================
-    #     max_data = 0
-    #     min_data = 0
-    #     for dat in data:
-    #         if np.max(dat)>max_data:
-    #             max_data = np.max(dat)
-    #         if np.min(dat)<min_data:
-    #             min_data = np.min(dat)
-    # print (max_data)
-    # print (min_data)
 
-# ====================================
 
 if __name__ == '__main__':
     maxImage()
