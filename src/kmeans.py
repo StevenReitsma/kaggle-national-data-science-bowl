@@ -126,5 +126,5 @@ class kMeansTrainer():
         print sixth     # False
     
 if __name__ == '__main__':    
-    km = kMeansTrainer(100, 1)
+    km = kMeansTrainer(100, 10)
     km.pipeline()

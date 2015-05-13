@@ -1,10 +1,11 @@
 from sklearn.externals import joblib
-from sklearn.linear_model import SGDClassifier
+from sklearn import linear_model
 import pandas as pd
 import numpy as np
 from pandas import DataFrame
 import os
 import h5py
+import csv
 
 header = "acantharia_protist_big_center,acantharia_protist_halo,acantharia_protist,amphipods,\
 appendicularian_fritillaridae,appendicularian_s_shape,appendicularian_slight_curve,appendicularian_straight,\
@@ -86,12 +87,25 @@ def predict_classifier(model='../models/svc100/classifier.pkl',
 
     print "Creating predictions, will take lan"
     # Predict samples
-    predictions = clf.predict_proba(features)
+    predictions = clf.predict(features)
     feature_file.close()
+    
+    with open('submission_mnist.csv', 'wb') as f:
+        writer = csv.writer(f)
+        writer.writerow(['ImageId', 'Label'])
+        i = 1
+        for prediction in predictions:
+            writer.writerow([i , prediction])
+            i+=1
+            
 
-    print "Creatings CSV file for submission to Kaggle"
-    # Create CSV file for submission to Kaggle
-    create_csv(predictions,load_filenames())
+    print predictions
+
+    
+    
+#    print "Creatings CSV file for submission to Kaggle"
+#    # Create CSV file for submission to Kaggle
+#    create_csv(predictions,load_filenames())
 
 
 if __name__ == "__main__":

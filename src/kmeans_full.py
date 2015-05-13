@@ -5,7 +5,7 @@ import kmeans
 import activationCalculation as ac
 import kmeans_runner
 import predict_classifier as pc
-
+import util
 #
 # This file contains all steps for training k-means with a SVC classifier.
 #
@@ -22,19 +22,20 @@ classifier="SVC" #'SGD', 'SVC', 'NUSVR', only tested for SVC
 #Preprocessing options
 square_method = 'pad' #Either 'pad' or 'stretch'
 patch_size = 6
-image_size = 32 #Common size for all images to be resized to
+image_size = 28 #Common size for all images to be resized to
 
-train_folder = '../data/train'
-test_folder = '../data/test'
+train_folder = '../mnist/'
+test_folder = '../data/testset/'
 
 processed_train_filename = '../data/preprocessed.h5'
+#processed_test_filename = '../data/preprocessed_test.h5'
 processed_test_filename = '../data/preprocessed_test.h5'
 
 
 
 #K-Means options
 nr_iterations = 10
-nr_centroids = 200
+nr_centroids = 100
 centroids_folder = "../data/centroidskmeans/"
 activations_folder_test = "../data/activations_test/"
 activations_folder_train = "../data/activations_train/"
@@ -43,11 +44,11 @@ activations_folder_train = "../data/activations_train/"
 nr_pool_regions = 4
 
 #Classifier options
-degree = 2
-cache_size = 200 #In MB
-max_iter = -1
+degree = 3
+cache_size = 3000 #In MB
+max_iter = 5000
 tol = 1e-3
-kernel = 'rbf'
+kernel = 'poly'
 
 
 #----------------------------------------------------
@@ -75,6 +76,7 @@ def two():
 
 # CREATE CENTROIDS
 # 30 min with default settings
+
 def three():
     km_trainer = kmeans.kMeansTrainer(nr_centroids = nr_centroids, 
                                       nr_it = nr_iterations)
@@ -155,8 +157,9 @@ def steven():
     print "Done"
     
     
+    
 #----------------------------------------------------
-# USE TRAINED MODEL TO PREDICT TEST SET
+# USE TRAINED MODEL TO PREDICT TEST SETS
 
 def eight():
     model_filename = '../models/'+classifier.lower()+str(nr_centroids)+'/classifier.pkl'
@@ -166,5 +169,14 @@ def eight():
                           activations_folder = activations_folder_test,
                           nr_centroids=nr_centroids)
     print "Done"
-    
 
+
+def testing():
+    km = kmeans.kMeansTrainer()
+    centroids = km.get_saved_centroids(nr_centroids, file_path=centroids_folder)
+    util.plot_centroids(centroids, centroids_folder)
+    
+four()
+five()
+steven()
+eight()
