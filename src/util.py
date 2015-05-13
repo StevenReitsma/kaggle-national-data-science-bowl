@@ -41,6 +41,7 @@ def plot(image, invert = False, cmap=plt.cm.binary):
     if invert:
         image = np.ones(len(image)) - image
     
+    plt.gray()
     plt.imshow(image, cmap=cmap)
 
     

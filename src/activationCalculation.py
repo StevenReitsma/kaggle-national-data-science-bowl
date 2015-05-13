@@ -24,11 +24,12 @@ class ActivationCalculation():
         cc = np.sum(np.square(centroids), axis=1) # Dot product centroidsxcentroids
         pc = 2*np.dot(patches, centroids.T) # 2* Dot product patchesxcentroids
 
-        z = np.sqrt(cc + (pp - pc.T).T) # Distance measure
-        mu = z.mean(axis=0)
+        z = np.sqrt(cc + (pp - pc)) # Distance measure
+        mu = z.mean(axis=1)
         activation = np.maximum(0, mu-z) # Similarity measure
 
         return activation
+    
  
     def _distance_to_centroids(self, patches, centroids):
         #self.visualize_activation(centroids)
