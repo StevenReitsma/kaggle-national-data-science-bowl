@@ -196,12 +196,7 @@ def extract_stats(filepaths, image_size, square_function):
     util.plot(mean_image, invert=True)
     
     return mean_image, variance_image, std_image
-    
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> master
 # Returns a dictionary from plankton name to index in ordered, unique set
 # of plankton names
 def gen_label_dict(classnames):

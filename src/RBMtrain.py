@@ -73,9 +73,9 @@ def train():
     #    print(data)
         X_train = (data-_min)/(_max-_min)
         weights = transform(rbm,X_train)
-        mean = np.mean(weights, axis=0)
-        std = np.std(weights, axis=0)
-        weights = (weights -  mean) / std
+        #mean = np.mean(weights, axis=0)
+        #std = np.std(weights, axis=0)
+        #weights = (weights -  mean) / std
         for i in range(0,len(data)/729):
             dim = weights[i*729:i*729+729,1:]
             #print(dim.shape)
