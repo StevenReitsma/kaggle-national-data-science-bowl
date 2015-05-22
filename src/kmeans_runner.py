@@ -45,10 +45,11 @@ def singlePipeline(nr_centroids, nr_it,
         act_calc = act.ActivationCalculation()
         features = act_calc.pipeline(centroids)  
     else:
-        print "loading centroids from file..."
+        print "loading activations from file..."
         #loads feature data
         feature_data = h5py.File("../data/activations_train/"+str(nr_centroids)+"activationkmeans.h5")
         features = feature_data["activations"]
+
     
     
 

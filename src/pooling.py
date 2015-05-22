@@ -14,15 +14,17 @@ def pool(activations, n_pool_regions = 4, operator = np.sum):
     
     patch_size = np.sqrt(activations.shape[0])
     n_features = activations.shape[1]
-
+    
     # Reshape to 2D slabs
-    reshaped = np.reshape(activations.T, (n_features, patch_size, patch_size))
+    if len(activations)*len(activations[0]) != (n_features*patch_size*patch_size):
+        print len(activations)
 
+    reshaped = np.reshape(activations.T, (n_features, patch_size, patch_size))
     # Pooling
     pool_regions_per_dimension = int(np.sqrt(n_pool_regions))
     half_patch = round(patch_size / pool_regions_per_dimension)
     feature_vector = np.zeros((n_pool_regions * n_features))
-
+    
     for x in range(0, pool_regions_per_dimension):
         for y in range(0, pool_regions_per_dimension):
             start_index_row = x * half_patch
@@ -37,4 +39,4 @@ def pool(activations, n_pool_regions = 4, operator = np.sum):
 
             feature_vector[feature_index:feature_index + n_features] = q
 
-    return feature_vector
+    return feature_vector    

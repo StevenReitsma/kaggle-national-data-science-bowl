@@ -58,11 +58,17 @@ def predict(features, nr_centroids):
 _threshold = 0.9
 
 def load_file(path='../data/submission1/out.csv'):
-         probabilities = pandas.io.parsers.read_csv(path,sep=',')
+         probabilities = pd.io.parsers.read_csv(path,sep=',')
          return probabilities.as_matrix(),probabilities
 
 def load_filenames(path='../data/test'):
-      return os.listdir(path)
+    file_names = os.listdir(path)
+    no_thumbs = []
+    for name in file_names:
+        if name != 'Thumbs.db':
+            no_thumbs.append(name)
+    
+    return no_thumbs
           
     
 def create_csv(probabilities,filenames):
@@ -87,25 +93,14 @@ def predict_classifier(model='../models/svc100/classifier.pkl',
 
     print "Creating predictions, will take lan"
     # Predict samples
-    predictions = clf.predict(features)
+    predictions = clf.predict_proba(features)
     feature_file.close()
     
-    with open('submission_mnist.csv', 'wb') as f:
-        writer = csv.writer(f)
-        writer.writerow(['ImageId', 'Label'])
-        i = 1
-        for prediction in predictions:
-            writer.writerow([i , prediction])
-            i+=1
-            
-
-    print predictions
-
     
     
-#    print "Creatings CSV file for submission to Kaggle"
+    print "Creatings CSV file for submission to Kaggle"
 #    # Create CSV file for submission to Kaggle
-#    create_csv(predictions,load_filenames())
+    create_csv(predictions,load_filenames())
 
 
 if __name__ == "__main__":

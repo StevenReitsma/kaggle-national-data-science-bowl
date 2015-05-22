@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 
+from sklearn.linear_model import SGDClassifier
+import numpy as np
 import preprocess
 import kmeans
 import activationCalculation as ac
 import kmeans_runner
 import predict_classifier as pc
 import util
+import h5py
+import csv
+import batchreader as br
 #
 # This file contains all steps for training k-means with a SVC classifier.
 #
@@ -14,7 +19,7 @@ import util
 #OPTIONS
 
 #Classifier
-classifier="SVC" #'SGD', 'SVC', 'NUSVR', only tested for SVC
+classifier="SGD" #'SGD', 'SVC', 'NUSVR', only tested for SVC
 
 # NUSVR does not seem to work :c
 # Can output likelihood-order, but not probabilities, meh.
@@ -22,10 +27,10 @@ classifier="SVC" #'SGD', 'SVC', 'NUSVR', only tested for SVC
 #Preprocessing options
 square_method = 'pad' #Either 'pad' or 'stretch'
 patch_size = 6
-image_size = 28 #Common size for all images to be resized to
+image_size = 32 #Common size for all images to be resized to
 
-train_folder = '../mnist/'
-test_folder = '../data/testset/'
+train_folder = '../data/train/'
+test_folder = '../data/test/'
 
 processed_train_filename = '../data/preprocessed.h5'
 #processed_test_filename = '../data/preprocessed_test.h5'
@@ -35,7 +40,7 @@ processed_test_filename = '../data/preprocessed_test.h5'
 
 #K-Means options
 nr_iterations = 10
-nr_centroids = 100
+nr_centroids = 500
 centroids_folder = "../data/centroidskmeans/"
 activations_folder_test = "../data/activations_test/"
 activations_folder_train = "../data/activations_train/"
@@ -45,7 +50,7 @@ nr_pool_regions = 4
 
 #Classifier options
 degree = 3
-cache_size = 3000 #In MB
+cache_size = 6000 #In MB
 max_iter = 5000
 tol = 1e-3
 kernel = 'poly'
@@ -171,12 +176,5 @@ def eight():
     print "Done"
 
 
-def testing():
-    km = kmeans.kMeansTrainer()
-    centroids = km.get_saved_centroids(nr_centroids, file_path=centroids_folder)
-    util.plot_centroids(centroids, centroids_folder)
-    
-four()
-five()
-steven()
+
 eight()
