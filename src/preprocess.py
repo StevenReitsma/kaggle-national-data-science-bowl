@@ -7,6 +7,7 @@ import util
 import imsquare
 import impatch
 import imutil
+import re
 
 from scipy import misc
 import numpy as np
@@ -71,6 +72,8 @@ def preprocess(path='../data/train',
         label_dict = {'UNLABELED':-1}
         labels = [-1 for _ in range(len(classnames))]
         class_count = 0
+        filepaths = np.array(filepaths).tolist()
+        filepaths.sort(key = alphanum_key)
    
     
     label_names = [key for key in label_dict]
@@ -336,7 +339,6 @@ def get_image_paths_test(path):
         
     return metadata
         
-    
 
 def get_image_paths_train(path):
     
@@ -353,6 +355,25 @@ def get_image_paths_train(path):
                     metadata.append((classname, filename, filepath))
     
     return metadata
+
+
+def tryint(s):
+    try:
+        return int(s)
+    except:
+        return s
+
+def alphanum_key(s):
+    """ Turn a string into a list of string and number chunks.
+        "z23a" -> ["z", 23, "a"]
+    """
+    return [ tryint(c) for c in re.split('([0-9]+)', s) ]
+
+def sort_numerical(paths):
+    """ Sort the given list in the way that humans expect.
+    """
+    paths.sort(key=alphanum_key)
+    return paths
 
 
 if __name__ == '__main__':

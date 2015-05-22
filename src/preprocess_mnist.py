@@ -326,7 +326,7 @@ def get_image_paths(path):
     else:
         print "Specified folder is test data"
         return get_image_paths_test(path), is_train
-
+        
 def get_image_paths_test(path):
     metadata = []
     

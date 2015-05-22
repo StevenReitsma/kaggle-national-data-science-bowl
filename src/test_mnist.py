@@ -5,6 +5,8 @@ Created on Wed Apr 29 10:19:54 2015
 @author: Luc
 """
 from __future__ import division
+from pooling import pool
+import activationCalculation as ac
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
@@ -110,15 +112,72 @@ def read_test_csv(file_path = '../data/test.csv'):
 
 
 if __name__ == '__main__':
-    vals = [0,1,12,34] 
-    nrs =  range(1,5)
-    print nrs
     
-    with open('submission_mnist.csv', 'wb') as f:
-        writer = csv.writer(f)
-        writer.writerow(vals)
+    calculator = ac.ActivationCalculation() 
+    patch = np.array(range(1,5))
+    patcheslist = np.zeros((16,4))
+    patches = np.zeros((16,4))
+    for i in range(16):
+        patcheslist[i] = patch
+        patch+=4
+    
+    patches[0] = patcheslist[0]
+    patches[1] = patcheslist[1]
+    patches[2] = patcheslist[4]
+    patches[3] = patcheslist[5]
+    patches[4] = patcheslist[2]
+    patches[5] = patcheslist[3]
+    patches[6] = patcheslist[6]
+    patches[7] = patcheslist[7]
+    patches[8] = patcheslist[8]
+    patches[9] = patcheslist[9]
+    patches[10] = patcheslist[12]
+    patches[11] = patcheslist[13]
+    patches[12] = patcheslist[10]
+    patches[13] = patcheslist[11]
+    patches[14] = patcheslist[14]
+    patches[15] = patcheslist[15]
+    
+    print patches
+    
+    centroids = np.zeros((2,4))
 
-        
+    centroids[0] = patches[7]
+    centroids[1] = patches[11]
+
+    
+    print centroids
+    
+    activations = calculator.distance_to_centroids(patches, centroids)
+    pooled = pool(activations)
+    print pooled
+    
+    
+#    patch = np.array(range(1,5))
+#    patches = np.zeros((5,4))
+#    for i in range(4):
+#        patches[i] = patch
+#        patch+=4
+#    
+#    centroids = np.zeros((3,4))
+#    centroid = np.array(range(5,9))        
+#    for i in range(3):
+#        centroids[i] = centroid
+#        centroid+=4
+#    
+#    activations = calculator.distance_to_centroids(patches, centroids)
+#    pool(activations)
+#    print activations
+#    array = np.array(range(16))+1
+#    array = np.array(range(64))+1    
+#
+#    matrix = np.zeros((16,16))
+#    for i in range(16):
+#        matrix[i] = array
+#        array+=1
+#
+#    pooled = pool(matrix)
+#    print pooled
 #    save_as_image(list0, 0)
 #    save_as_image(list1, 1)
 #    save_as_image(list2, 2)
