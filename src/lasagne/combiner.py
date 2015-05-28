@@ -26,4 +26,4 @@ def combine_mean(filenames):
 	print "Done! Upload file out_averaged.csv.gz to Kaggle."
 
 if __name__ == "__main__":
-	combine_mean(['MODEL_CONCURRENT.csv', 'MODEL_MORE_FILTERS.csv', 'MODEL_CONCURRENT_FLIPS_100.csv'])
+	combine_mean(['models/MODEL_TOPHAT_MORE_FILTERS.csv', 'models/MODEL_CONCURRENT_MORE_FILTERS.csv', 'models/MODEL_45_CONCURRENT.csv', 'models/MODEL_MORE_FILTERS.csv', 'models/MODEL_TOPHAT.csv', 'models/MODEL_CONCURRENT_FLIPS_100.csv'])

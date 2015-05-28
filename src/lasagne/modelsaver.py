@@ -1,5 +1,6 @@
 import numpy as np
 import pickle
+from visualize import visualize_first_layer
 
 class ModelSaver(object):
 	"""
@@ -11,6 +12,8 @@ class ModelSaver(object):
 
 	# Executed at end of epoch
 	def __call__(self, nn, train_history):
+		visualize_first_layer(nn)
+
 		epoch = train_history[-1]['epoch']
 
 		if epoch % self.epochs == 0:

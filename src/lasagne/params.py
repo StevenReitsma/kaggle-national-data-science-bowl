@@ -13,9 +13,11 @@ AUGMENTATION_PARAMS = {
 		}
 		
 BATCH_SIZE = 64
-START_LEARNING_RATE = 0.03
+START_LEARNING_RATE = 0.01
 MOMENTUM = 0.9
 
 # Whether to  naively resize images. False pads the image.
-# Rerun gen_test.py and gen_train.py for changes to take effect.
+# Rerun gen_test.py, gen_train.py and imageio.py for changes to take effect.
 NAIVE = False
+# How many channels are in the images
+CHANNELS = 3
