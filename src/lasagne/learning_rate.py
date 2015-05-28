@@ -20,8 +20,8 @@ class AdjustVariable(object):
 
 		if epoch <= 50:
 			new_value = np.cast['float32'](ls_tmp[epoch - 1])
-		elif epoch > 50 and epoch <= 200:
-			new_value = np.cast['float32'](ls_tmp_2[epoch - 1 - 50])
+		elif epoch > 50 and epoch <= 100:
+			new_value = np.cast['float32'](ls_tmp_2[epoch - 1 - 100])
 		else:
 			new_value = np.cast['float32'](ls_tmp_3[epoch - 1 - 200])
 

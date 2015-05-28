@@ -47,8 +47,16 @@ class Augmenter():
 		tform_ds = skimage.transform.AffineTransform()
 		
 		for i in range(self.X.shape[0]):
-			new = self.fast_warp(self.X[i][0], tform_ds + tform_augment + tform_identity, 
+			new1 = self.fast_warp(self.X[i][0], tform_ds + tform_augment + tform_identity, 
 								 output_shape=(PIXELS,PIXELS), mode='nearest').astype('float32')
-			self.X[i, :, :, :] = new
+			self.X[i, 0, :, :] = new1
+
+			if CHANNELS == 3:
+				new2 = self.fast_warp(self.X[i][1], tform_ds + tform_augment + tform_identity, 
+								 output_shape=(PIXELS,PIXELS), mode='nearest').astype('float32')
+				self.X[i, 1, :, :] = new2
+				new3 = self.fast_warp(self.X[i][2], tform_ds + tform_augment + tform_identity, 
+									 output_shape=(PIXELS,PIXELS), mode='nearest').astype('float32')
+				self.X[i, 2, :, :] = new3
 
 		return self.X

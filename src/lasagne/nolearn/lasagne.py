@@ -292,15 +292,15 @@ class NeuralNet(BaseEstimator):
             t0 = time()
 
             for Xb, yb in self.batch_iterator_train(X_train, y_train):
-                new_xb = self._include_45_rotations(Xb)
+                #new_xb = self._include_45_rotations(Xb)
 
-                batch_train_loss = self.train_iter_(new_xb, yb)
+                batch_train_loss = self.train_iter_(Xb, yb)
                 train_losses.append(batch_train_loss)
 
             for Xb, yb in self.batch_iterator_test(X_valid, y_valid):
-                new_xb = self._include_45_rotations(Xb)
+                #new_xb = self._include_45_rotations(Xb)
                 
-                batch_valid_loss, accuracy = self.eval_iter_(new_xb, yb)
+                batch_valid_loss, accuracy = self.eval_iter_(Xb, yb)
                 valid_losses.append(batch_valid_loss)
                 valid_accuracies.append(accuracy)
 
@@ -358,8 +358,8 @@ class NeuralNet(BaseEstimator):
     def predict_proba(self, X):
         probas = []
         for Xb, yb in self.batch_iterator_test(X):
-            new_xb = self._include_45_rotations(Xb)
-            probas.append(self.predict_iter_(new_xb))
+            #new_xb = self._include_45_rotations(Xb)
+            probas.append(self.predict_iter_(Xb))
         return np.vstack(probas)
 
     def predict(self, X):

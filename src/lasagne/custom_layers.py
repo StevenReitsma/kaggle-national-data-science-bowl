@@ -21,7 +21,7 @@ class SliceLayer(layers.MultipleInputsLayer):
 		self.flip = flip
 
 	def get_output_shape_for(self, input_shape):
-		return (None, 1, self.part_size, self.part_size)
+		return (None, CHANNELS, self.part_size, self.part_size)
 
 	def get_output_for(self, input, *args, **kwargs):
 		parts = []
