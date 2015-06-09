@@ -93,7 +93,7 @@ def read_csv(file_path = '../data/mnist/train.csv'):
         f.close()
         util.update_progress(1)
         
-def read_test_csv(file_path = '../data/test.csv'):
+def read_test_csv(file_path = '../data/mnist/test.csv'):
     f = open(file_path)
     try:
         reader = csv.reader(f)
@@ -110,14 +110,8 @@ def read_test_csv(file_path = '../data/test.csv'):
 
 
 if __name__ == '__main__':
-    vals = [0,1,12,34] 
-    nrs =  range(1,5)
-    print nrs
-    
-    with open('submission_mnist.csv', 'wb') as f:
-        writer = csv.writer(f)
-        writer.writerow(vals)
-
+    read_csv()
+    read_test_csv()
         
 #    save_as_image(list0, 0)
 #    save_as_image(list1, 1)

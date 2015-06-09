@@ -15,7 +15,7 @@ class RandomBatchReader (br.BatchReader):
     """
     
     
-    def __init__(self, filepath="../data/preprocessed.h5", batchsize=72900, dataset="data", random_size=729):
+    def __init__(self, filepath="../data/preprocessed.h5", batchsize=72900, dataset="data", random_size=529):
         if not batchsize % random_size == 0:
             raise Exception('batchsize must be n times random_size')
 
