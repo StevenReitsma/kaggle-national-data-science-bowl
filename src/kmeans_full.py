@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 
+from sklearn.linear_model import SGDClassifier
+import numpy as np
 import preprocess
 import kmeans
 import activationCalculation as ac
 import kmeans_runner
 import predict_classifier as pc
-
+import util
+import h5py
+import csv
+import batchreader as br
 #
 # This file contains all steps for training k-means with a SVC classifier.
 #
@@ -14,7 +19,7 @@ import predict_classifier as pc
 #OPTIONS
 
 #Classifier
-classifier="SVC" #'SGD', 'SVC', 'NUSVR', only tested for SVC
+classifier="SGD" #'SGD', 'SVC', 'NUSVR', only tested for SVC
 
 # NUSVR does not seem to work :c
 # Can output likelihood-order, but not probabilities, meh.
@@ -24,17 +29,18 @@ square_method = 'pad' #Either 'pad' or 'stretch'
 patch_size = 6
 image_size = 32 #Common size for all images to be resized to
 
-train_folder = '../data/train'
-test_folder = '../data/test'
+train_folder = '../data/train/'
+test_folder = '../data/test/'
 
 processed_train_filename = '../data/preprocessed.h5'
+#processed_test_filename = '../data/preprocessed_test.h5'
 processed_test_filename = '../data/preprocessed_test.h5'
 
 
 
 #K-Means options
 nr_iterations = 10
-nr_centroids = 200
+nr_centroids = 500
 centroids_folder = "../data/centroidskmeans/"
 activations_folder_test = "../data/activations_test/"
 activations_folder_train = "../data/activations_train/"
@@ -43,11 +49,11 @@ activations_folder_train = "../data/activations_train/"
 nr_pool_regions = 4
 
 #Classifier options
-degree = 2
-cache_size = 200 #In MB
-max_iter = -1
+degree = 3
+cache_size = 6000 #In MB
+max_iter = 5000
 tol = 1e-3
-kernel = 'rbf'
+kernel = 'poly'
 
 
 #----------------------------------------------------
@@ -75,6 +81,7 @@ def two():
 
 # CREATE CENTROIDS
 # 30 min with default settings
+
 def three():
     km_trainer = kmeans.kMeansTrainer(nr_centroids = nr_centroids, 
                                       nr_it = nr_iterations)
@@ -155,8 +162,9 @@ def steven():
     print "Done"
     
     
+    
 #----------------------------------------------------
-# USE TRAINED MODEL TO PREDICT TEST SET
+# USE TRAINED MODEL TO PREDICT TEST SETS
 
 def eight():
     model_filename = '../models/'+classifier.lower()+str(nr_centroids)+'/classifier.pkl'
@@ -166,5 +174,7 @@ def eight():
                           activations_folder = activations_folder_test,
                           nr_centroids=nr_centroids)
     print "Done"
-    
 
+
+
+eight()

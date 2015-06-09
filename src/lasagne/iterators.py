@@ -95,10 +95,13 @@ class DataAugmentationBatchIterator(ShufflingBatchIterator):
 
 		for i in range(Xb.shape[0]):
 			Xbb[i, 0, :, :] = fast_warp(Xb[i][0], tform_ds + tform_augment + tform_identity, output_shape=(PIXELS,PIXELS), mode='nearest').astype('float32')
+			if CHANNELS == 3:
+				Xbb[i, 1, :, :] = fast_warp(Xb[i][1], tform_ds + tform_augment + tform_identity, output_shape=(PIXELS,PIXELS), mode='nearest').astype('float32')
+				Xbb[i, 2, :, :] = fast_warp(Xb[i][2], tform_ds + tform_augment + tform_identity, output_shape=(PIXELS,PIXELS), mode='nearest').astype('float32')
 
 			# Subtract mean and divide by std
-			Xbb[i, 0, :, :] -= self.mean
-			Xbb[i, 0, :, :] /= self.std
+			Xbb[i, :, :, :] -= self.mean
+			Xbb[i, :, :, :] /= self.std
 
 		return Xbb, yb
 
@@ -118,7 +121,7 @@ class ScalingBatchIterator(BatchIterator):
 		Xbb = np.zeros((Xb.shape[0], Xb.shape[1], Xb.shape[2], Xb.shape[3]), dtype=np.float32)
 
 		for i in range(Xb.shape[0]):
-			Xbb[i, 0, :, :] = Xb[i, 0, :, :] - self.mean
-			Xbb[i, 0, :, :] /= self.std
+			Xbb[i, :, :, :] = Xb[i, :, :, :] - self.mean
+			Xbb[i, :, :, :] /= self.std
 
 		return Xbb, yb

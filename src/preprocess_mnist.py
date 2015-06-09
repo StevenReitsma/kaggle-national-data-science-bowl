@@ -7,7 +7,7 @@ import util
 import imsquare
 import impatch
 import imutil
-import re
+import csv
 
 from scipy import misc
 import numpy as np
@@ -38,7 +38,7 @@ Preprocessing script
 
 """
 
-def preprocess(path='../data/train', 
+def preprocess(path='../data/mnist', 
                outpath="../data/preprocessed.h5", **kwargs):
     """
     Preprocesses given folder, parameters (all optional):
@@ -58,28 +58,30 @@ def preprocess(path='../data/train',
     train_data_file = kwargs.get('train_data_file', '../data/preprocessed.h5')
         
     square_function = imsquare.get_square_function_by_name(square_method)
+    is_train = True
     
+#    file_metadata, is_train = get_image_paths(path)   
+#    classnames, filenames, filepaths = zip(*file_metadata)  
+#    
+#    
+#    if is_train:
+#        label_dict = gen_label_dict(classnames)
+#        labels = [label_dict[c] for c in classnames]
+#        class_count = len(label_dict)
+#    else:
+#        label_dict = {'UNLABELED':-1}
+#        labels = [-1 for _ in range(len(classnames))]
+#        class_count = 0
+#   
+#    
+#    label_names = [key for key in label_dict]
+#    label_names = np.sort(label_names)
+    labels =[0,1,2,3,4,5,6,7,8,9]
+    class_count = len(labels)
     
-    file_metadata, is_train = get_image_paths(path)   
-    classnames, filenames, filepaths = zip(*file_metadata)  
-    
-    
-    if is_train:
-        label_dict = gen_label_dict(classnames)
-        labels = [label_dict[c] for c in classnames]
-        class_count = len(label_dict)
-    else:
-        label_dict = {'UNLABELED':-1}
-        labels = [-1 for _ in range(len(classnames))]
-        class_count = 0
-        filepaths = np.array(filepaths).tolist()
-        filepaths.sort(key = alphanum_key)
-   
-    
-    label_names = [key for key in label_dict]
-    label_names = np.sort(label_names)
     # Amount of images
-    n = len(file_metadata)
+#    n = len(file_metadata)
+    n = 42000
     
     
     # Calculate some dimensions
@@ -153,7 +155,7 @@ def preprocess(path='../data/train',
     
     for i, filepath in enumerate(filepaths):
         
-        image = misc.imread(filepath, flatten = 1)
+        image = misc.imread(filepath)
         image = process(image, square_function, image_size)
         
         # Normalize image     
@@ -187,7 +189,7 @@ def preprocess(path='../data/train',
   
 
 
-def extract_stats(filepaths, image_size, square_function):
+def extract_stats(csv_file, image_size, square_function, n):
     print "Calculating mean, std and var of all images"
     
     #Running total (sum) of all images
@@ -195,13 +197,11 @@ def extract_stats(filepaths, image_size, square_function):
     mean = np.zeros((image_size,image_size))
     M2 = np.zeros((image_size,image_size))    
     
-    n = len(filepaths)    
-    
-    for i, filepath in enumerate(filepaths):
+    for i, filepath in enumerate(csv_file):
         
-        image = misc.imread(filepath, flatten = 1)
-        
+        image = misc.imread(filepath)
         image = process(image, square_function, image_size)
+        
         # Online statistics
         count_so_far = count_so_far+1
         delta = image - mean
@@ -326,7 +326,7 @@ def get_image_paths(path):
     else:
         print "Specified folder is test data"
         return get_image_paths_test(path), is_train
-
+        
 def get_image_paths_test(path):
     metadata = []
     
@@ -334,11 +334,11 @@ def get_image_paths_test(path):
 
     for filename in os.listdir(path):
         filepath = os.path.join(path, filename)
-        if filename != 'Thumbs.db':       
-            metadata.append((classname, filename, filepath) )
+        metadata.append((classname, filename, filepath) )
         
     return metadata
         
+    
 
 def get_image_paths_train(path):
     
@@ -351,30 +351,10 @@ def get_image_paths_train(path):
     for classname in classes:
         for filename in os.listdir(os.path.join(path, classname)):
                 filepath = os.path.join(path, classname, filename)
-                if filename != 'Thumbs.db':      #ignore the thumbs.db file
-                    metadata.append((classname, filename, filepath))
+                metadata.append((classname, filename, filepath))
     
     return metadata
 
 
-def tryint(s):
-    try:
-        return int(s)
-    except:
-        return s
-
-def alphanum_key(s):
-    """ Turn a string into a list of string and number chunks.
-        "z23a" -> ["z", 23, "a"]
-    """
-    return [ tryint(c) for c in re.split('([0-9]+)', s) ]
-
-def sort_numerical(paths):
-    """ Sort the given list in the way that humans expect.
-    """
-    paths.sort(key=alphanum_key)
-    return paths
-
-
 if __name__ == '__main__':
-    preprocess(path = '../data/mnist')
+    preprocess()

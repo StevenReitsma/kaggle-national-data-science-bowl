@@ -29,6 +29,7 @@ class ActivationCalculation():
         activation = np.maximum(0, mu-z) # Similarity measure
 
         return activation
+    
  
     def _distance_to_centroids(self, patches, centroids):
         #self.visualize_activation(centroids)
@@ -90,14 +91,11 @@ class ActivationCalculation():
         dimensions = (batches.nbatches , len(centroids)*n_pool_regions) # Set dimensions to #imagesx4*#centroids
         activations = np.zeros(dimensions)
         
-        
-        
         for i, batch in enumerate(batches):
-            activation = self.distance_to_centroids(batch, centroids) # Calculate activations for each patch to each centroid
+            activation = self.distance_to_centroids(batch, centroids) # Calculate activations for each patch to each centroid        
             
-            #self.visualize_activation(activation.T)            
-            
-            activations[i] = pool(activation, n_pool_regions = n_pool_regions) # Returns a vector with length 4x#centroids
+            pooled = pool(activation, n_pool_regions = n_pool_regions) # Returns a vector with length 4x#centroids
+            activations[i] = pooled
             util.update_progress(i/batches.nbatches)
             
         util.update_progress(1)

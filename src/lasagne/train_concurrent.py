@@ -15,6 +15,7 @@ import pickle
 from custom_layers import SliceLayer, MergeLayer
 import random
 from modelsaver import ModelSaver
+from custom_nonlinearities import *
 
 if USE_GPU:
 	Conv2DLayer = layers.dnn.Conv2DDNNLayer
@@ -54,10 +55,10 @@ def fit(output):
 			('output', layers.DenseLayer),
 			],
 
-		input_shape=(None, 1, PIXELS, PIXELS),
+		input_shape=(None, CHANNELS, PIXELS, PIXELS),
 
-		slicer_part_size = 64, slicer_flip = True,
-		merger_nr_views = 16,
+		slicer_part_size = 48, slicer_flip = True,
+		merger_nr_views = 8,
 
 		conv1_num_filters=32, conv1_filter_size=(6, 6), conv1_pad = 0, pool1_ds=(2, 2), pool1_strides = (2, 2),
 		conv2_num_filters=64, conv2_filter_size=(5, 5), conv2_pad = 0, pool2_ds=(2, 2), pool2_strides = (2, 2),
@@ -78,16 +79,16 @@ def fit(output):
 		update_momentum=theano.shared(float32(MOMENTUM)),
 
 		regression=False,
-		batch_iterator_train=DataAugmentationBatchIterator(batch_size=BATCH_SIZE, mean=np.reshape(mean, (PIXELS, PIXELS)), std=np.reshape(std, (PIXELS, PIXELS))),
-		batch_iterator_test=ScalingBatchIterator(batch_size=BATCH_SIZE, mean=np.reshape(mean, (PIXELS, PIXELS)), std=np.reshape(std, (PIXELS, PIXELS))),
+		batch_iterator_train=DataAugmentationBatchIterator(batch_size=BATCH_SIZE, mean=np.reshape(mean, (CHANNELS, PIXELS, PIXELS)), std=np.reshape(std, (CHANNELS, PIXELS, PIXELS))),
+		batch_iterator_test=ScalingBatchIterator(batch_size=BATCH_SIZE, mean=np.reshape(mean, (CHANNELS, PIXELS, PIXELS)), std=np.reshape(std, (CHANNELS, PIXELS, PIXELS))),
 		on_epoch_finished=[
 			AdjustVariable('update_learning_rate', start=START_LEARNING_RATE),
 			EarlyStopping(patience=20),
-			ModelSaver(epochs=5, output=output), # saves model every 5 epochs
+			ModelSaver(epochs=10, output=output), # saves model every X epochs
 		],
 		max_epochs=300,
 		verbose=1,
-		eval_size=0.2,
+		eval_size=0.1,
 	)
 
 	net.fit(X, y)

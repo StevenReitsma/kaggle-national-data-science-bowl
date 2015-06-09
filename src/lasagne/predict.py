@@ -9,6 +9,7 @@ from params import *
 from augmenter import Augmenter
 import matplotlib.pyplot as plt
 from subprocess import call
+from iterators import ScalingBatchIterator
 
 header = "acantharia_protist_big_center,acantharia_protist_halo,acantharia_protist,amphipods,\
 appendicularian_fritillaridae,appendicularian_s_shape,appendicularian_slight_curve,appendicularian_straight,\
@@ -47,10 +48,16 @@ def diversive_augment(y_pred, model):
 	for flip in flips:
 		for rot in rotations:
 			print "Flip: %r, rot: %i" % (flip, rot)
-			aug = Augmenter(y_pred, rot, (0,0), 1.0, 0, flip)
-			augmented = aug.transform()
-			pred = model.predict_proba(augmented)
-			stack_pred.append(pred)
+			batch_size = len(y_pred)/10
+			probs = []
+			for i in range(0, 10):
+				print "Working on batch %i" % (i)
+				batch = y_pred[i*batch_size:i*batch_size+batch_size]
+				aug = Augmenter(batch, rot, (0,0), 1.0, 0, flip)
+				augmented = aug.transform()
+				pred = model.predict_proba(augmented)
+				probs.append(pred)
+			stack_pred.append(np.vstack(probs))
 
 	avg = np.mean(stack_pred, 0)
 
@@ -84,4 +91,4 @@ def predict(filename):
 	print "Done! File saved to out.csv and out.csv.gz"
 
 if __name__ == "__main__":
-	predict('model.pkl')
+	predict('models/MODEL_TOPHAT.pkl')

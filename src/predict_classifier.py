@@ -1,10 +1,11 @@
 from sklearn.externals import joblib
-from sklearn.linear_model import SGDClassifier
+from sklearn import linear_model
 import pandas as pd
 import numpy as np
 from pandas import DataFrame
 import os
 import h5py
+import csv
 
 header = "acantharia_protist_big_center,acantharia_protist_halo,acantharia_protist,amphipods,\
 appendicularian_fritillaridae,appendicularian_s_shape,appendicularian_slight_curve,appendicularian_straight,\
@@ -57,11 +58,17 @@ def predict(features, nr_centroids):
 _threshold = 0.9
 
 def load_file(path='../data/submission1/out.csv'):
-         probabilities = pandas.io.parsers.read_csv(path,sep=',')
+         probabilities = pd.io.parsers.read_csv(path,sep=',')
          return probabilities.as_matrix(),probabilities
 
 def load_filenames(path='../data/test'):
-      return os.listdir(path)
+    file_names = os.listdir(path)
+    no_thumbs = []
+    for name in file_names:
+        if name != 'Thumbs.db':
+            no_thumbs.append(name)
+    
+    return no_thumbs
           
     
 def create_csv(probabilities,filenames):
@@ -88,9 +95,11 @@ def predict_classifier(model='../models/svc100/classifier.pkl',
     # Predict samples
     predictions = clf.predict_proba(features)
     feature_file.close()
-
+    
+    
+    
     print "Creatings CSV file for submission to Kaggle"
-    # Create CSV file for submission to Kaggle
+#    # Create CSV file for submission to Kaggle
     create_csv(predictions,load_filenames())
 
 

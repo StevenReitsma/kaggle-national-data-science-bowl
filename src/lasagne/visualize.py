@@ -3,9 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
 
-def visualize_first_layer(filename):
-	with open(filename, 'rb') as f:
-		model = pickle.load(f)
+def visualize_first_layer(model):
 
 	W = model.layers_['conv1'].W.get_value()
 	length = int(np.sqrt(W.shape[0]))
@@ -18,8 +16,3 @@ def visualize_first_layer(filename):
 			ax[i, j].axis('off')
 
 	plt.show()
-
-
-
-if __name__ == "__main__":
-	visualize_first_layer('MODEL_NAIVE_RESIZING.pkl')
